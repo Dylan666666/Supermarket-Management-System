@@ -1,34 +1,32 @@
-package com.market.scms.dao;
+package com.market.scms.service;
 
 import com.market.scms.entity.SupermarketStaff;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 /**
  * @Author: Mr_OO
- * @Date: 2020/10/8 9:40
+ * @Date: 2020/10/8 13:43
  */
-public interface SupermarketStaffDao {
-
+public interface SupermarketStaffService {
     /**
      * 通过电话号码查询职工信息
-     * 
+     *
      * @param staffPhone
      * @return
      */
-    SupermarketStaff queryStaffByPhone(@Param("staffPhone") Long staffPhone);
+    SupermarketStaff queryStaffByPhone(Long staffPhone);
 
     /**
      * 查询所有职工信息
-     * 
+     *
      * @return
      */
     List<SupermarketStaff> queryStaffList();
 
     /**
      * 注册职工信息
-     * 
+     *
      * @param staff
      * @return
      */
@@ -36,7 +34,7 @@ public interface SupermarketStaffDao {
 
     /**
      * 更新职工信息
-     * 
+     *
      * @param staff
      * @return
      */
@@ -44,10 +42,10 @@ public interface SupermarketStaffDao {
 
     /**
      * 职工登录
-     * 
+     *
      * @param staffPhone
      * @param staffPassword
      * @return
      */
-    SupermarketStaff staffLogin(@Param("staffPhone") Long staffPhone, @Param("staffPassword") String staffPassword);
+    SupermarketStaff staffLogin(Long staffPhone, String staffPassword);
 }
