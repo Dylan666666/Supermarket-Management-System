@@ -12,7 +12,7 @@ public class SupermarketStaff {
     private Long staffId;
     private String staffName;
     private String staffPassword;
-    private Long staffPhone;
+    private String staffPhone;
     /**
      * 职位属性
      */
@@ -21,7 +21,6 @@ public class SupermarketStaff {
      * 职工状态属性
      */
     private Integer staffStatus;
-
     private Date createTime;
     private Date lastEditTime;
 
@@ -37,6 +36,14 @@ public class SupermarketStaff {
      *  登录时间
      */
     private LocalDateTime loginTime;
+    
+    public String getStaffPhone() {
+        return staffPhone;
+    }
+
+    public void setStaffPhone(String staffPhone) {
+        this.staffPhone = staffPhone;
+    }
 
     public String getToken() {
         return token;
@@ -84,14 +91,6 @@ public class SupermarketStaff {
 
     public void setStaffPassword(String staffPassword) {
         this.staffPassword = staffPassword;
-    }
-
-    public Long getStaffPhone() {
-        return staffPhone;
-    }
-
-    public void setStaffPhone(Long staffPhone) {
-        this.staffPhone = staffPhone;
     }
 
     public Integer getStaffPosition() {

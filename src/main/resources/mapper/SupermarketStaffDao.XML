@@ -21,7 +21,7 @@
         tb_staff 
         WHERE 
         staff_status != -1
-        ORDER BY staff_Position ASC 
+        ORDER BY staff_position ASC 
     </select>
     
     <insert id="insertStaff" parameterType="com.market.scms.entity.SupermarketStaff"

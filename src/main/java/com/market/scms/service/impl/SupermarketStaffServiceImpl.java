@@ -1,7 +1,6 @@
 package com.market.scms.service.impl;
 
 import com.market.scms.dao.SupermarketStaffDao;
-import com.market.scms.dto.SupermarketStaffExecution;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.SupermarketStaffService;
@@ -42,9 +41,9 @@ public class SupermarketStaffServiceImpl implements SupermarketStaffService {
      * @throws SupermarketStaffException
      */
     @Override
-    public SupermarketStaff queryStaffByPhone(Long staffPhone) throws SupermarketStaffException {
+    public SupermarketStaff queryStaffByPhone(String staffPhone) throws SupermarketStaffException {
         SupermarketStaff staff = null;
-        if (staffPhone > 0) {
+        if (staffPhone != null) {
             try {
                 staff = supermarketStaffDao.queryStaffByPhone(staffPhone);
             } catch (SupermarketStaffException e) {
@@ -83,7 +82,7 @@ public class SupermarketStaffServiceImpl implements SupermarketStaffService {
     @Transactional
     public int insertStaff(SupermarketStaff staff) throws SupermarketStaffException {
         int res = 0;
-        if (staff != null && staff.getStaffPhone() != 0 &&
+        if (staff != null && staff.getStaffPhone() != null &&
                 staff.getStaffName() != null &&
                 staff.getStaffPassword() != null) {
             try {
@@ -136,9 +135,9 @@ public class SupermarketStaffServiceImpl implements SupermarketStaffService {
      * @return
      */
     @Override
-    public SupermarketStaff staffLogin(Long staffPhone, String staffPassword) throws SupermarketStaffException {
-        if (staffPhone <= 0 || staffPassword == null) {
-            throw new SupermarketStaffException("登录出错");
+    public SupermarketStaff staffLogin(String staffPhone, String staffPassword) throws SupermarketStaffException {
+        if (staffPhone == null || staffPassword == null) {
+            throw new SupermarketStaffException("输入不能为空");
         } else{
             SupermarketStaff staff = null;
             try {

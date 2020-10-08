@@ -15,7 +15,7 @@ public interface SupermarketStaffService {
      * @param staffPhone
      * @return
      */
-    SupermarketStaff queryStaffByPhone(Long staffPhone);
+    SupermarketStaff queryStaffByPhone(String staffPhone);
 
     /**
      * 查询所有职工信息
@@ -47,7 +47,7 @@ public interface SupermarketStaffService {
      * @param staffPassword
      * @return
      */
-    SupermarketStaff staffLogin(Long staffPhone, String staffPassword);
+    SupermarketStaff staffLogin(String staffPhone, String staffPassword);
 
     /**
      * 生成 token 并注册

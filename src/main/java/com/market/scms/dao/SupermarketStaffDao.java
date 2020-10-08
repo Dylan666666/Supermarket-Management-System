@@ -17,7 +17,7 @@ public interface SupermarketStaffDao {
      * @param staffPhone
      * @return
      */
-    SupermarketStaff queryStaffByPhone(@Param("staffPhone") Long staffPhone);
+    SupermarketStaff queryStaffByPhone(@Param("staffPhone") String staffPhone);
 
     /**
      * 查询所有职工信息
@@ -49,7 +49,7 @@ public interface SupermarketStaffDao {
      * @param staffPassword
      * @return
      */
-    SupermarketStaff staffLogin(@Param("staffPhone") Long staffPhone, @Param("staffPassword") String staffPassword);
+    SupermarketStaff staffLogin(@Param("staffPhone") String staffPhone, @Param("staffPassword") String staffPassword);
 
     /**
      * 通过token查找职工
