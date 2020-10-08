@@ -28,10 +28,10 @@
             useGeneratedKeys="true" keyProperty="staffId" keyColumn="staff_id">
         INSERT INTO
         tb_staff(staff_name,staff_password,staff_phone,create_time,last_edit_time,
-        staff_position,staff_status)
+        staff_position,staff_status,staff_token,staff_login_time,staff_expire_time)
         VALUES 
         (#{staffName},#{staffPassword},#{staffPhone},#{createTime},#{lastEditTime},
-        #{staffPosition},#{staffStatus})
+        #{staffPosition},#{staffStatus},#{token},#{loginTime},#{expireTime})
     </insert>
     
     <update id="updateStaff">
@@ -43,6 +43,9 @@
             <if test="staffPosition != null"> staff_position = #{staffPosition},</if>
             <if test="staffStatus != null"> staff_status = #{staffStatus},</if>
             <if test="lastEditTime != null"> last_edit_time = #{lastEditTime}</if>
+            <if test="token != null"> staff_token = #{token}</if>
+            <if test="loginTime != null"> staff_login_time = #{loginTime}</if>
+            <if test="expireTime != null"> staff_expire_time = #{expireTIme}</if>
         </set>
         WHERE 
         staff_id = #{staffId}
@@ -57,6 +60,15 @@
         staff_phone = #{staffPhone}
         AND 
         staff_password = #{staffPassword}
+    </select>
+    
+    <select id="findByToken" resultType="com.market.scms.entity.SupermarketStaff">
+        SELECT 
+        *
+        FROM 
+        db_staff
+        WHERE 
+        staff_token = #{token}
     </select>
     
 </mapper>

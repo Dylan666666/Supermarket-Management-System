@@ -48,4 +48,27 @@ public interface SupermarketStaffService {
      * @return
      */
     SupermarketStaff staffLogin(Long staffPhone, String staffPassword);
+
+    /**
+     * 生成 token 并注册
+     * 
+     * @param staff
+     * @return
+     */
+    String createToken(SupermarketStaff staff);
+
+    /**
+     * 根据token去修改用户token ，使原本token失效
+     * 
+     * @param token
+     */
+    void logout(String token);
+
+    /**
+     * 根据token获取用户信息
+     * 
+     * @param token
+     * @return
+     */
+    SupermarketStaff findByToken(String token);
 }

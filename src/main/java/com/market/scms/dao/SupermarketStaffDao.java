@@ -50,4 +50,12 @@ public interface SupermarketStaffDao {
      * @return
      */
     SupermarketStaff staffLogin(@Param("staffPhone") Long staffPhone, @Param("staffPassword") String staffPassword);
+
+    /**
+     * 通过token查找职工
+     * 
+     * @param token
+     * @return
+     */
+    SupermarketStaff findByToken(String token);
 }
