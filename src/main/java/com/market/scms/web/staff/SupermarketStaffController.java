@@ -6,6 +6,7 @@ import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.SupermarketStaffService;
 import com.market.scms.util.HttpServletRequestUtil;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -134,6 +135,45 @@ public class SupermarketStaffController {
         // 将用户session置为空
         supermarketStaffService.logout(token);
         modelMap.put("success", true);
+        return modelMap;
+    }
+
+    @Transactional
+    @PostMapping("/changePassword")
+    public Map<String, Object> changePassword(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<String, Object>();
+        String staffPhone = HttpServletRequestUtil.getString(request, "staffPhone");
+        String staffPassword = HttpServletRequestUtil.getString(request, "staffPassword");
+        String newPassword = HttpServletRequestUtil.getString(request, "newPassword");
+        if (staffPhone != null && staffPassword != null && newPassword != null) {
+            try {
+                SupermarketStaff staff = supermarketStaffService.queryStaffByPhone(staffPhone);
+                if (staff == null) {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", "该手机号不存在");
+                    return modelMap;
+                }
+                if (!staff.getStaffPassword().equals(staffPassword)) {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", "密码错误");
+                    return modelMap;
+                }
+                staff.setStaffPassword(newPassword);
+                int res = supermarketStaffService.updateStaff(staff);
+                if (res != 1) {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", "更改密码失败");
+                    return modelMap;
+                }
+                modelMap.put("success", true);
+            } catch (SupermarketStaffException e) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", e.getMessage());
+            }
+        } else {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "输入信息不能为空");
+        }
         return modelMap;
     }
     
