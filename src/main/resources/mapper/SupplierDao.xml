@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.market.scms.dao.SupplierDao">
-    <select id="queryStaffByPhone" resultType="com.market.scms.entity.Supplier">
+    <select id="querySupplierByPhone" resultType="com.market.scms.entity.Supplier">
         SELECT 
         *
         FROM 
@@ -41,7 +41,7 @@
             <if test="supplierAddress != null"> supplier_address = #{supplierAddress},</if>
             <if test="supplierEmail != null"> supplier_email = #{supplierEmail},</if>
             <if test="supplierFax != null"> supplier_fax = #{supplierFax},</if>
-            <if test="supplier_payment != null"> supplier_payment = #{supplierPayment},</if>
+            <if test="supplierPayment != null"> supplier_payment = #{supplierPayment},</if>
             <if test="lastEditTime != null"> last_edit_time = #{lastEditTime},</if>
             <if test="token != null"> supplier_token = #{token},</if>
             <if test="loginTime != null"> supplier_login_time = #{loginTime},</if>
@@ -51,7 +51,7 @@
         supplier_id = #{supplierId}
     </update>
 
-    <select id="staffLogin" resultType="com.market.scms.entity.Supplier">
+    <select id="supplierLogin" resultType="com.market.scms.entity.Supplier">
         SELECT 
         *
         FROM 
