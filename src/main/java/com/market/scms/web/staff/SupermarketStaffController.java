@@ -60,5 +60,39 @@ public class SupermarketStaffController {
         return modelMap;
     }
     
+    @PostMapping("/login")
+    public Map<String, Object> login(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>();
+        String staffPassword = HttpServletRequestUtil.getString(request, "staffPassword");
+        String staffPhone = HttpServletRequestUtil.getString(request, "staffPhone");
+        if (staffPassword != null && staffPhone != null) {
+            try {
+                SupermarketStaff staff = supermarketStaffService.queryStaffByPhone(staffPhone);
+                if (staff == null) {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", "该手机号不存在");
+                    return modelMap;
+                }
+                staff = supermarketStaffService.staffLogin(staffPhone, staffPassword);
+                if (staff == null) {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", "密码错误");
+                    return modelMap;
+                }
+                modelMap.put("staff", staff);
+                modelMap.put("staffToken", staff.getToken());
+            } catch (SupermarketStaffException e) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", e.getMessage());
+                return modelMap;
+            }
+        } else {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "请务必输入电话和密码");
+        }
+        return modelMap;
+    }
+    
+    
     
 }
