@@ -88,6 +88,7 @@ public class SupermarketStaffServiceImpl implements SupermarketStaffService {
             try {
                 staff.setCreateTime(new Date());
                 staff.setLastEditTime(new Date());
+                staff.setStaffStatus(1001);
                 res = supermarketStaffDao.insertStaff(staff);
                 if (res <= 0) {
                     throw new SupermarketStaffException("添加职工信息出错");

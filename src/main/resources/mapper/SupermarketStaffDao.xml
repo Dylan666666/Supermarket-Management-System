@@ -5,8 +5,7 @@
 <mapper namespace="com.market.scms.dao.SupermarketStaffDao">
     <select id="queryStaffByPhone" resultType="com.market.scms.entity.SupermarketStaff">
         SELECT 
-        staff_id,staff_name,staff_password,staff_phone,create_time,last_edit_time,
-        staff_position,staff_status
+        *
         FROM 
         tb_staff
         WHERE 
@@ -15,8 +14,7 @@
 
     <select id="queryStaffList" resultType="com.market.scms.entity.SupermarketStaff">
         SELECT 
-        staff_id,staff_name,staff_password,staff_phone,create_time,last_edit_time,
-        staff_position,staff_status
+        *
         FROM 
         tb_staff 
         WHERE 
@@ -34,7 +32,7 @@
         #{staffPosition},#{staffStatus},#{token},#{loginTime},#{expireTime})
     </insert>
     
-    <update id="updateStaff">
+    <update id="updateStaff" parameterType="com.market.scms.entity.SupermarketStaff">
         UPDATE 
         tb_staff
         <set>
@@ -42,10 +40,10 @@
             <if test="staffName != null"> staff_name = #{staffName},</if>
             <if test="staffPosition != null"> staff_position = #{staffPosition},</if>
             <if test="staffStatus != null"> staff_status = #{staffStatus},</if>
-            <if test="lastEditTime != null"> last_edit_time = #{lastEditTime}</if>
-            <if test="token != null"> staff_token = #{token}</if>
-            <if test="loginTime != null"> staff_login_time = #{loginTime}</if>
-            <if test="expireTime != null"> staff_expire_time = #{expireTIme}</if>
+            <if test="lastEditTime != null"> last_edit_time = #{lastEditTime},</if>
+            <if test="token != null"> staff_token = #{token},</if>
+            <if test="loginTime != null"> staff_login_time = #{loginTime},</if>
+            <if test="expireTime != null"> staff_expire_time = #{expireTime}</if>
         </set>
         WHERE 
         staff_id = #{staffId}
@@ -55,7 +53,7 @@
         SELECT 
         *
         FROM 
-        db_staff
+        tb_staff
         WHERE 
         staff_phone = #{staffPhone}
         AND 
@@ -66,7 +64,7 @@
         SELECT 
         *
         FROM 
-        db_staff
+        tb_staff
         WHERE 
         staff_token = #{token}
     </select>
