@@ -1,5 +1,6 @@
 package com.market.scms.web.staff;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.SupermarketStaffService;
@@ -89,6 +90,42 @@ public class SupermarketStaffController {
         } else {
             modelMap.put("success", false);
             modelMap.put("errMsg", "请务必输入电话和密码");
+        }
+        return modelMap;
+    }
+    
+    @PostMapping("/update")
+    public Map<String, Object> updateStaff(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>();
+        String staffStr = HttpServletRequestUtil.getString(request, "staff");
+        //测试
+        System.out.println(staffStr);
+        ObjectMapper mapper = new ObjectMapper();
+        SupermarketStaff staff = null;
+        try {
+            staff = mapper.readValue(staffStr, SupermarketStaff.class);
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "数据传输出错" + e.getMessage());
+            return modelMap;
+        }
+        if (staff != null && staff.getStaffId() > 0 && staff.getStaffPhone() != null) {
+            try {
+                int res = supermarketStaffService.updateStaff(staff);
+                if (res == 0) {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", "更改出错");
+                    return modelMap;
+                }
+                modelMap.put("success", true);
+            } catch (SupermarketStaffException e) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", e.getMessage());
+                return modelMap;
+            }
+        } else {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "不具备更新条件");
         }
         return modelMap;
     }
