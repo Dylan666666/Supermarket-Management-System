@@ -6,10 +6,7 @@ import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.SupermarketStaffService;
 import com.market.scms.util.HttpServletRequestUtil;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -130,6 +127,14 @@ public class SupermarketStaffController {
         return modelMap;
     }
     
-    
+    @PostMapping("/logout")
+    public Map<String, Object> logout(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<String, Object>();
+        String token = HttpServletRequestUtil.getString(request, "staffToken");
+        // 将用户session置为空
+        supermarketStaffService.logout(token);
+        modelMap.put("success", true);
+        return modelMap;
+    }
     
 }
