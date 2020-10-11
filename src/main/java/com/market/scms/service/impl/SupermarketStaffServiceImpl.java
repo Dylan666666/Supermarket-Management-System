@@ -2,6 +2,8 @@ package com.market.scms.service.impl;
 
 import com.market.scms.dao.SupermarketStaffDao;
 import com.market.scms.entity.SupermarketStaff;
+import com.market.scms.enums.StaffStatusStateEnum;
+import com.market.scms.enums.TokenTimeEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.SupermarketStaffService;
 import com.market.scms.util.PageCalculator;
@@ -21,18 +23,9 @@ import java.util.UUID;
  */
 @Service
 public class SupermarketStaffServiceImpl implements SupermarketStaffService {
-
-    /**
-     * 12小时后失效
-     * 
-     */
-    private final static int EXPIRE = 24;
     
     @Resource
     private SupermarketStaffDao supermarketStaffDao;
-    
-    @Resource
-    private SupermarketStaffService supermarketStaffService;
 
     /**
      * 通过电话查询职工
@@ -94,7 +87,7 @@ public class SupermarketStaffServiceImpl implements SupermarketStaffService {
             try {
                 staff.setCreateTime(new Date());
                 staff.setLastEditTime(new Date());
-                staff.setStaffStatus(1001);
+                staff.setStaffStatus(StaffStatusStateEnum.JUST_REGISTERED.getState());
                 res = supermarketStaffDao.insertStaff(staff);
                 if (res <= 0) {
                     throw new SupermarketStaffException("添加职工信息出错");
@@ -125,10 +118,10 @@ public class SupermarketStaffServiceImpl implements SupermarketStaffService {
                 staff.setLastEditTime(new Date());
                 res = supermarketStaffDao.updateStaff(staff);
                 if (res <= 0) {
-                    throw new SupermarketStaffException("添加信息出错");
+                    throw new SupermarketStaffException("更改信息失败");
                 }
             } catch (SupermarketStaffException e) {
-                throw new SupermarketStaffException("添加信息出错");
+                throw new SupermarketStaffException("更改信息失败");
             }
             return res;
         }
@@ -175,7 +168,7 @@ public class SupermarketStaffServiceImpl implements SupermarketStaffService {
         //当前时间
         LocalDateTime now = LocalDateTime.now();
         //过期时间
-        LocalDateTime expireTime = now.plusHours(EXPIRE);
+        LocalDateTime expireTime = now.plusHours(TokenTimeEnum.EXPIRE_TIME.getState());
         //保存到数据库
         staff.setLoginTime(now);
         staff.setExpireTime(expireTime);

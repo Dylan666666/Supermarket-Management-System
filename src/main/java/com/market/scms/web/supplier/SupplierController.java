@@ -1,9 +1,10 @@
-package com.market.scms.web.staff;
+package com.market.scms.web.supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.market.scms.entity.SupermarketStaff;
+import com.market.scms.entity.Supplier;
 import com.market.scms.exceptions.SupermarketStaffException;
-import com.market.scms.service.SupermarketStaffService;
+import com.market.scms.exceptions.SupplierException;
+import com.market.scms.service.SupplierService;
 import com.market.scms.util.HttpServletRequestUtil;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,105 +16,106 @@ import java.util.Map;
 
 /**
  * @Author: Mr_OO
- * @Date: 2020/10/8 19:34
+ * @Date: 2020/10/11 14:05
  */
 @RestController
-@RequestMapping("/staff")
+@RequestMapping("/supplier")
 @CrossOrigin
-public class SupermarketStaffController {
+public class SupplierController {
     
     @Resource
-    private SupermarketStaffService supermarketStaffService;
-    
+    private SupplierService supplierService;
+
     @PostMapping("/insert")
-    public Map<String, Object> insertStaff(HttpServletRequest request) {
+    public Map<String, Object> insertSupplier(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>();
         //TODO 验证码验证未判断
-        String staffName = HttpServletRequestUtil.getString(request, "staffName");
-        String staffPassword = HttpServletRequestUtil.getString(request, "staffPassword");
-        String staffPhone = HttpServletRequestUtil.getString(request, "staffPhone");
-        SupermarketStaff staff = new SupermarketStaff();
-        staff.setStaffName(staffName);
-        staff.setStaffPassword(staffPassword);
-        staff.setStaffPhone(staffPhone);
-        //非空判断
-        if (staffName != null && staffPassword != null && staffPhone != null) {
+        String supplierName = HttpServletRequestUtil.getString(request, "supplierName");
+        String supplierPassword = HttpServletRequestUtil.getString(request, "supplierPassword");
+        String supplierPhone = HttpServletRequestUtil.getString(request, "supplierPhone");
+        String supplierAddress = HttpServletRequestUtil.getString(request, "supplierAddress");
+        if (supplierName != null && supplierPassword != null && supplierPhone != null && supplierAddress != null) {
             try {
-                SupermarketStaff curStaff = supermarketStaffService.queryStaffByPhone(staffPhone);
-                if (curStaff != null) {
+                Supplier curSupplier = supplierService.querySupplierByPhone(supplierPhone);
+                if (curSupplier != null) {
                     modelMap.put("success", false);
                     modelMap.put("errMsg", "该手机号已注册");
                     return modelMap;
                 }
-                int res = supermarketStaffService.insertStaff(staff);
+                Supplier supplier = new Supplier();
+                supplier.setSupplierName(supplierName);
+                supplier.setSupplierPassword(supplierPassword);
+                supplier.setSupplierPhone(supplierPhone);
+                supplier.setSupplierAddress(supplierAddress);
+                int res = supplierService.insertSupplier(supplier);
                 if (res == 1) {
                     modelMap.put("success", true);
                 } else {
                     modelMap.put("success", false);
-                    modelMap.put("errMsg", "添加失败");
+                    modelMap.put("errMsg", "注册失败");
                 }
-            } catch (SupermarketStaffException e) {
+            } catch (SupplierException e) {
                 modelMap.put("success", false);
                 modelMap.put("errMsg", e.getMessage());
                 return modelMap;
             }
         } else {
             modelMap.put("success", false);
-            modelMap.put("errMsg", "请务必输入姓名，密码以及电话");
+            modelMap.put("errMsg", "请务必输入供应商名称，地址，电话以及密码");
         }
         return modelMap;
     }
-    
+
     @PostMapping("/login")
     public Map<String, Object> login(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>();
-        String staffPassword = HttpServletRequestUtil.getString(request, "staffPassword");
-        String staffPhone = HttpServletRequestUtil.getString(request, "staffPhone");
-        if (staffPassword != null && staffPhone != null) {
+        String supplierPhone = HttpServletRequestUtil.getString(request, "supplierPhone");
+        String supplierPassword = HttpServletRequestUtil.getString(request, "supplierPassword");
+        if (supplierPassword != null && supplierPhone != null) {
             try {
-                SupermarketStaff staff = supermarketStaffService.queryStaffByPhone(staffPhone);
-                if (staff == null) {
+                Supplier supplier = supplierService.querySupplierByPhone(supplierPhone);
+                if (supplier == null) {
                     modelMap.put("success", false);
                     modelMap.put("errMsg", "该手机号不存在");
                     return modelMap;
                 }
-                staff = supermarketStaffService.staffLogin(staffPhone, staffPassword);
-                if (staff == null) {
+                supplier = supplierService.supplierLogin(supplierPhone, supplierPassword);
+                if (supplier == null) {
                     modelMap.put("success", false);
                     modelMap.put("errMsg", "密码错误");
                     return modelMap;
                 }
                 modelMap.put("success", true);
-                modelMap.put("staff", staff);
-                modelMap.put("staffToken", staff.getToken());
-            } catch (SupermarketStaffException e) {
+                modelMap.put("supplier", supplier);
+                modelMap.put("supplierToken", supplier.getToken());
+            } catch (SupplierException e) {
                 modelMap.put("success", false);
                 modelMap.put("errMsg", e.getMessage());
                 return modelMap;
             }
         } else {
             modelMap.put("success", false);
-            modelMap.put("errMsg", "请务必输入电话和密码");
+            modelMap.put("errMsg", "请务必输入完整的电话以及密码");
         }
         return modelMap;
     }
     
     @PostMapping("/update")
-    public Map<String, Object> updateStaff(HttpServletRequest request) {
+    public Map<String, Object> updateSupplier(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>();
-        String staffStr = HttpServletRequestUtil.getString(request, "staff");
+        String supplierStr = HttpServletRequestUtil.getString(request, "supplier");
         ObjectMapper mapper = new ObjectMapper();
-        SupermarketStaff staff = null;
+        Supplier supplier = null;
         try {
-            staff = mapper.readValue(staffStr, SupermarketStaff.class);
+            supplier = mapper.readValue(supplierStr, Supplier.class);
         } catch (Exception e) {
             modelMap.put("success", false);
             modelMap.put("errMsg", "数据传输失败" + e.getMessage());
             return modelMap;
         }
-        if (staff != null && staff.getStaffId() > 0 && staff.getStaffPhone() != null) {
+        if (supplier != null && supplier.getSupplierId() > 0) {
             try {
-                int res = supermarketStaffService.updateStaff(staff);
+                int res = supplierService.updateSupplier(supplier);
                 if (res == 0) {
                     modelMap.put("success", false);
                     modelMap.put("errMsg", "更改失败");
@@ -131,42 +133,42 @@ public class SupermarketStaffController {
         }
         return modelMap;
     }
-    
+
     @PostMapping("/logout")
     public void logout(HttpServletRequest request) {
-        String token = HttpServletRequestUtil.getString(request, "staffToken");
+        String token = HttpServletRequestUtil.getString(request, "supplierToken");
         // 将用户session置为空
-        supermarketStaffService.logout(token);
+        supplierService.logout(token);
     }
-    
+
     @PostMapping("/changePassword")
     public Map<String, Object> changePassword(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<String, Object>();
-        String staffPhone = HttpServletRequestUtil.getString(request, "staffPhone");
-        String staffPassword = HttpServletRequestUtil.getString(request, "staffPassword");
+        String supplierPhone = HttpServletRequestUtil.getString(request, "supplierPhone");
+        String supplierPassword = HttpServletRequestUtil.getString(request, "supplierPassword");
         String newPassword = HttpServletRequestUtil.getString(request, "newPassword");
-        if (staffPhone != null && staffPassword != null && newPassword != null) {
+        if (supplierPhone != null && supplierPassword != null && newPassword != null) {
             try {
-                SupermarketStaff staff = supermarketStaffService.queryStaffByPhone(staffPhone);
-                if (staff == null) {
+                Supplier supplier = supplierService.querySupplierByPhone(supplierPhone);
+                if (supplier == null) {
                     modelMap.put("success", false);
                     modelMap.put("errMsg", "该手机号不存在");
                     return modelMap;
                 }
-                if (!staff.getStaffPassword().equals(staffPassword)) {
+                if (!supplier.getSupplierPassword().equals(supplierPassword)) {
                     modelMap.put("success", false);
                     modelMap.put("errMsg", "密码错误");
                     return modelMap;
                 }
-                staff.setStaffPassword(newPassword);
-                int res = supermarketStaffService.updateStaff(staff);
+                supplier.setSupplierPassword(newPassword);
+                int res = supplierService.updateSupplier(supplier);
                 if (res != 1) {
                     modelMap.put("success", false);
                     modelMap.put("errMsg", "更改密码失败");
                     return modelMap;
                 }
                 modelMap.put("success", true);
-            } catch (SupermarketStaffException e) {
+            } catch (SupplierException e) {
                 modelMap.put("success", false);
                 modelMap.put("errMsg", e.getMessage());
             }
@@ -176,18 +178,18 @@ public class SupermarketStaffController {
         }
         return modelMap;
     }
-    
+
     @GetMapping("/query")
-    public Map<String, Object> queryStaff(HttpServletRequest request) {
+    public Map<String, Object> querySupplier(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<String, Object>();
-        String staffStr = HttpServletRequestUtil.getString(request, "staff");
+        String supplierStr = HttpServletRequestUtil.getString(request, "supplier");
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request,"pageSize");
         ObjectMapper mapper = new ObjectMapper();
-        SupermarketStaff staff = null;
+        Supplier supplier = null;
         try {
-            staff = mapper.readValue(staffStr, SupermarketStaff.class);
-            if (staff == null) {
+            supplier = mapper.readValue(supplierStr, Supplier.class);
+            if (supplier == null) {
                 throw new SupermarketStaffException("传入数据为空");
             }
         } catch (Exception e) {
@@ -202,11 +204,11 @@ public class SupermarketStaffController {
             if (pageSize == -1) {
                 pageSize = 100;
             }
-            List<SupermarketStaff> list = supermarketStaffService.queryStaffByCondition(staff, pageIndex, pageSize);
+            List<Supplier> list = supplierService.querySupplierByCondition(supplier, pageIndex, pageSize);
             modelMap.put("success", true);
             modelMap.put("staffList", list);
             modelMap.put("staffCount", list.size());
-        } catch (SupermarketStaffException e) {
+        } catch (SupplierException e) {
             modelMap.put("success", false);
             modelMap.put("errMsg", e.getMessage());
         }
