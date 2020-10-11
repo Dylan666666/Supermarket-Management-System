@@ -10,6 +10,7 @@ import com.market.scms.exceptions.SupplierException;
 import com.market.scms.service.SupplierService;
 import com.market.scms.util.PageCalculator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
