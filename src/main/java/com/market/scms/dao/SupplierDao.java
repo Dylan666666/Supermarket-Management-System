@@ -20,10 +20,15 @@ public interface SupplierDao {
 
     /**
      * 查询所有供应商信息
-     *
+     * 
+     * @param supplierCondition
+     * @param rowIndex
+     * @param pageSize
      * @return
      */
-    List<Supplier> querySupplierList();
+    List<Supplier> querySupplierByCondition(@Param("supplierCondition") Supplier supplierCondition,
+                                            @Param("rowIndex") int rowIndex, 
+                                            @Param("pageSize") int pageSize);
 
     /**
      * 注册供应商信息

@@ -12,12 +12,41 @@
         supplier_phone = #{supplierPhone}
     </select>
 
-    <select id="querySupplierList" resultType="com.market.scms.entity.Supplier">
+    <select id="querySupplierByCondition" resultType="com.market.scms.entity.Supplier">
         SELECT 
         *
         FROM 
-        tb_supplier
-        ORDER BY supplier_status DESC 
+        tb_supplier s
+        <where>
+            <if test="supplierCondition.supplierName != null">
+                AND
+                s.supplier_name
+                LIKE
+                '%${supplierCondition.supplierName}%'
+            </if>
+            <if test="supplierCondition.supplierId != null">
+                AND
+                s.supplier_id = #{supplierCondition.supplierId}
+            </if>
+            <if test="supplierCondition.supplierPhone != null">
+                AND
+                s.supplier_phone = #{supplierCondition.supplierPhone}
+            </if>
+            <if test="supplierCondition.supplierFax != null">
+                AND
+                s.supplier_fax = #{supplierCondition.supplierFax}
+            </if>
+            <if test="supplierCondition.supplierStatus != null">
+                AND
+                s.supplier_status = #{supplierCondition.supplierStatus}
+            </if>
+            <if test="supplierCondition.supplierPayment != null">
+                AND
+                s.supplier_payment = #{supplierCondition.supplierPayment}
+            </if>
+        </where>
+        ORDER BY supplier_id ASC 
+        LIMIT #{rowIndex},#{pageSize}
     </select>
 
     <insert id="insertSupplier" parameterType="com.market.scms.entity.Supplier"

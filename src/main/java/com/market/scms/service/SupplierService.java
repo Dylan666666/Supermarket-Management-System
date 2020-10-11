@@ -1,6 +1,5 @@
 package com.market.scms.service;
 
-import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.entity.Supplier;
 
 import java.util.List;
@@ -21,10 +20,13 @@ public interface SupplierService {
 
     /**
      * 查询所有供应商信息
-     *
+     * 
+     * @param supplier
+     * @param pageIndex
+     * @param pageSize
      * @return
      */
-    List<Supplier> querySupplierList();
+    List<Supplier> querySupplierByCondition(Supplier supplier, int pageIndex, int pageSize);
 
     /**
      * 注册供应商信息
@@ -54,10 +56,10 @@ public interface SupplierService {
     /**
      * 生成 token
      *
-     * @param staff
+     * @param supplier
      * @return
      */
-    String createToken(Supplier staff);
+    String createToken(Supplier supplier);
 
     /**
      * 根据token去修改用户token ，使原本token失效

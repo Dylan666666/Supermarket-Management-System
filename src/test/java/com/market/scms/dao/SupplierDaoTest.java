@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: Mr_OO
@@ -32,7 +33,6 @@ public class SupplierDaoTest {
     
     @Test
     public void queryTest() {
-        System.out.println(supplierDao.querySupplierList().get(0).getSupplierName());
         System.out.println(supplierDao.querySupplierByPhone("1").getSupplierName());
         System.out.println(supplierDao.supplierLogin("1", "1").getSupplierName());
     }
@@ -45,5 +45,16 @@ public class SupplierDaoTest {
         System.out.println(supplierDao.updateSupplier(supplier));
         System.out.println(supplierDao.findByToken("1").getSupplierName());
     }
+    
+    @Test
+    public void queryByCondition() {
+        Supplier supplier = new Supplier();
+        supplier.setSupplierName("哈");
+        List<Supplier> list = supplierDao.querySupplierByCondition(supplier, 0, 100);
+        for (Supplier s : list) {
+            System.out.println(s.getSupplierName());
+        }
+    }
+    
     
 }
