@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -96,8 +97,6 @@ public class SupermarketStaffController {
     public Map<String, Object> updateStaff(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>();
         String staffStr = HttpServletRequestUtil.getString(request, "staff");
-        //测试
-        System.out.println(staffStr);
         ObjectMapper mapper = new ObjectMapper();
         SupermarketStaff staff = null;
         try {
@@ -173,6 +172,34 @@ public class SupermarketStaffController {
         } else {
             modelMap.put("success", false);
             modelMap.put("errMsg", "输入信息不能为空");
+        }
+        return modelMap;
+    }
+    
+    @GetMapping("/queryStaff")
+    public Map<String, Object> queryStaff(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<String, Object>();
+        String staffStr = HttpServletRequestUtil.getString(request, "staff");
+        ObjectMapper mapper = new ObjectMapper();
+        SupermarketStaff staff = null;
+        try {
+            staff = mapper.readValue(staffStr, SupermarketStaff.class);
+            if (staff == null) {
+                throw new SupermarketStaffException("传入数据为空");
+            }
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "数据传输出错" + e.getMessage());
+            return modelMap;
+        }
+        try {
+            List<SupermarketStaff> list = supermarketStaffService.queryStaffByCondition(staff, 0, 100);
+            modelMap.put("success", true);
+            modelMap.put("staffList", list);
+            modelMap.put("staffCount", list.size());
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", e.getMessage());
         }
         return modelMap;
     }

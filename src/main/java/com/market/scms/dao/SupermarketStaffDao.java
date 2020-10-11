@@ -20,13 +20,6 @@ public interface SupermarketStaffDao {
     SupermarketStaff queryStaffByPhone(@Param("staffPhone") String staffPhone);
 
     /**
-     * 查询所有职工信息
-     * 
-     * @return
-     */
-    List<SupermarketStaff> queryStaffList();
-
-    /**
      * 注册职工信息
      * 
      * @param staff
@@ -58,4 +51,16 @@ public interface SupermarketStaffDao {
      * @return
      */
     SupermarketStaff findByToken(String token);
+
+    /**
+     * 职工信息模糊查询
+     * 
+     * @param staffCondition
+     * @param rowIndex
+     * @param pageSize
+     * @return
+     */
+    List<SupermarketStaff> queryStaffByCondition(@Param("staffCondition")SupermarketStaff staffCondition,
+                                                 @Param("rowIndex") int rowIndex,@Param("pageSize") int pageSize);
+    
 }

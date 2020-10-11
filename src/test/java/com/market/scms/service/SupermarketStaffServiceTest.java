@@ -42,8 +42,6 @@ public class SupermarketStaffServiceTest {
     
     @Test
     public void queryTest() {
-        List<SupermarketStaff> list = supermarketStaffService.queryStaffList();
-        System.out.println(list.get(0).getStaffName());
         System.out.println(supermarketStaffService.queryStaffByPhone("666").getStaffName());
         System.out.println(supermarketStaffService.staffLogin("666", "666").getStaffName());
     }
@@ -63,6 +61,16 @@ public class SupermarketStaffServiceTest {
     @Test
     public void logoutTest() {
         supermarketStaffService.logout("666");
+    }
+    
+    @Test
+    public void queryByCondition() {
+        SupermarketStaff staff = new SupermarketStaff();
+        staff.setStaffName("6");
+        List<SupermarketStaff> staffList = supermarketStaffService.queryStaffByCondition(staff, 0, 100);
+        for (SupermarketStaff supermarketStaff : staffList) {
+            System.out.println(supermarketStaff.getStaffName());
+        }
     }
     
 }

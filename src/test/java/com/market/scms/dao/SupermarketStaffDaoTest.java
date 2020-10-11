@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: Mr_OO
@@ -40,7 +41,6 @@ public class SupermarketStaffDaoTest {
     
     @Test
     public void queryTest() {
-        System.out.println(supermarketStaffDao.queryStaffList());
         System.out.println(supermarketStaffDao.queryStaffByPhone("666").getStaffPhone());
         System.out.println(supermarketStaffDao.staffLogin("666", "666").getStaffPhone());
     }
@@ -51,6 +51,16 @@ public class SupermarketStaffDaoTest {
         SupermarketStaff staff = supermarketStaffDao.findByToken("asdasd");
         staff.setToken("666");
         System.out.println(supermarketStaffDao.updateStaff(staff));
+    }
+    
+    @Test
+    public void queryByConditionTest() {
+        SupermarketStaff staff = new SupermarketStaff();
+        staff.setStaffName("66666");
+        List<SupermarketStaff> staffList = supermarketStaffDao.queryStaffByCondition(staff, 0, 100);
+        for (SupermarketStaff supermarketStaff : staffList) {
+            System.out.println(supermarketStaff.getStaffName());
+        }
     }
     
 }

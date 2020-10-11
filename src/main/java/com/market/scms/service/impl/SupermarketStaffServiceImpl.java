@@ -4,6 +4,7 @@ import com.market.scms.dao.SupermarketStaffDao;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.SupermarketStaffService;
+import com.market.scms.util.PageCalculator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,16 +57,21 @@ public class SupermarketStaffServiceImpl implements SupermarketStaffService {
     }
 
     /**
-     * 查询所有职工
+     *  查询所有职工
      * 
+     * @param staffCondition
+     * @param pageIndex
+     * @param pageSize
      * @return
      * @throws SupermarketStaffException
      */
     @Override
-    public List<SupermarketStaff> queryStaffList() throws SupermarketStaffException {
+    public List<SupermarketStaff> queryStaffByCondition(SupermarketStaff staffCondition, int pageIndex, int pageSize) 
+            throws SupermarketStaffException {
+        int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
         List<SupermarketStaff> list = new ArrayList<>();
         try {
-            list = supermarketStaffDao.queryStaffList();
+            list = supermarketStaffDao.queryStaffByCondition(staffCondition, rowIndex, pageSize);
         } catch (SupermarketStaffException e) {
             throw new SupermarketStaffException("查询出错");
         }

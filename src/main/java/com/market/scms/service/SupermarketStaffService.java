@@ -18,11 +18,14 @@ public interface SupermarketStaffService {
     SupermarketStaff queryStaffByPhone(String staffPhone);
 
     /**
-     * 查询所有职工信息
-     *
+     * 根据条件查询所有职工信息
+     * 
+     * @param staffCondition
+     * @param pageIndex
+     * @param pageSize
      * @return
      */
-    List<SupermarketStaff> queryStaffList();
+    List<SupermarketStaff> queryStaffByCondition(SupermarketStaff staffCondition, int pageIndex, int pageSize);
 
     /**
      * 注册职工信息
@@ -50,7 +53,7 @@ public interface SupermarketStaffService {
     SupermarketStaff staffLogin(String staffPhone, String staffPassword);
 
     /**
-     * 生成 token 并注册
+     * 生成 token
      * 
      * @param staff
      * @return

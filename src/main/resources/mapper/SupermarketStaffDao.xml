@@ -11,16 +11,6 @@
         WHERE 
         staff_phone = #{staffPhone}
     </select>
-
-    <select id="queryStaffList" resultType="com.market.scms.entity.SupermarketStaff">
-        SELECT 
-        *
-        FROM 
-        tb_staff 
-        WHERE 
-        staff_status != -1
-        ORDER BY staff_position ASC 
-    </select>
     
     <insert id="insertStaff" parameterType="com.market.scms.entity.SupermarketStaff"
             useGeneratedKeys="true" keyProperty="staffId" keyColumn="staff_id">
@@ -67,6 +57,40 @@
         tb_staff
         WHERE 
         staff_token = #{token}
+    </select>
+
+
+    <select id="queryStaffByCondition" resultType="com.market.scms.entity.SupermarketStaff">
+        SELECT 
+        *
+        FROM 
+        tb_staff s
+        <where>
+            <if test="staffCondition.staffName != null">
+                AND
+                s.staff_name
+                LIKE
+                '%${staffCondition.staffName}%'
+            </if>
+            <if test="staffCondition.staffId != null">
+                AND 
+                s.staff_id = #{staffCondition.staffId}
+            </if>
+            <if test="staffCondition.staffPhone != null">
+                AND
+                s.staff_phone = #{staffCondition.staffPhone}
+            </if>
+            <if test="staffCondition.staffPosition != null">
+                AND
+                s.staff_position = #{staffCondition.staffPosition}
+            </if>
+            <if test="staffCondition.staffStatus != null">
+                AND
+                s.staff_status = #{staffCondition.staffStatus}
+            </if>
+        </where>
+        ORDER BY staff_position ASC 
+        LIMIT #{rowIndex},#{pageSize}
     </select>
     
 </mapper>
