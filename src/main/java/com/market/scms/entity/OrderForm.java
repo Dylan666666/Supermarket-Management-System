@@ -11,6 +11,7 @@ public class OrderForm {
     private Long orderId;
     private String goodsName;
     private String goodsCategory;
+    private String goodsDetailedDescription;
     private Integer goodsNum;
     /**
      * 
@@ -18,6 +19,14 @@ public class OrderForm {
      */
     private Integer orderStatus;
     private Date orderTime;
+
+    public String getGoodsDetailedDescription() {
+        return goodsDetailedDescription;
+    }
+
+    public void setGoodsDetailedDescription(String goodsDetailedDescription) {
+        this.goodsDetailedDescription = goodsDetailedDescription;
+    }
 
     public Long getOrderId() {
         return orderId;

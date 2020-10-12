@@ -30,13 +30,15 @@ public class OrderFormController {
         Map<String, Object> modelMap = new HashMap<>();
         String goodsName = HttpServletRequestUtil.getString(request, "goodsName");
         String goodsCategory = HttpServletRequestUtil.getString(request, "goodsCategory");
+        String goodsDetailedDescription = HttpServletRequestUtil.getString(request, "goodsDetailedDescription");
         int goodsNum = HttpServletRequestUtil.getInt(request, "goodsNum");
-        if (goodsName != null && goodsCategory != null && goodsNum > 0) {
+        if (goodsName != null && goodsCategory != null && goodsDetailedDescription != null && goodsNum > 0) {
             try {
                 OrderForm orderForm = new OrderForm();
                 orderForm.setGoodsName(goodsName);
                 orderForm.setGoodsCategory(goodsCategory);
                 orderForm.setGoodsNum(goodsNum);
+                orderForm.setGoodsDetailedDescription(goodsDetailedDescription);
                 int res = orderFomService.insertOrderForm(orderForm);
                 if (res == 0) {
                     modelMap.put("success", false);
@@ -51,7 +53,7 @@ public class OrderFormController {
             }
         } else {
             modelMap.put("success", false);
-            modelMap.put("errMsg", "请务必正确输入商品名，商品类别以及商品数量");
+            modelMap.put("errMsg", "请务必正确输入商品名，商品类别,商品详细描述以及商品数量");
         }
         return modelMap;
     }

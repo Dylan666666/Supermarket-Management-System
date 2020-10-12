@@ -75,7 +75,7 @@ public class OrderFormServiceImpl implements OrderFomService {
     @Override
     public int insertOrderForm(OrderForm orderForm) {
         if (orderForm != null && orderForm.getGoodsName() != null && orderForm.getGoodsCategory() != null
-        && orderForm.getGoodsNum() != null) {
+        && orderForm.getGoodsNum() != null && orderForm.getGoodsDetailedDescription() != null) {
             orderForm.setOrderStatus(OrderFormStatusStateEnum.TO_BE_REVIEWED_BY_MANAGER.getState());
             orderForm.setOrderTime(new Date());
             try {

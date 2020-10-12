@@ -42,9 +42,9 @@
     <insert id="insertOrderForm" parameterType="com.market.scms.entity.OrderForm"
             useGeneratedKeys="true" keyProperty="orderId" keyColumn="order_id">
         INSERT INTO
-        tb_order_form(goods_name,goods_category,goods_num,order_status,order_time)
+        tb_order_form(goods_name,goods_category,goods_num,order_status,order_time,goods_detailed_description)
         VALUES 
-        (#{goodsName},#{goodsCategory},#{goodsNum},#{orderStatus},#{orderTime})
+        (#{goodsName},#{goodsCategory},#{goodsNum},#{orderStatus},#{orderTime},#{goodsDetailedDescription})
     </insert>
 
     <update id="updateOrderForm" parameterType="com.market.scms.entity.OrderForm">
@@ -54,6 +54,7 @@
             <if test="goodsName != null"> goods_name = #{goodsName},</if>
             <if test="goodsCategory != null"> goods_category = #{goodsCategory},</if>
             <if test="goodsNum != null"> goods_num = #{goodsNum},</if>
+            <if test="goodsDetailedDescription != null"> goods_detailed_description = #{goodsDetailedDescription},</if>
             <if test="orderStatus != null"> order_status = #{orderStatus}</if>
         </set>
         WHERE
