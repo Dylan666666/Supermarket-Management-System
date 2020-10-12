@@ -61,7 +61,7 @@ public class SupplierController {
             }
         } else {
             modelMap.put("success", false);
-            modelMap.put("errMsg", "请务必输入供应商名称，地址，电话以及密码");
+            modelMap.put("errMsg", "请务必正确输入供应商名称，地址，电话以及密码");
         }
         return modelMap;
     }
@@ -95,7 +95,7 @@ public class SupplierController {
             }
         } else {
             modelMap.put("success", false);
-            modelMap.put("errMsg", "请务必输入完整的电话以及密码");
+            modelMap.put("errMsg", "请务必正确输入完整的电话以及密码");
         }
         return modelMap;
     }
@@ -113,7 +113,7 @@ public class SupplierController {
             modelMap.put("errMsg", "数据传输失败" + e.getMessage());
             return modelMap;
         }
-        if (supplier != null && supplier.getSupplierId() > 0) {
+        if (supplier != null && supplier.getSupplierId() != null) {
             try {
                 int res = supplierService.updateSupplier(supplier);
                 if (res == 0) {
@@ -194,7 +194,7 @@ public class SupplierController {
             }
         } catch (Exception e) {
             modelMap.put("success", false);
-            modelMap.put("errMsg", "数据传输出错" + e.getMessage());
+            modelMap.put("errMsg", "数据传输出错: " + e.getMessage());
             return modelMap;
         }
         try {

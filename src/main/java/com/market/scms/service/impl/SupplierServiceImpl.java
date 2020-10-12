@@ -2,7 +2,6 @@ package com.market.scms.service.impl;
 
 import com.market.scms.dao.SupplierDao;
 import com.market.scms.entity.Supplier;
-import com.market.scms.enums.SupplierPaymentStateEnum;
 import com.market.scms.enums.SupplierStatusStateEnum;
 import com.market.scms.enums.TokenTimeEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
@@ -10,7 +9,6 @@ import com.market.scms.exceptions.SupplierException;
 import com.market.scms.service.SupplierService;
 import com.market.scms.util.PageCalculator;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;

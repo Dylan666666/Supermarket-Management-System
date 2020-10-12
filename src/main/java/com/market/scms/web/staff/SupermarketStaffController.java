@@ -59,7 +59,7 @@ public class SupermarketStaffController {
             }
         } else {
             modelMap.put("success", false);
-            modelMap.put("errMsg", "请务必输入姓名，密码以及电话");
+            modelMap.put("errMsg", "请务必正确输入姓名，密码以及电话");
         }
         return modelMap;
     }
@@ -93,7 +93,7 @@ public class SupermarketStaffController {
             }
         } else {
             modelMap.put("success", false);
-            modelMap.put("errMsg", "请务必输入电话和密码");
+            modelMap.put("errMsg", "请务必正确输入电话和密码");
         }
         return modelMap;
     }
