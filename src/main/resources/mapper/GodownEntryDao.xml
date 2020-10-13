@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.dao.GodownEntryDao">
+    <select id="queryEntryById" resultType="com.market.scms.entity.GodownEntry">
+        SELECT 
+        *
+        FROM 
+        tb_godown_entry
+        WHERE 
+        godown_entry_id = #{godownEntryId}
+    </select>
+
+    <select id="queryEntryByGoodsId" resultType="com.market.scms.entity.GodownEntry">
+        SELECT
+        *
+        FROM 
+        tb_godown_entry
+        WHERE 
+        godown_entry_goods_id = #{godownEntryGoodsId}
+    </select>
+
+    <select id="queryEntryListBySupplierId" resultType="com.market.scms.entity.GodownEntry">
+        SELECT
+        *
+        FROM 
+        tb_godown_entry
+        WHERE 
+        godown_entry_supplier_id = #{godownEntrySupplierId}
+        ORDER BY godown_entry_id ASC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <insert id="insertEntry" parameterType="com.market.scms.entity.GodownEntry"
+            useGeneratedKeys="true" keyProperty="godownEntryId" keyColumn="godown_entry_id">
+        INSERT INTO
+        tb_godown_entry(godown_entry_goods_id,godown_entry_supplier_id,godown_order_id,
+        godown_entry_date,godown_entry_goods_price,godown_entry_paid,godown_entry_num,godown_entry_status)
+        VALUES 
+        (#{godownEntryGoodsId},#{godownEntrySupplierId},#{godownOrderId},#{godownEntryDate},
+        #{godownEntryGoodsPrice},#{godownEntryPaid},#{godownEntryNum},#{godownEntryStatus})
+    </insert>
+
+    <update id="updateEntry" parameterType="com.market.scms.entity.GodownEntry">
+        UPDATE
+        tb_godown_entry
+        <set>
+            <if test="godownEntryGoodsPrice != null"> godown_entry_goods_price = #{godownEntryGoodsPrice},</if>
+            <if test="godownEntryPaid != null"> godown_entry_paid = #{godownEntryPaid},</if>
+            <if test="godownEntryNum != null"> godown_entry_num = #{godownEntryNum},</if>
+            <if test="godownEntryStatus != null"> godown_entry_status = #{godownEntryStatus}</if>
+        </set>
+        WHERE
+        godown_entry_id = #{godownEntryId}
+    </update>
+
+</mapper>

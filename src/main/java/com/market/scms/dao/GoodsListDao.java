@@ -1,7 +1,6 @@
 package com.market.scms.dao;
 
 import com.market.scms.entity.GoodsList;
-import com.market.scms.entity.OrderForm;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
