@@ -5,9 +5,9 @@ package com.market.scms.enums;
  * @Date: 2020/10/8 10:55
  */
 public enum GodownEntryStatusStateEnum {
-    MANAGER_REVIEWED(1, "经理已审核"), FINANCE_REVIEWED(2, "财务已审核"),
-    CLERK_REVIEWED(3, "职工，库管已审核"), UNQUALIFIED(4, "数量或质量不合格"),
-    ENTERED(5, "已登记入账"), INVALID(0, "已失效");
+    TO_BE_REVIEWED_BY_MANAGER(1, "待经理审核"), TO_BE_REVIEWED_BY_FINANCE(2, "待财务审核并打款"),
+    TO_BE_REVIEWED_BY_CLERK(3, "待职工，库管审核质量和数量"),ENTERED(4, "已登记入账"),
+    UNQUALIFIED(1000, "数量或质量不合格"), INVALID(-1, "已失效");
 
     private int state;
     private String stateInfo;
