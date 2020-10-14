@@ -87,6 +87,31 @@ public class GodownEntryServiceImpl implements GodownEntryService {
     }
 
     /**
+     * 模糊查询（主用于根据状态属性查询）
+     * 
+     * @param godownCondition
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public List<GodownEntry> queryEntryListByGodownCondition(GodownEntry godownCondition, int pageIndex, int pageSize) 
+    throws GodownEntryException {
+        if (godownCondition != null && pageIndex >= 0 && pageSize > 0) {
+            try {
+                int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+                List<GodownEntry> list = godownEntryDao
+                        .queryEntryListByGodownCondition(godownCondition, rowIndex, pageSize);
+                return list;
+            } catch (GodownEntryException e) {
+                throw new GodownEntryException("查询失败");
+            }
+        } else {
+            throw new GodownEntryException("传入数据有错");
+        }
+    }
+
+    /**
      * 添加新入库单信息
      * 
      * @param godownEntry

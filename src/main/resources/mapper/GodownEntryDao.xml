@@ -32,6 +32,25 @@
         LIMIT #{rowIndex},#{pageSize}
     </select>
 
+    <select id="queryEntryListByGodownCondition" resultType="com.market.scms.entity.GodownEntry">
+        SELECT
+        *
+        FROM
+        tb_godown_entry s
+        <where>
+            <if test="godownCondition.godownOrderId != null">
+                AND
+                s.godown_order_id = #{godownCondition.godownOrderId}
+            </if>
+            <if test="godownCondition.godownEntryStatus != null">
+                AND
+                s.godown_entry_status = #{godownCondition.godownEntryStatus}
+            </if>
+        </where>
+        ORDER BY godown_entry_id ASC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
     <insert id="insertEntry" parameterType="com.market.scms.entity.GodownEntry"
             useGeneratedKeys="true" keyProperty="godownEntryId" keyColumn="godown_entry_id">
         INSERT INTO

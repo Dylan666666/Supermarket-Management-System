@@ -190,7 +190,9 @@ public class SupplierController {
         try {
             supplier = mapper.readValue(supplierStr, Supplier.class);
             if (supplier == null) {
-                throw new SupermarketStaffException("传入数据为空");
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "传入数据为空");
+                return modelMap;
             }
         } catch (Exception e) {
             modelMap.put("success", false);
@@ -198,10 +200,10 @@ public class SupplierController {
             return modelMap;
         }
         try {
-            if (pageIndex == -1) {
+            if (pageIndex == -1000) {
                 pageIndex = 0;
             }
-            if (pageSize == -1) {
+            if (pageSize == -1000) {
                 pageSize = 100;
             }
             List<Supplier> list = supplierService.querySupplierByCondition(supplier, pageIndex, pageSize);

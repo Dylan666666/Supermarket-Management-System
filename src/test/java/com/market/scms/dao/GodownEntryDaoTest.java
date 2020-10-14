@@ -48,4 +48,11 @@ public class GodownEntryDaoTest {
         System.out.println(godownEntryDao.updateEntry(godownEntry));
     }
     
+    @Test
+    public void queryByCondition() {
+        GodownEntry godownEntry = new GodownEntry();
+        godownEntry.setGodownEntryStatus(1);
+        System.out.println(godownEntryDao.queryEntryListByGodownCondition(godownEntry, 0, 100).get(0).getGodownEntryDate());
+    }
+    
 }

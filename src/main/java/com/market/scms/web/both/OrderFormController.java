@@ -69,7 +69,9 @@ public class OrderFormController {
         try {
             orderForm = mapper.readValue(orderFormStr, OrderForm.class);
             if (orderForm == null) {
-                throw new OrderFormException("传入数据为空");
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "添加失败");
+                return modelMap;
             }
         } catch (Exception e) {
             modelMap.put("success", false);
@@ -77,10 +79,10 @@ public class OrderFormController {
             return modelMap;
         }
         try {
-            if (pageIndex == -1) {
+            if (pageIndex == -1000) {
                 pageIndex = 0;
             }
-            if (pageSize == -1) {
+            if (pageSize == -1000) {
                 pageSize = 100;
             }
             List<OrderForm> list = orderFomService.queryFormByCondition(orderForm, pageIndex, pageSize);
@@ -111,7 +113,9 @@ public class OrderFormController {
             try {
                 int res = orderFomService.updateOrderForm(orderForm);
                 if (res == 0) {
-                    throw new OrderFormException("更新失败");
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", "更改失败");
+                    return modelMap;
                 }
                 modelMap.put("success", true);
             } catch (OrderFormException e) {

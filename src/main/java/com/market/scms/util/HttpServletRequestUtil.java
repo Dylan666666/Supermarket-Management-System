@@ -13,7 +13,7 @@ public class HttpServletRequestUtil {
         try {
             return Integer.decode(request.getParameter(key));
         } catch (Exception e) {
-            return -1;
+            return -1000;
         }
     }
 
@@ -21,7 +21,7 @@ public class HttpServletRequestUtil {
         try {
             return Long.valueOf(request.getParameter(key));
         } catch (Exception e) {
-            return -1L;
+            return -1000L;
         }
     }
 
@@ -29,7 +29,7 @@ public class HttpServletRequestUtil {
         try {
             return Double.valueOf(request.getParameter(key));
         } catch (Exception e) {
-            return -1d;
+            return -1000d;
         }
     }
 

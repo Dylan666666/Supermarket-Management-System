@@ -39,6 +39,19 @@ public interface GodownEntryDao {
                                         @Param("rowIndex") int rowIndex,
                                         @Param("pageSize") int pageSize);
 
+
+    /**
+     * 模糊查询（主用于根据状态属性查询）
+     *
+     * @param godownCondition
+     * @param rowIndex
+     * @param pageSize
+     * @return
+     */
+    List<GodownEntry> queryEntryListByGodownCondition(@Param("godownCondition") GodownEntry godownCondition,
+                                                 @Param("rowIndex") int rowIndex,
+                                                 @Param("pageSize") int pageSize);
+
     /**
      * 添加新入库单信息
      *

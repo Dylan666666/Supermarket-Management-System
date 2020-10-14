@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: Mr_OO
@@ -47,6 +48,17 @@ public class GodownEntryServiceTest {
         GodownEntry godownEntry = godownEntryService.queryEntryByGoodsId(2L);
         godownEntry.setGodownEntryDate(new Date());
         System.out.println(godownEntryService.updateEntry(godownEntry));
+    }
+    
+    @Test
+    public void queryByStatus() {
+        GodownEntry godownEntry = new GodownEntry();
+        godownEntry.setGodownEntryStatus(1);
+        List<GodownEntry> list = godownEntryService
+                .queryEntryListByGodownCondition(godownEntry, 0, 100);
+        for (GodownEntry entry : list) {
+            System.out.println(entry.getGodownEntryGoodsPrice());
+        }
     }
     
 }

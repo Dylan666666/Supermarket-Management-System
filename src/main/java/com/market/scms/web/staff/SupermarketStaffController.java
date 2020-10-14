@@ -188,7 +188,9 @@ public class SupermarketStaffController {
         try {
             staff = mapper.readValue(staffStr, SupermarketStaff.class);
             if (staff == null) {
-                throw new SupermarketStaffException("传入数据为空");
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "数据传输出错");
+                return modelMap;
             }
         } catch (Exception e) {
             modelMap.put("success", false);
@@ -196,10 +198,10 @@ public class SupermarketStaffController {
             return modelMap;
         }
         try {
-            if (pageIndex == -1) {
+            if (pageIndex == -1000) {
                 pageIndex = 0;
             }
-            if (pageSize == -1) {
+            if (pageSize == -1000) {
                 pageSize = 100;
             }
             List<SupermarketStaff> list = supermarketStaffService.queryStaffByCondition(staff, pageIndex, pageSize);

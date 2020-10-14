@@ -1,6 +1,8 @@
 package com.market.scms.service;
 
 import com.market.scms.entity.GodownEntry;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 /**
@@ -34,6 +36,18 @@ public interface GodownEntryService {
      */
     List<GodownEntry> queryEntryListBySupplierId(Long godownEntrySupplierId, int pageIndex, int pageSize);
 
+    /**
+     * 模糊查询（主用于根据状态属性查询）
+     *
+     * @param godownCondition
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
+    List<GodownEntry> queryEntryListByGodownCondition(@Param("godownCondition") GodownEntry godownCondition,
+                                                      @Param("pageIndex") int pageIndex,
+                                                      @Param("pageSize") int pageSize);
+    
     /**
      * 添加新入库单信息
      *
