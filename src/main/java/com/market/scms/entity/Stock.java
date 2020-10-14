@@ -6,16 +6,16 @@ package com.market.scms.entity;
  * @Date: 2020/10/7 15:54
  */
 public class Stock {
-    private Long stocksId;
+    private Long stockId;
     private Long stockGoodsId;
     private Integer stockGoodsNum;
 
-    public Long getStocksId() {
-        return stocksId;
+    public Long getStockId() {
+        return stockId;
     }
 
-    public void setStocksId(Long stocksId) {
-        this.stocksId = stocksId;
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
     }
 
     public Long getStockGoodsId() {
