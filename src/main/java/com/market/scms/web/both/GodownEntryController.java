@@ -140,8 +140,8 @@ public class GodownEntryController {
      * @param request
      * @return
      */
-    @GetMapping("/queryByCondition")
-    public Map<String, Object> queryGodownEntryListByCondition (HttpServletRequest request) {
+    @GetMapping("/queryByStatus")
+    public Map<String, Object> queryGodownEntryListByStatus (HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>();
         int status = HttpServletRequestUtil.getInt(request, "godownEntryStatus");
         if (status != -1000) {
