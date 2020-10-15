@@ -7,7 +7,7 @@ package com.market.scms.enums;
 public enum GodownEntryStatusStateEnum {
     TO_BE_REVIEWED_BY_MANAGER(0, "待经理审核"), 
     APPROVED_BY_MANAGER(1, "经理审核通过（待财务打款）"),
-    APPROVED_BY_BY_FINANCE(2, "财务审核通过并打款"),
+    APPROVED_BY_FINANCE(2, "财务审核通过并打款"),
     TO_BE_DELIVERED_BY_SUPPLIER(3, "供应商待发货"),
     DELIVERED_BY_SUPPLIER(4, "供应商已发货待验货"),
     APPROVED_BY_WORKERS(5, "职工审核成功"),
