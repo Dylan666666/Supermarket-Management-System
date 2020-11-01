@@ -208,8 +208,8 @@ public class SupplierController {
             }
             List<Supplier> list = supplierService.querySupplierByCondition(supplier, pageIndex, pageSize);
             modelMap.put("success", true);
-            modelMap.put("staffList", list);
-            modelMap.put("staffCount", list.size());
+            modelMap.put("supplierList", list);
+            modelMap.put("supplierCount", list.size());
         } catch (SupplierException e) {
             modelMap.put("success", false);
             modelMap.put("errMsg", e.getMessage());
