@@ -1,4 +1,4 @@
-package com.market.scms.dao;
+package com.market.scms.service;
 
 import com.market.scms.entity.SupermarketStaff;
 import org.junit.Test;
@@ -13,13 +13,14 @@ import java.util.List;
 
 /**
  * @Author: Mr_OO
- * @Date: 2020/10/8 20:35
+ * @Date: 2020/11/2 14:58
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SupermarketStaffDaoTest {
+public class StaffServiceTest {
+    
     @Resource
-    private SupermarketStaffDao supermarketStaffDao;
+    private StaffService staffService;
 
     //当前时间
     LocalDateTime now = LocalDateTime.now();
@@ -28,37 +29,37 @@ public class SupermarketStaffDaoTest {
     public void InsertTest() {
         SupermarketStaff staff = new SupermarketStaff();
         staff.setToken("asdasd");
-        staff.setStaffPhone("666");
-        staff.setStaffPassword("666");
-        staff.setStaffName("666");
+        staff.setStaffPhone("777");
+        staff.setStaffPassword("777");
+        staff.setStaffName("777");
         staff.setExpireTime(now);
         staff.setLoginTime(now);
         staff.setStaffStatus(1001);
         staff.setCreateTime(new Date());
         staff.setLastEditTime(new Date());
-        System.out.println(supermarketStaffDao.insertStaff(staff));
+        System.out.println(staffService.insertStaff(staff));
     }
 
     @Test
     public void updateTest() {
-        SupermarketStaff staff = supermarketStaffDao.findByToken("asdasd");
-        staff.setToken("666");
-        System.out.println(supermarketStaffDao.updateStaff(staff));
-        System.out.println(supermarketStaffDao.findByToken("666").getStaffPhone());
-        
+        SupermarketStaff staff = staffService.findByToken("asdasd");
+        staff.setToken("777");
+        System.out.println(staffService.updateStaff(staff));
+        System.out.println(staffService.findByToken("777").getStaffPhone());
+
     }
-    
+
     @Test
     public void queryTest() {
-        System.out.println(supermarketStaffDao.queryStaffByPhone("666").getStaffPhone());
-        System.out.println(supermarketStaffDao.staffLogin("666", "666").getStaffPhone());
+        System.out.println(staffService.queryStaffByPhone("666").getStaffPhone());
+        System.out.println(staffService.staffLogin("666", "666").getStaffPhone());
     }
-    
+
     @Test
     public void queryByConditionTest() {
         SupermarketStaff staff = new SupermarketStaff();
         staff.setStaffName("666");
-        List<SupermarketStaff> staffList = supermarketStaffDao.queryStaffByCondition(staff, 0, 100);
+        List<SupermarketStaff> staffList = staffService.queryStaffByCondition(staff, 0, 100);
         for (SupermarketStaff supermarketStaff : staffList) {
             System.out.println(supermarketStaff.getStaffName());
         }
