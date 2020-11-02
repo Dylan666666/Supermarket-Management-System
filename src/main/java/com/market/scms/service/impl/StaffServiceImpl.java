@@ -2,6 +2,7 @@ package com.market.scms.service.impl;
 
 import com.market.scms.dao.SupermarketStaffDao;
 import com.market.scms.entity.SupermarketStaff;
+import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.StaffService;
 import com.market.scms.util.PageCalculator;
@@ -38,10 +39,12 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public int insertStaff(SupermarketStaff staff) throws SupermarketStaffException {
-        if (staff != null && staff.getStaffPhone() != null && staff.getStaffPassword() != null) {
+        if (staff != null && staff.getStaffPhone() != null && staff.getStaffPassword() != null &&
+                staff.getStaffName() != null) {
             try {
                 staff.setLastEditTime(new Date());
                 staff.setCreateTime(new Date());
+                staff.setStaffStatus(StaffStatusStateEnum.JUST_REGISTERED.getState());
                 int res = staffDao.insertStaff(staff);
                 if (res == 0) {
                     throw new SupermarketStaffException("注册失败");
