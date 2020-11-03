@@ -99,6 +99,7 @@ public class StaffController {
 
     @PostMapping("/update")
     @ResponseBody
+    @Transactional
     public Map<String,Object> staffUpdate(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
         String staffStr = HttpServletRequestUtil.getString(request, "staff");
@@ -141,6 +142,7 @@ public class StaffController {
 
     @PostMapping("/changePassword")
     @ResponseBody
+    @Transactional
     public Map<String,Object> staffChangePassword(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         String staffPhone = HttpServletRequestUtil.getString(request, "staffPhone");
@@ -149,9 +151,9 @@ public class StaffController {
         if (staffPassword != null && staffPhone != null && newPassword != null) {
             try {
                 SupermarketStaff staff = staffService.queryStaffByPhone(staffPhone);
-                if (!staff.getStaffPassword().equals(staffPassword)) {
+                if (staff == null) {
                     modelMap.put("success",false);
-                    modelMap.put("errMsg", "密码错误");
+                    modelMap.put("errMsg", "手机号或密码错误");
                     return modelMap;
                 }
                 staff.setStaffPassword(newPassword);

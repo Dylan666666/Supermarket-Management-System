@@ -60,7 +60,7 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public int updateStaff(SupermarketStaff staff) throws SupermarketStaffException {
-        if (staff != null) {
+        if (staff != null && staff.getStaffId() != null) {
             try {
                 staff.setLastEditTime(new Date());
                 int res = staffDao.updateStaff(staff);
