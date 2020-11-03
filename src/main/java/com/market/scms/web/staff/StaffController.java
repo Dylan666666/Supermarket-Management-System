@@ -32,27 +32,35 @@ public class StaffController {
     @ResponseBody
     public Map<String,Object> insertStaff(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
-        String staffStr = HttpServletRequestUtil.getString(request, "staff");
-        ObjectMapper mapper = new ObjectMapper();
-        SupermarketStaff staff = null;
-        try {
-            staff = mapper.readValue(staffStr, SupermarketStaff.class);
-        } catch (Exception e) {
-            modelMap.put("success",false);
-            modelMap.put("errMsg", "注册出错-01");
-            return modelMap;
-        }
-        try {
-            int res = staffService.insertStaff(staff);
-            if (res == 0) {
+        String staffPhone = HttpServletRequestUtil.getString(request, "staffPhone");
+        String staffPassword = HttpServletRequestUtil.getString(request, "staffPassword");
+        String staffName = HttpServletRequestUtil.getString(request, "staffName");
+        if (staffPhone != null && staffPassword != null && staffName != null) {
+            try {
+                if (staffService.queryStaffByPhone(staffPhone) != null) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "该账号已存在，无法完成注册");
+                    return modelMap;
+                }
+                SupermarketStaff staff = new SupermarketStaff();
+                staff.setStaffPhone(staffPhone);
+                staff.setStaffPassword(staffPassword);
+                staff.setStaffName(staffName);
+                int res = staffService.insertStaff(staff);
+                if (res == 0) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "抱歉，注册失败");
+                    return modelMap;
+                }
+                modelMap.put("success", true);
+            } catch (SupermarketStaffException e) {
                 modelMap.put("success",false);
-                modelMap.put("errMsg", "注册失败");
+                modelMap.put("errMsg", e.getMessage());
                 return modelMap;
             }
-            modelMap.put("success", true);
-        } catch (SupermarketStaffException staffException) {
+        } else {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "注册失败," + staffException.getMessage());
+            modelMap.put("errMsg", "姓名、电话、密码信息不可为空");
             return modelMap;
         }
         return modelMap;
