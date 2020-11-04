@@ -1,5 +1,6 @@
 package com.market.scms.web.supplier;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.entity.Supplier;
 import com.market.scms.exceptions.SupermarketStaffException;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @Author: Mr_OO
