@@ -1,4 +1,4 @@
-package com.market.scms.dao;
+package com.market.scms.mapper;
 
 import com.market.scms.entity.SupermarketStaff;
 import org.apache.ibatis.annotations.Param;
@@ -9,7 +9,7 @@ import java.util.List;
  * @Author: Mr_OO
  * @Date: 2020/10/8 9:40
  */
-public interface SupermarketStaffDao {
+public interface SupermarketStaffMapper {
 
     /**
      * 通过电话号码查询职工信息

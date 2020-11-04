@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.market.scms.dao.SupplierDao">
+<mapper namespace="com.market.scms.mapper.SupplierMapper">
     <select id="querySupplierByPhone" resultType="com.market.scms.entity.Supplier">
         SELECT 
         *

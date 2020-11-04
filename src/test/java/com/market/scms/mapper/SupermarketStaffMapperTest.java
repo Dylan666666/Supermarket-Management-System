@@ -1,4 +1,4 @@
-package com.market.scms.dao;
+package com.market.scms.mapper;
 
 import com.market.scms.entity.SupermarketStaff;
 import org.junit.Test;
@@ -17,9 +17,9 @@ import java.util.List;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SupermarketStaffDaoTest {
+public class SupermarketStaffMapperTest {
     @Resource
-    private SupermarketStaffDao supermarketStaffDao;
+    private SupermarketStaffMapper supermarketStaffMapper;
 
     //当前时间
     LocalDateTime now = LocalDateTime.now();
@@ -36,29 +36,29 @@ public class SupermarketStaffDaoTest {
         staff.setStaffStatus(1001);
         staff.setCreateTime(new Date());
         staff.setLastEditTime(new Date());
-        System.out.println(supermarketStaffDao.insertStaff(staff));
+        System.out.println(supermarketStaffMapper.insertStaff(staff));
     }
 
     @Test
     public void updateTest() {
-        SupermarketStaff staff = supermarketStaffDao.findByToken("asdasd");
+        SupermarketStaff staff = supermarketStaffMapper.findByToken("asdasd");
         staff.setToken("666");
-        System.out.println(supermarketStaffDao.updateStaff(staff));
-        System.out.println(supermarketStaffDao.findByToken("666").getStaffPhone());
+        System.out.println(supermarketStaffMapper.updateStaff(staff));
+        System.out.println(supermarketStaffMapper.findByToken("666").getStaffPhone());
         
     }
     
     @Test
     public void queryTest() {
-        System.out.println(supermarketStaffDao.queryStaffByPhone("666").getStaffPhone());
-        System.out.println(supermarketStaffDao.staffLogin("666", "666").getStaffPhone());
+        System.out.println(supermarketStaffMapper.queryStaffByPhone("666").getStaffPhone());
+        System.out.println(supermarketStaffMapper.staffLogin("666", "666").getStaffPhone());
     }
     
     @Test
     public void queryByConditionTest() {
         SupermarketStaff staff = new SupermarketStaff();
         staff.setStaffName("666");
-        List<SupermarketStaff> staffList = supermarketStaffDao.queryStaffByCondition(staff, 0, 100);
+        List<SupermarketStaff> staffList = supermarketStaffMapper.queryStaffByCondition(staff, 0, 100);
         for (SupermarketStaff supermarketStaff : staffList) {
             System.out.println(supermarketStaff.getStaffName());
         }

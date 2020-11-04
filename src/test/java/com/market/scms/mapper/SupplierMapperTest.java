@@ -1,4 +1,4 @@
-package com.market.scms.dao;
+package com.market.scms.mapper;
 
 import com.market.scms.entity.Supplier;
 import org.junit.Test;
@@ -16,9 +16,9 @@ import java.util.List;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SupplierDaoTest {
+public class SupplierMapperTest {
     @Resource
-    private SupplierDao supplierDao;
+    private SupplierMapper supplierMapper;
     
     @Test
     public void insertTest() {
@@ -27,30 +27,30 @@ public class SupplierDaoTest {
         supplier.setSupplierAddress("中国");
         supplier.setSupplierPhone("1");
         supplier.setSupplierPassword("1");
-        int res = supplierDao.insertSupplier(supplier);
+        int res = supplierMapper.insertSupplier(supplier);
         System.out.println(res);
     } 
     
     @Test
     public void queryTest() {
-        System.out.println(supplierDao.querySupplierByPhone("1").getSupplierName());
-        System.out.println(supplierDao.supplierLogin("1", "1").getSupplierName());
+        System.out.println(supplierMapper.querySupplierByPhone("1").getSupplierName());
+        System.out.println(supplierMapper.supplierLogin("1", "1").getSupplierName());
     }
     
     @Test
     public void updateTest() {
-        Supplier supplier = supplierDao.querySupplierByPhone("1");
+        Supplier supplier = supplierMapper.querySupplierByPhone("1");
         supplier.setCreateTime(new Date());
         supplier.setToken("1");
-        System.out.println(supplierDao.updateSupplier(supplier));
-        System.out.println(supplierDao.findByToken("1").getSupplierName());
+        System.out.println(supplierMapper.updateSupplier(supplier));
+        System.out.println(supplierMapper.findByToken("1").getSupplierName());
     }
     
     @Test
     public void queryByCondition() {
         Supplier supplier = new Supplier();
         supplier.setSupplierName("哈");
-        List<Supplier> list = supplierDao.querySupplierByCondition(supplier, 0, 100);
+        List<Supplier> list = supplierMapper.querySupplierByCondition(supplier, 0, 100);
         for (Supplier s : list) {
             System.out.println(s.getSupplierName());
         }

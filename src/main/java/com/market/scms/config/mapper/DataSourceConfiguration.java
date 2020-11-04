@@ -1,4 +1,4 @@
-package com.market.scms.config.dao;
+package com.market.scms.config.mapper;
 
 import com.market.scms.util.DESUtil;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -14,7 +14,7 @@ import java.beans.PropertyVetoException;
  * @Date: 2020/9/23 10:29
  */
 @Configuration
-@MapperScan("com.market.scms.dao")
+@MapperScan("com.market.scms.mapper")
 public class DataSourceConfiguration {
     
     @Value("${jdbc.driver}")

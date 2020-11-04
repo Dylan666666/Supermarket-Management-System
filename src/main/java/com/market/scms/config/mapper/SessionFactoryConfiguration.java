@@ -1,4 +1,4 @@
-package com.market.scms.config.dao;
+package com.market.scms.config.mapper;
 
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.factory.annotation.Value;

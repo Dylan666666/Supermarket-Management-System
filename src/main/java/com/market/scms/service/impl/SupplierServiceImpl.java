@@ -1,6 +1,6 @@
 package com.market.scms.service.impl;
 
-import com.market.scms.dao.SupplierDao;
+import com.market.scms.mapper.SupplierMapper;
 import com.market.scms.entity.Supplier;
 import com.market.scms.enums.SupplierStatusStateEnum;
 import com.market.scms.exceptions.SupplierException;
@@ -21,13 +21,13 @@ import java.util.UUID;
 public class SupplierServiceImpl implements SupplierService {
     
     @Resource
-    private SupplierDao supplierDao;
+    private SupplierMapper supplierMapper;
     
     @Override
     public Supplier queryStaffByPhone(String supplierPhone) throws SupplierException {
         if (supplierPhone != null) {
             try {
-                Supplier supplier = supplierDao.querySupplierByPhone(supplierPhone);
+                Supplier supplier = supplierMapper.querySupplierByPhone(supplierPhone);
                 return supplier;
             } catch (SupplierException e) {
                 throw new SupplierException("传入信息为空");
@@ -45,7 +45,7 @@ public class SupplierServiceImpl implements SupplierService {
                 supplier.setLastEditTime(new Date());
                 supplier.setCreateTime(new Date());
                 supplier.setSupplierStatus(SupplierStatusStateEnum.GOOD.getState());
-                int res = supplierDao.insertSupplier(supplier);
+                int res = supplierMapper.insertSupplier(supplier);
                 if (res == 0) {
                     throw new SupplierException("注册失败");
                 }
@@ -63,7 +63,7 @@ public class SupplierServiceImpl implements SupplierService {
         if (supplier != null && supplier.getSupplierId() != null) {
             try {
                 supplier.setLastEditTime(new Date());;
-                int res = supplierDao.updateSupplier(supplier);
+                int res = supplierMapper.updateSupplier(supplier);
                 if (res == 0) {
                     throw new SupplierException("更改失败");
                 }
@@ -80,7 +80,7 @@ public class SupplierServiceImpl implements SupplierService {
     public Supplier supplierLogin(String supplierPhone, String supplierPassword) throws SupplierException {
         if (supplierPhone != null && supplierPassword != null) {
             try {
-                Supplier supplier = supplierDao.supplierLogin(supplierPhone, supplierPassword);
+                Supplier supplier = supplierMapper.supplierLogin(supplierPhone, supplierPassword);
                 return supplier;
             } catch (SupplierException e ){
                 throw new SupplierException("登录失败");
@@ -94,7 +94,7 @@ public class SupplierServiceImpl implements SupplierService {
     public Supplier findByToken(String token) throws SupplierException {
         if (token != null) {
             try { 
-                Supplier supplier = supplierDao.findByToken(token);
+                Supplier supplier = supplierMapper.findByToken(token);
                 return supplier;
             } catch (SupplierException e) {
                 throw new SupplierException("查询失败");
@@ -110,7 +110,7 @@ public class SupplierServiceImpl implements SupplierService {
         if (supplierCondition != null && pageIndex != -1000 && pageSize != -1000) {
             try {
                 int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
-                List<Supplier> list = supplierDao.querySupplierByCondition(supplierCondition, rowIndex, pageSize);
+                List<Supplier> list = supplierMapper.querySupplierByCondition(supplierCondition, rowIndex, pageSize);
                 return list;
             } catch (SupplierException e) {
                 throw new SupplierException("查询失败");
@@ -123,9 +123,9 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public void supplierLogout(String supplierToken) throws SupplierException {
         try {
-            Supplier supplier = supplierDao.findByToken(supplierToken);
+            Supplier supplier = supplierMapper.findByToken(supplierToken);
             supplier.setToken(UUID.randomUUID().toString());
-            supplierDao.updateSupplier(supplier);
+            supplierMapper.updateSupplier(supplier);
         } catch (SupplierException e) {
             throw new SupplierException("消除token出错");
         }

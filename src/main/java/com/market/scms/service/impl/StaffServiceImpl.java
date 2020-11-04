@@ -1,6 +1,6 @@
 package com.market.scms.service.impl;
 
-import com.market.scms.dao.SupermarketStaffDao;
+import com.market.scms.mapper.SupermarketStaffMapper;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
@@ -21,13 +21,13 @@ import java.util.UUID;
 public class StaffServiceImpl implements StaffService {
     
     @Resource
-    private SupermarketStaffDao staffDao;
+    private SupermarketStaffMapper staffMapper;
     
     @Override
     public SupermarketStaff queryStaffByPhone(String staffPhone) throws SupermarketStaffException {
         if (staffPhone != null) {
             try {
-                SupermarketStaff staff = staffDao.queryStaffByPhone(staffPhone);
+                SupermarketStaff staff = staffMapper.queryStaffByPhone(staffPhone);
                 return staff;
             } catch (SupermarketStaffException e) {
                 throw new SupermarketStaffException("查询失败");
@@ -45,7 +45,7 @@ public class StaffServiceImpl implements StaffService {
                 staff.setLastEditTime(new Date());
                 staff.setCreateTime(new Date());
                 staff.setStaffStatus(StaffStatusStateEnum.JUST_REGISTERED.getState());
-                int res = staffDao.insertStaff(staff);
+                int res = staffMapper.insertStaff(staff);
                 if (res == 0) {
                     throw new SupermarketStaffException("注册失败");
                 }
@@ -63,7 +63,7 @@ public class StaffServiceImpl implements StaffService {
         if (staff != null && staff.getStaffId() != null) {
             try {
                 staff.setLastEditTime(new Date());
-                int res = staffDao.updateStaff(staff);
+                int res = staffMapper.updateStaff(staff);
                 if (res == 0) {
                     throw new SupermarketStaffException("信息更改失败");
                 }
@@ -80,7 +80,7 @@ public class StaffServiceImpl implements StaffService {
     public SupermarketStaff staffLogin(String staffPhone, String staffPassword) throws SupermarketStaffException {
         if (staffPhone != null && staffPassword != null) {
             try {
-                SupermarketStaff staff = staffDao.staffLogin(staffPhone, staffPassword);
+                SupermarketStaff staff = staffMapper.staffLogin(staffPhone, staffPassword);
                 return staff;
             } catch (SupermarketStaffException e) {
                 throw new SupermarketStaffException("登录失败");
@@ -94,7 +94,7 @@ public class StaffServiceImpl implements StaffService {
     public SupermarketStaff findByToken(String token) throws SupermarketStaffException {
         if (token != null) {
             try {
-                SupermarketStaff staff = staffDao.findByToken(token);
+                SupermarketStaff staff = staffMapper.findByToken(token);
                 return staff;
             } catch (SupermarketStaffException e) {
                 throw new SupermarketStaffException("查询失败");
@@ -110,7 +110,7 @@ public class StaffServiceImpl implements StaffService {
         if (staffCondition != null && pageIndex != -1000 && pageSize != -1000) {
             try {
                 int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
-                List<SupermarketStaff> list = staffDao.queryStaffByCondition(staffCondition, rowIndex, pageSize);
+                List<SupermarketStaff> list = staffMapper.queryStaffByCondition(staffCondition, rowIndex, pageSize);
                 return list;
             } catch (SupermarketStaffException staffException) {
                 throw new SupermarketStaffException("查询失败");
@@ -123,9 +123,9 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public void staffLogout(String staffToken) throws SupermarketStaffException {
         try {
-            SupermarketStaff staff = staffDao.findByToken(staffToken);
+            SupermarketStaff staff = staffMapper.findByToken(staffToken);
             staff.setToken(UUID.randomUUID().toString());
-            staffDao.updateStaff(staff);
+            staffMapper.updateStaff(staff);
         } catch (SupermarketStaffException staffException) {
             throw new SupermarketStaffException("消除token出错");
         }

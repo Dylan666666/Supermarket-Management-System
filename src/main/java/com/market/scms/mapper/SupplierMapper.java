@@ -1,4 +1,4 @@
-package com.market.scms.dao;
+package com.market.scms.mapper;
 
 import com.market.scms.entity.Supplier;
 import org.apache.ibatis.annotations.Param;
@@ -9,7 +9,7 @@ import java.util.List;
  * @Author: Mr_OO
  * @Date: 2020/10/9 14:37
  */
-public interface SupplierDao {
+public interface SupplierMapper {
     /**
      * 通过电话号码查询供应商信息
      * 
