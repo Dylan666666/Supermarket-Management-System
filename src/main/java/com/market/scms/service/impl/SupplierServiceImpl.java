@@ -75,7 +75,7 @@ public class SupplierServiceImpl implements SupplierService {
             throw new SupplierException("必要信息为空");
         }
     }
-
+    
     @Override
     public Supplier supplierLogin(String supplierPhone, String supplierPassword) throws SupplierException {
         if (supplierPhone != null && supplierPassword != null) {
