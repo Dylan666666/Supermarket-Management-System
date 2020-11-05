@@ -6,6 +6,7 @@ import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.StaffService;
 import com.market.scms.util.CreateToken;
+import com.market.scms.util.EncryptionUtil;
 import com.market.scms.util.HttpServletRequestUtil;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,7 @@ public class StaffController {
             return modelMap;
         }
         try {
+            staff.setStaffPassword(EncryptionUtil.getMd5(staff.getStaffPassword()));
             int res = staffService.insertStaff(staff);
             if (res == 0) {
                 modelMap.put("success",false);
@@ -68,6 +70,7 @@ public class StaffController {
         String staffPassword = HttpServletRequestUtil.getString(request, "staffPassword");
         if (staffPhone != null && staffPassword != null) {
             try {
+                staffPassword = EncryptionUtil.getMd5(staffPassword);
                 SupermarketStaff staff = staffService.staffLogin(staffPhone, staffPassword);
                 if (staff == null) {
                     modelMap.put("success",false);
@@ -157,7 +160,7 @@ public class StaffController {
                     modelMap.put("errMsg", "手机号或密码错误");
                     return modelMap;
                 }
-                staff.setStaffPassword(newPassword);
+                staff.setStaffPassword(EncryptionUtil.getMd5(newPassword));
                 int res = staffService.updateStaff(staff);
                 if (res == 0) {
                     modelMap.put("success",false);
