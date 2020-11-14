@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.FunctionMapper">
+    <select id="queryById" resultType="com.market.scms.entity.staff.Function">
+        SELECT 
+        *
+        FROM 
+        tb_function
+        WHERE 
+        function_id = #{functionId}
+    </select>
+
+    <insert id="insert" parameterType="com.market.scms.entity.staff.Function"
+    useGeneratedKeys="true" keyProperty="functionId" keyColumn="function_id">
+        INSERT INTO
+        tb_function(function_weight,function_name,secondary_menu_id,function_url)
+        VALUES 
+        (#{function.functionWeight},#{function.functionName},#{function.secondaryMenuId},#{function.functionUrl})
+    </insert>
+
+    <delete id="delete" parameterType="com.market.scms.entity.staff.Function">
+        DELETE FROM
+        tb_function
+        WHERE 
+        function_id = #{functionId}
+    </delete>
+    
+    <update id="update" parameterType="com.market.scms.entity.staff.Function">
+        UPDATE
+        tb_function
+        <set>
+            <if test="functionWeight != null"> function_weight = #{functionWeight},</if>
+            <if test="functionName != null"> function_name = #{functionName},</if>
+            <if test="secondaryMenuId != null"> secondary_menu_id = #{secondaryMenuId},</if>
+            <if test="functionUrl != null"> function_url = #{functionUrl}</if>
+        </set>
+        WHERE
+        function_id = #{functionId}
+    </update>
+
+</mapper>

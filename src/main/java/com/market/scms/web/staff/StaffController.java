@@ -1,19 +1,19 @@
 package com.market.scms.web.staff;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.StaffService;
-import com.market.scms.util.CreateToken;
-import com.market.scms.util.EncryptionUtil;
 import com.market.scms.util.HttpServletRequestUtil;
+import com.market.scms.util.PasswordHelper;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,6 @@ public class StaffController {
             return modelMap;
         }
         try {
-            staff.setStaffPassword(EncryptionUtil.getMd5(staff.getStaffPassword()));
             int res = staffService.insertStaff(staff);
             if (res == 0) {
                 modelMap.put("success",false);
@@ -55,7 +54,7 @@ public class StaffController {
             modelMap.put("success", true);
         } catch (SupermarketStaffException staffException) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "注册失败," + staffException.getMessage());
+            modelMap.put("errMsg", staffException.getMessage());
             return modelMap;
         }
         return modelMap;
@@ -70,27 +69,12 @@ public class StaffController {
         String staffPassword = HttpServletRequestUtil.getString(request, "staffPassword");
         if (staffPhone != null && staffPassword != null) {
             try {
-                staffPassword = EncryptionUtil.getMd5(staffPassword);
                 SupermarketStaff staff = staffService.staffLogin(staffPhone, staffPassword);
-                if (staff == null) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "账号或密码错误，登录失败");
-                    return modelMap;
-                }
-                CreateToken.staffCreateToken(staff);
-                int res = staffService.updateStaff(staff);
-                if (res == 1) {
-                    HttpSession session = request.getSession();
-                    session.setAttribute("token", staff.getToken());
-                    modelMap.put("success",true);
-                    modelMap.put("staff", staff);
-                    modelMap.put("staffToken", staff.getToken());
-                } else {
-                    throw new SupermarketStaffException("登录失败");
-                }
+                modelMap.put("staff", staff);
+                modelMap.put("success",true);
             } catch (SupermarketStaffException staffException) {
                 modelMap.put("success",false);
-                modelMap.put("errMsg", "登录失败");
+                modelMap.put("errMsg", staffException.getMessage());
                 return modelMap;
             }
         } else {
@@ -104,6 +88,7 @@ public class StaffController {
     @PostMapping("/update")
     @ResponseBody
     @Transactional
+    @RequiresPermissions("/staff/update")
     public Map<String,Object> staffUpdate(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
         String staffStr = HttpServletRequestUtil.getString(request, "staff");
@@ -136,17 +121,16 @@ public class StaffController {
     @PostMapping("/logout")
     @ResponseBody
     public void staffLogout(HttpServletRequest request) {
-        String token = HttpServletRequestUtil.getString(request, "staffToken");
-        if (token != null) {
-            try {
-                staffService.staffLogout(token);
-            } catch (SupermarketStaffException e) {}
-        }
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            subject.logout();
+        } catch (Exception e) {}
     }
 
     @PostMapping("/changePassword")
     @ResponseBody
     @Transactional
+    @RequiresPermissions("/staff/changePassword")
     public Map<String,Object> staffChangePassword(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         String staffPhone = HttpServletRequestUtil.getString(request, "staffPhone");
@@ -157,10 +141,17 @@ public class StaffController {
                 SupermarketStaff staff = staffService.queryStaffByPhone(staffPhone);
                 if (staff == null) {
                     modelMap.put("success",false);
-                    modelMap.put("errMsg", "手机号或密码错误");
+                    modelMap.put("errMsg", "手机号不存在");
                     return modelMap;
                 }
-                staff.setStaffPassword(EncryptionUtil.getMd5(newPassword));
+                PasswordHelper helper = new PasswordHelper();
+                if (!helper.encryptPassword(staffPhone, staffPassword).equals(staff.getStaffPassword())) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "密码输入错误");
+                    return modelMap;
+                }
+                staff.setStaffPassword(newPassword);
+                helper.encryptPassword(staff);
                 int res = staffService.updateStaff(staff);
                 if (res == 0) {
                     modelMap.put("success",false);
@@ -184,6 +175,7 @@ public class StaffController {
 
     @PostMapping("/query")
     @ResponseBody
+    @RequiresPermissions("/staff/query")
     public Map<String,Object> staffQuery(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
         String staffStr = HttpServletRequestUtil.getString(request, "staff");

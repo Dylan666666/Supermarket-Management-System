@@ -1,5 +1,8 @@
 package com.market.scms.entity;
 
+import org.springframework.beans.factory.annotation.Value;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -8,8 +11,10 @@ import java.util.Date;
  * @Author: Mr_OO
  * @Date: 2020/10/7 15:28
  */
-public class SupermarketStaff {
-    private Long staffId;
+public class SupermarketStaff implements Serializable {
+    private static final long serialVersionUID = 3449541084534768055L;
+    
+    private Integer staffId;
     private String staffName;
     private String staffPassword;
     private String staffPhone;
@@ -36,6 +41,20 @@ public class SupermarketStaff {
      *  登录时间
      */
     private LocalDateTime loginTime;
+
+    /**
+     * 密码盐
+     */
+    private String salt;
+
+    /**
+     * 密码盐. 重新对盐重新进行了定义，用户名+salt，这样就不容易被破解，可以采用多种方式定义加盐
+     *
+     * @return
+     */
+    public String getCredentialsSalt() {
+        return this.staffPhone + this.salt;
+    }
     
     public String getStaffPhone() {
         return staffPhone;
@@ -68,15 +87,7 @@ public class SupermarketStaff {
     public void setLoginTime(LocalDateTime loginTime) {
         this.loginTime = loginTime;
     }
-
-    public Long getStaffId() {
-        return staffId;
-    }
-
-    public void setStaffId(Long staffId) {
-        this.staffId = staffId;
-    }
-
+    
     public String getStaffName() {
         return staffName;
     }
@@ -123,5 +134,39 @@ public class SupermarketStaff {
 
     public void setLastEditTime(Date lastEditTime) {
         this.lastEditTime = lastEditTime;
+    }
+
+    public Integer getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(Integer staffId) {
+        this.staffId = staffId;
+    }
+
+    @Override
+    public String toString() {
+        return "测试：SupermarketStaff{" +
+                "staffId=" + staffId +
+                ", staffName='" + staffName + '\'' +
+                ", staffPassword='" + staffPassword + '\'' +
+                ", staffPhone='" + staffPhone + '\'' +
+                ", staffPosition=" + staffPosition +
+                ", staffStatus=" + staffStatus +
+                ", createTime=" + createTime +
+                ", lastEditTime=" + lastEditTime +
+                ", token='" + token + '\'' +
+                ", expireTime=" + expireTime +
+                ", loginTime=" + loginTime +
+                ", salt='" + salt + '\'' +
+                '}';
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

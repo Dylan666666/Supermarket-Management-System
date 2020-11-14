@@ -6,12 +6,21 @@ import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.StaffService;
 import com.market.scms.util.PageCalculator;
+import com.market.scms.util.PasswordHelper;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ByteSource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @Author: Mr_OO
@@ -42,9 +51,14 @@ public class StaffServiceImpl implements StaffService {
         if (staff != null && staff.getStaffPhone() != null && staff.getStaffPassword() != null &&
                 staff.getStaffName() != null) {
             try {
+                if (staffMapper.queryStaffByPhone(staff.getStaffPhone()) != null) {
+                    throw new SupermarketStaffException("该手机号已被注册");
+                }
+                staff.setSalt(ByteSource.Util.bytes(staff.getStaffPhone()).toString());
                 staff.setLastEditTime(new Date());
                 staff.setCreateTime(new Date());
                 staff.setStaffStatus(StaffStatusStateEnum.JUST_REGISTERED.getState());
+                new PasswordHelper().encryptPassword(staff);
                 int res = staffMapper.insertStaff(staff);
                 if (res == 0) {
                     throw new SupermarketStaffException("注册失败");
@@ -78,30 +92,33 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public SupermarketStaff staffLogin(String staffPhone, String staffPassword) throws SupermarketStaffException {
-        if (staffPhone != null && staffPassword != null) {
-            try {
-                SupermarketStaff staff = staffMapper.staffLogin(staffPhone, staffPassword);
-                return staff;
-            } catch (SupermarketStaffException e) {
-                throw new SupermarketStaffException("登录失败");
-            }
-        } else {
-            throw new SupermarketStaffException("账号或密码为空");
-        }
-    }
+        // 获取Subject实例对象，用户实例
+        Subject currentUser = SecurityUtils.getSubject();
 
-    @Override
-    public SupermarketStaff findByToken(String token) throws SupermarketStaffException {
-        if (token != null) {
-            try {
-                SupermarketStaff staff = staffMapper.findByToken(token);
-                return staff;
-            } catch (SupermarketStaffException e) {
-                throw new SupermarketStaffException("查询失败");
-            }
-        } else {
-            throw new SupermarketStaffException("token为空");
+        // 将用户名和密码封装到UsernamePasswordToken
+        UsernamePasswordToken token = new UsernamePasswordToken(staffPhone, staffPassword);
+        
+        SupermarketStaff staff;
+        
+        //认证
+        try {
+            // 传到 MyShiroRealm 类中的方法进行认证
+            currentUser.login(token);
+            
+            // 构建缓存用户信息返回给前端
+            System.out.println("构建缓存用户信息返回给前端");
+            staff = (SupermarketStaff) currentUser.getPrincipals().getPrimaryPrincipal();
+            //设置TOKEN返回给前端
+            staff.setToken(currentUser.getSession().getId().toString());
+            
+        } catch (UnknownAccountException e) {
+            throw new SupermarketStaffException("账号不存在!");
+        } catch (IncorrectCredentialsException e) {
+            throw new SupermarketStaffException("密码不正确!");
+        } catch (AuthenticationException e) {
+            throw new SupermarketStaffException("用户验证失败!");
         }
+        return staff;
     }
 
     @Override
@@ -122,12 +139,7 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public void staffLogout(String staffToken) throws SupermarketStaffException {
-        try {
-            SupermarketStaff staff = staffMapper.findByToken(staffToken);
-            staff.setToken(UUID.randomUUID().toString());
-            staffMapper.updateStaff(staff);
-        } catch (SupermarketStaffException staffException) {
-            throw new SupermarketStaffException("消除token出错");
-        }
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
     }
 }

@@ -28,9 +28,9 @@ public class SupermarketStaffMapperTest {
     public void InsertTest() {
         SupermarketStaff staff = new SupermarketStaff();
         staff.setToken("asdasd");
-        staff.setStaffPhone("666");
-        staff.setStaffPassword("666");
-        staff.setStaffName("666");
+        staff.setStaffPhone("66666");
+        staff.setStaffPassword("66666");
+        staff.setStaffName("66666");
         staff.setExpireTime(now);
         staff.setLoginTime(now);
         staff.setStaffStatus(1001);

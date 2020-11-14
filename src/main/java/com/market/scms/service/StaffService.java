@@ -40,15 +40,7 @@ public interface StaffService {
      * @param staffPassword
      * @return
      */
-    SupermarketStaff staffLogin(String staffPhone,String staffPassword);
-
-    /**
-     * 通过token查找职工
-     *
-     * @param token
-     * @return
-     */
-    SupermarketStaff findByToken(String token);
+    SupermarketStaff staffLogin(String staffPhone, String staffPassword);
 
     /**
      * 职工信息模糊查询

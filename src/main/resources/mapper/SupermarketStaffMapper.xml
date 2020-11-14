@@ -16,10 +16,10 @@
             useGeneratedKeys="true" keyProperty="staffId" keyColumn="staff_id">
         INSERT INTO
         tb_staff(staff_name,staff_password,staff_phone,create_time,last_edit_time,
-        staff_position,staff_status,staff_token,staff_login_time,staff_expire_time)
+        staff_position,staff_status,staff_token,staff_login_time,staff_expire_time,salt)
         VALUES 
         (#{staffName},#{staffPassword},#{staffPhone},#{createTime},#{lastEditTime},
-        #{staffPosition},#{staffStatus},#{token},#{loginTime},#{expireTime})
+        #{staffPosition},#{staffStatus},#{token},#{loginTime},#{expireTime},#{salt})
     </insert>
     
     <update id="updateStaff" parameterType="com.market.scms.entity.SupermarketStaff">
@@ -34,6 +34,7 @@
             <if test="token != null"> staff_token = #{token},</if>
             <if test="loginTime != null"> staff_login_time = #{loginTime},</if>
             <if test="expireTime != null"> staff_expire_time = #{expireTime}</if>
+            <if test="salt != null"> salt = #{salt}</if>
         </set>
         WHERE 
         staff_id = #{staffId}
@@ -50,16 +51,6 @@
         staff_password = #{staffPassword}
     </select>
     
-    <select id="findByToken" resultType="com.market.scms.entity.SupermarketStaff">
-        SELECT 
-        *
-        FROM 
-        tb_staff
-        WHERE 
-        staff_token = #{token}
-    </select>
-
-
     <select id="queryStaffByCondition" resultType="com.market.scms.entity.SupermarketStaff">
         SELECT 
         *

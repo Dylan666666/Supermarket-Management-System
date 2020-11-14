@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.SecondaryMenuMapper">
+    <select id="queryById" resultType="com.market.scms.entity.staff.SecondaryMenu">
+        SELECT 
+        *
+        FROM 
+        tb_secondary_menu
+        WHERE 
+        secondary_menu_id = #{secondaryMenuId}
+    </select>
+
+    <insert id="insert" parameterType="com.market.scms.entity.staff.SecondaryMenu">
+        INSERT INTO
+        tb_secondary_menu(secondary_menu_weight,primary_menu_id,
+        secondary_menu_name,secondary_menu_url)
+        VALUES 
+        (#{secondaryMenuWeight},#{primaryMenuId},#{secondaryMenuName},#{secondaryMenuUrl})
+    </insert>
+
+    <delete id="delete" parameterType="com.market.scms.entity.staff.SecondaryMenu">
+        DELETE FROM
+        tb_secondary_menu
+        WHERE 
+        secondary_menu_id = #{secondaryMenuId}
+    </delete>
+
+    <update id="update" parameterType="com.market.scms.entity.staff.SecondaryMenu">
+        UPDATE
+        tb_secondary_menu
+        <set>
+            <if test="secondaryMenuName != null"> secondary_menu_name = #{secondaryMenuName},</if>
+            <if test="secondaryMenuWeight != null"> secondary_menu_weight = #{secondaryMenuWeight},</if>
+            <if test="primaryMenuId != null"> primary_menu_id = #{primaryMenuId},</if>
+            <if test="secondaryMenuUrl != null"> secondary_menu_url = #{secondaryMenuUrl}</if>
+        </set>
+        WHERE
+        secondary_menu_id = #{secondaryMenuId}
+    </update>
+
+</mapper>

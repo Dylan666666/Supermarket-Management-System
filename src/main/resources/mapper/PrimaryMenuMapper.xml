@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.PrimaryMenuMapper">
+    <select id="queryById" resultType="com.market.scms.entity.staff.PrimaryMenu">
+        SELECT 
+        *
+        FROM 
+        tb_primary_menu
+        WHERE 
+        primary_menu_id = #{primaryMenuId}
+    </select>
+
+    <insert id="insert" parameterType="com.market.scms.entity.staff.PrimaryMenu">
+        INSERT INTO
+        tb_primary_menu(primary_menu_id,primary_menu_name,primary_menu_weight)
+        VALUES 
+        (#{primaryMenuId},#{primaryMenuName},#{primaryMenuWeight})
+    </insert>
+
+    <delete id="delete" parameterType="com.market.scms.entity.staff.Function">
+        DELETE FROM
+        tb_primary_menu
+        WHERE 
+        primary_menu_id = #{primaryMenuId}
+    </delete>
+
+    <update id="update" parameterType="com.market.scms.entity.staff.Function">
+        UPDATE
+        tb_primary_menu
+        <set>
+            <if test="primaryMenuName != null"> primary_menu_name = #{primaryMenuName},</if>
+            <if test="primaryMenuWeight != null"> primary_menu_weight = #{primaryMenuWeight}</if>
+        </set>
+        WHERE
+        primary_menu_id = #{primaryMenuId}
+    </update>
+
+</mapper>

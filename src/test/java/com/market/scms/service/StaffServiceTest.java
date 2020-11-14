@@ -42,17 +42,14 @@ public class StaffServiceTest {
 
     @Test
     public void updateTest() {
-        SupermarketStaff staff = staffService.findByToken("asdasd");
-        staff.setToken("777");
-        System.out.println(staffService.updateStaff(staff));
-        System.out.println(staffService.findByToken("777").getStaffPhone());
+        
 
     }
 
     @Test
     public void queryTest() {
-        System.out.println(staffService.queryStaffByPhone("666").getStaffPhone());
-        System.out.println(staffService.staffLogin("666", "666").getStaffPhone());
+        System.out.println(staffService.queryStaffByPhone("123").getStaffPhone());
+   //     System.out.println(staffService.staffLogin("666", "666").getStaffPhone());
     }
 
     @Test

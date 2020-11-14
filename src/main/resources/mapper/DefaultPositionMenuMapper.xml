@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.DefaultPositionMenuMapper">
+    <select id="queryAll" resultType="com.market.scms.entity.staff.DefaultPositionMenu">
+        SELECT 
+        *
+        FROM 
+        tb_default_position_menu
+    </select>
+
+    <select id="queryByPositionId" resultType="com.market.scms.entity.staff.DefaultPositionMenu">
+        SELECT 
+        *
+        FROM 
+        tb_default_position_menu
+        WHERE 
+        staff_position_id = #{positionId}
+    </select>
+
+    <insert id="insert" parameterType="com.market.scms.entity.staff.DefaultPositionMenu">
+        INSERT INTO
+        tb_default_position_menu(secondary_menu_id,staff_position_id)
+        VALUES 
+        (#{menu.secondaryMenuId},#{menu.staffPositionId})
+    </insert>
+
+    <delete id="delete" parameterType="com.market.scms.entity.staff.DefaultPositionMenu">
+        DELETE FROM
+        tb_default_position_menu
+        WHERE 
+        secondary_menu_id = #{menu.secondaryMenuId}
+        AND 
+        staff_position_id = #{menu.staffPositionId}
+    </delete>
+    
+    
+
+</mapper>
