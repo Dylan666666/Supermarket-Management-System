@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.GoodsCategoryMapper">
+    <select id="queryAll" resultType="com.market.scms.entity.GoodsCategory">
+        SELECT 
+        *
+        FROM 
+        tb_goods_category
+        ORDER BY category_id
+    </select>
+
+    <insert id="insert" parameterType="com.market.scms.entity.GoodsCategory">
+        INSERT INTO
+        tb_goods_category(category_id,category_name,stocktaking_staff_id)
+        VALUES 
+        (#{categoryId},#{categoryName},#{stocktakingStaffId})
+    </insert>
+
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.GoodsMapper">
+    <select id="queryAll" resultType="com.market.scms.entity.Goods">
+        SELECT 
+        *
+        FROM 
+        tb_goods
+    </select>
+
+    <insert id="insertGoods" parameterType="com.market.scms.entity.Goods">
+        INSERT INTO
+        tb_goods(goods_id,goods_name,goods_category_id,goods_brand,goods_specifications,
+        goods_picture)
+        VALUES 
+        (#{goodsId},#{goodsName},#{goodsCategoryId},#{goodsBrand},#{goodsSpecifications},
+        #{goodsPicture})
+    </insert>
+
+    <delete id="deleteGoods" parameterType="com.market.scms.entity.Goods">
+        DELETE FROM
+        tb_goods
+        WHERE 
+        goods_id = #{goodsId} 
+    </delete>
+
+    <update id="updateGoods" parameterType="com.market.scms.entity.Goods">
+        UPDATE
+        tb_goods
+        <set>
+            <if test="goodsName != null"> goods_name = #{goodsName},</if>
+            <if test="goodsCategoryId != null"> goods_category_id = #{goodsCategoryId},</if>
+            <if test="goodsBrand != null"> goods_brand = #{goodsBrand},</if>
+            <if test="goodsSpecifications != null"> goods_specifications = #{goodsSpecifications},</if>
+            <if test="goodsPicture != null"> goods_picture = #{goodsPicture}</if>
+        </set>
+        WHERE
+        goods_id = #{goodsId}
+    </update>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.Goods">
+        SELECT
+        *
+        FROM
+        tb_goods s
+        <where>
+            <if test="goodsName != null">
+                AND
+                s.goods_name
+                LIKE
+                '%${goodsName}%'
+            </if>
+            <if test="goodsId != null">
+                AND
+                s.goods_id = #{goodsId}
+            </if>
+            <if test="goodsCategoryId != null">
+                AND
+                s.goods_category_id = #{goodsCategoryId}
+            </if>
+            <if test="goodsBrand != null">
+                AND
+                s.goods_brand = #{goodsBrand}
+            </if>
+        </where>
+        ORDER BY goods_id
+    </select>
+
+</mapper>

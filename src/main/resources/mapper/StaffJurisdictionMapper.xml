@@ -12,14 +12,14 @@
         staff_id = #{staffId}
     </select>
 
-    <insert id="insert" parameterType="com.market.scms.entity.staff.SecondaryMenu">
+    <insert id="insert" parameterType="com.market.scms.entity.staff.StaffJurisdiction">
         INSERT INTO
         tb_staff_jurisdiction(staff_id,function_id,jurisdiction_status)
         VALUES 
         (#{staffId},#{functionId},#{jurisdictionStatus})
     </insert>
 
-    <update id="update" parameterType="com.market.scms.entity.staff.SecondaryMenu">
+    <update id="update" parameterType="com.market.scms.entity.staff.StaffJurisdiction">
         UPDATE
         tb_staff_jurisdiction
         SET 
@@ -29,5 +29,12 @@
         AND 
         function_id = #{functionId}
     </update>
+
+    <delete id="delete" parameterType="com.market.scms.entity.staff.StaffJurisdiction">
+        DELETE FROM
+        tb_staff_jurisdiction
+        WHERE 
+        staff_id = #{staffId}
+    </delete>
 
 </mapper>

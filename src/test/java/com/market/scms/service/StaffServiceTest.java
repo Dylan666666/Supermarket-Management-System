@@ -41,9 +41,10 @@ public class StaffServiceTest {
     }
 
     @Test
-    public void updateTest() {
-        
-
+    public void updateStaffPosition() {
+        SupermarketStaff staff = staffService.queryStaffByPhone("333");
+        staff.setStaffPosition(4);
+        System.out.println(staffService.updateStaffPosition(staff));
     }
 
     @Test

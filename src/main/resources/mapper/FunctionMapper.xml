@@ -39,5 +39,14 @@
         WHERE
         function_id = #{functionId}
     </update>
+    
+    <select id="queryBySecondaryMenuId" resultType="com.market.scms.entity.staff.Function">
+        SELECT 
+        *
+        FROM 
+        tb_function
+        WHERE 
+        secondary_menu_id = #{secondaryMenuId}
+    </select>
 
 </mapper>

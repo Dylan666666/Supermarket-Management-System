@@ -86,8 +86,8 @@ public class DESUtil {
 
     public static void main(String[] args) {
         //输入自己数据库的账号和密码进行获取
-        System.out.println(getEncryptString("root"));
-        System.out.println(getEncryptString("666666"));
+        System.out.println(getEncryptString(""));
+        System.out.println(getEncryptString(""));
     }
     
 }

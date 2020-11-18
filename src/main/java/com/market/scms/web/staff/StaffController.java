@@ -102,7 +102,20 @@ public class StaffController {
             return modelMap;
         }
         try {
+            //先判断职位是否被更改了，是则更新职位相关权限表
+            SupermarketStaff curStaff = staffService.queryStaffByPhone(staff.getStaffPhone());
+            if (staff.getStaffPosition() != null && 
+                    !curStaff.getStaffPosition().equals(staff.getStaffPosition())) {
+                int res = staffService.updateStaffPosition(staff);
+                if (res != 1) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "信息更改失败");
+                    return modelMap;
+                }
+            }
+            //更改职工信息
             int res = staffService.updateStaff(staff);
+            System.out.println("res = " + res);
             if (res == 0) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", "信息更改失败");

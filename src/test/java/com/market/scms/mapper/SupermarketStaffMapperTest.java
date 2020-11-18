@@ -41,11 +41,9 @@ public class SupermarketStaffMapperTest {
 
     @Test
     public void updateTest() {
-        SupermarketStaff staff = supermarketStaffMapper.findByToken("asdasd");
-        staff.setToken("666");
-        System.out.println(supermarketStaffMapper.updateStaff(staff));
-        System.out.println(supermarketStaffMapper.findByToken("666").getStaffPhone());
-        
+        SupermarketStaff staff = supermarketStaffMapper.queryStaffByPhone("222");
+        staff.setStaffPosition(4);
+        System.out.println(supermarketStaffMapper.updateStaffPosition(staff));
     }
     
     @Test

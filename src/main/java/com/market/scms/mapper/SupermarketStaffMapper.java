@@ -36,6 +36,14 @@ public interface SupermarketStaffMapper {
     int updateStaff(SupermarketStaff staff);
 
     /**
+     * 更改职工职位 (高权限)
+     * 
+     * @param staff
+     * @return
+     */
+    int updateStaffPosition(SupermarketStaff staff);
+
+    /**
      * 职工登录
      * 
      * @param staffPhone
@@ -43,14 +51,6 @@ public interface SupermarketStaffMapper {
      * @return
      */
     SupermarketStaff staffLogin(@Param("staffPhone") String staffPhone, @Param("staffPassword") String staffPassword);
-
-    /**
-     * 通过token查找职工
-     * 
-     * @param token
-     * @return
-     */
-    SupermarketStaff findByToken(String token);
 
     /**
      * 职工信息模糊查询

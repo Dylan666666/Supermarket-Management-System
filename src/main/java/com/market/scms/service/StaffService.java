@@ -34,6 +34,14 @@ public interface StaffService {
     int updateStaff(SupermarketStaff staff);
 
     /**
+     * 更改职工职位 (高权限)
+     *
+     * @param staff
+     * @return
+     */
+    int updateStaffPosition(SupermarketStaff staff);
+
+    /**
      * 职工登录
      *
      * @param staffPhone

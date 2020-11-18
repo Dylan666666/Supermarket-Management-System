@@ -2,15 +2,16 @@ package com.market.scms.enums;
 
 /**
  * @Author: Mr_OO
- * @Date: 2020/10/11 11:06
+ * @Date: 2020/11/18 18:46
  */
-public enum TokenTimeEnum {
-    EXPIRE_TIME(24, "token存活时间");
+public enum CouponStatusStateEnum {
+    ORDERING(0, "订货中"), ORDER_SUCCESS(1, "订货成功"),
+    ORDER_FAILURE(-1, "订货失败");
 
     private int state;
     private String stateInfo;
 
-    TokenTimeEnum(int state, String stateInfo) {
+    CouponStatusStateEnum(int state, String stateInfo) {
         this.state = state;
         this.stateInfo = stateInfo;
     }
@@ -23,8 +24,8 @@ public enum TokenTimeEnum {
         return stateInfo;
     }
 
-    public static TokenTimeEnum stateOf(int index) {
-        for (TokenTimeEnum curEnum : values()) {
+    public static CouponStatusStateEnum stateOf(int index) {
+        for (CouponStatusStateEnum curEnum : values()) {
             if (curEnum.getState() == index) {
                 return curEnum;
             }

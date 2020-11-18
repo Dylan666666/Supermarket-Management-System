@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.ExportBillMapper">
+    
+    <insert id="insert" parameterType="com.market.scms.entity.ExportBill">
+        INSERT INTO
+        tb_export_bill(export_bill_id,export_bill_coupon_id,export_bill_supplier_id,
+        export_bill_goods_batch_number,export_bill_production_date,export_bill_shelf_life,
+        export_bill_price,export_bill_status,export_bill_paid,export_bill_time,export_confirm_staff_id,
+        export_submit_staff_id)
+        VALUES 
+        (#{exportBillId},#{exportBillCouponId},#{exportBillSupplierId},#{exportBillGoodsBatchNumber},
+        #{exportBillProductionDate},#{exportBillShelfLife},#{exportBillPrice},#{exportBillStatus},
+        #{exportBillPaid},#{exportBillTime},#{exportConfirmStaffId},#{exportSubmitStaffId})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.ExportBill">
+        UPDATE
+        tb_export_bill
+        <set>
+            <if test="exportBillSupplierId != null"> export_bill_supplier_id = #{exportBillSupplierId},</if>
+            <if test="exportBillGoodsBatchNumber"> export_bill_goods_batch_number = #{exportBillGoodsBatchNumber},</if>
+            <if test="exportBillProductionDate"> export_bill_production_date = #{exportBillProductionDate},</if>
+            <if test="exportBillShelfLife != null"> export_bill_shelf_life = #{exportBillShelfLife},</if>
+            <if test="exportBillPrice != null"> export_bill_price = #{exportBillPrice},</if>
+            <if test="exportBillStatus != null"> export_bill_status = #{exportBillStatus},</if>
+            <if test="exportBillPaid != null"> export_bill_paid = #{exportBillPaid},</if>
+            <if test="exportBillTime != null"> export_bill_time = #{exportBillTime},</if>
+            <if test="exportConfirmStaffId != null"> export_confirm_staff_id = #{exportConfirmStaffId},</if>
+            <if test="exportSubmitStaffId != null"> export_submit_staff_id = #{exportSubmitStaffId}</if>
+        </set>
+        WHERE
+        export_bill_id = #{exportBillId}
+    </update>
+    
+    <select id="queryByBillId" resultType="com.market.scms.entity.ExportBill">
+        SELECT 
+        *
+        FROM 
+        tb_export_bill
+        WHERE 
+        export_bill_id = #{exportBillId}
+    </select>
+
+    <select id="queryByCouponId" resultType="com.market.scms.entity.ExportBill">
+        SELECT 
+        *
+        FROM 
+        tb_export_bill
+        WHERE 
+        export_bill_coupon_id = #{exportBillCouponId}
+    </select>
+
+    <select id="queryByBillStatus" resultType="com.market.scms.entity.ExportBill">
+        SELECT 
+        *
+        FROM 
+        tb_export_bill
+        WHERE 
+        export_bill_status = #{exportBillStatus}
+    </select>
+
+    <select id="queryAll" resultType="com.market.scms.entity.ExportBill">
+        SELECT 
+        *
+        FROM 
+        tb_export_bill
+    </select>
+
+</mapper>

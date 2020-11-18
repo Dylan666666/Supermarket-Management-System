@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.UnitMapper">
+    <select id="queryAll" resultType="com.market.scms.entity.Unit">
+        SELECT 
+        *
+        FROM 
+        tb_unit
+        ORDER BY unit_id
+    </select>
+
+    <insert id="insert" parameterType="com.market.scms.entity.Unit">
+        INSERT INTO
+        tb_unit(unit_id,unit_name)
+        VALUES 
+        (#{unitId},#{unitName})
+    </insert>
+
+</mapper>

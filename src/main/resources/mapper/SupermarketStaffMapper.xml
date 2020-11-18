@@ -28,7 +28,6 @@
         <set>
             <if test="staffPassword != null"> staff_password = #{staffPassword},</if>
             <if test="staffName != null"> staff_name = #{staffName},</if>
-            <if test="staffPosition != null"> staff_position = #{staffPosition},</if>
             <if test="staffStatus != null"> staff_status = #{staffStatus},</if>
             <if test="lastEditTime != null"> last_edit_time = #{lastEditTime},</if>
             <if test="token != null"> staff_token = #{token},</if>
@@ -37,6 +36,15 @@
             <if test="salt != null"> salt = #{salt}</if>
         </set>
         WHERE 
+        staff_id = #{staffId}
+    </update>
+    
+    <update id="updateStaffPosition" parameterType="com.market.scms.entity.SupermarketStaff">
+        UPDATE
+        tb_staff
+        SET 
+        staff_position = #{staffPosition}
+        WHERE
         staff_id = #{staffId}
     </update>
     

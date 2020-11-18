@@ -3,6 +3,8 @@ package com.market.scms.mapper;
 import com.market.scms.entity.staff.Function;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @Author: Mr_OO
  * @Date: 2020/11/9 21:33
@@ -32,6 +34,14 @@ public interface FunctionMapper {
      * @return
      */
     Function queryById(@Param("functionId") int functionId);
+
+    /**
+     * 通过secondaryMenuId查询功能集合
+     * 
+     * @param id
+     * @return
+     */
+    List<Function> queryBySecondaryMenuId(int id);
 
     /**
      * 更改三级菜单信息

@@ -1,6 +1,7 @@
 package com.market.scms.service.impl;
 
-import com.market.scms.mapper.SupermarketStaffMapper;
+import com.market.scms.entity.staff.StaffPositionRelation;
+import com.market.scms.mapper.*;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
@@ -14,9 +15,7 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -31,6 +30,9 @@ public class StaffServiceImpl implements StaffService {
     
     @Resource
     private SupermarketStaffMapper staffMapper;
+    
+    @Resource
+    private StaffPositionRelationMapper staffPositionRelationMapper;
     
     @Override
     public SupermarketStaff queryStaffByPhone(String staffPhone) throws SupermarketStaffException {
@@ -88,6 +90,45 @@ public class StaffServiceImpl implements StaffService {
         } else {
             throw new SupermarketStaffException("信息为空");
         }
+    }
+
+    @Override
+    public int updateStaffPosition(SupermarketStaff staff) throws SupermarketStaffException {
+        if (staff != null && staff.getStaffId() != null && staff.getStaffPhone() != null 
+                && staff.getStaffPosition() != null) {
+            try {
+                SupermarketStaff curStaff = staffMapper.queryStaffByPhone(staff.getStaffPhone());
+                if (curStaff.getStaffPosition() == null) {
+                    //插入职工职位表
+                    StaffPositionRelation relation = new StaffPositionRelation();
+                    relation.setStaffPositionStatus(1);
+                    relation.setStaffPositionId(staff.getStaffPosition());
+                    relation.setStaffId(staff.getStaffId());
+                    int res1 = staffPositionRelationMapper.insert(relation);
+                    if (res1 == 0) {
+                        throw new SupermarketStaffException("更改职位失败");
+                    }
+                } else {
+                    StaffPositionRelation relation = new StaffPositionRelation();
+                    //删除职工职位行数据
+                    relation.setStaffId(staff.getStaffId());
+                    relation.setStaffPositionId(curStaff.getStaffPosition());
+                    staffPositionRelationMapper.delete(relation);
+                    //添加职工职位行数据
+                    relation.setStaffPositionStatus(1);
+                    relation.setStaffPositionId(staff.getStaffPosition());
+                    int res1 = staffPositionRelationMapper.insert(relation);
+                    if (res1 == 0) {
+                        throw new SupermarketStaffException("更改职位失败");
+                    }
+                }
+            } catch (SupermarketStaffException e) {
+                throw new SupermarketStaffException("更改职位失败");
+            }
+        } else {
+            throw new SupermarketStaffException("信息为空");
+        }
+        return 1;
     }
 
     @Override
