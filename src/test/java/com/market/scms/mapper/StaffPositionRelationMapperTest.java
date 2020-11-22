@@ -22,8 +22,8 @@ public class StaffPositionRelationMapperTest {
     @Test
     public void insert() {
         StaffPositionRelation relation = new StaffPositionRelation();
-        relation.setStaffId(1);
-        relation.setStaffPositionId(1);
+        relation.setStaffId(26);
+        relation.setStaffPositionId(4);
         relation.setStaffPositionStatus(1);
         System.out.println(mapper.insert(relation));
     }

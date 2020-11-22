@@ -47,8 +47,9 @@ public class StockMapperTest {
     
     @Test
     public void update() {
-        Stock stock = stockMapper.queryByExportBillId("123");
-        stock.setStockInventory(10000);
+        Stock stock = new Stock();
+        stock.setStockGoodsId(1L);
+        stock.setStockGoodsPrice(1.41);
         System.out.println(stockMapper.update(stock));
     }
     

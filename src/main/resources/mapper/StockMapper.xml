@@ -19,7 +19,8 @@
         UPDATE
         tb_stock
         SET 
-        stock_inventory = #{stockInventory}
+        <if test="stockInventory != null"> stock_inventory = #{stockInventory},</if>
+        <if test="stockGoodsPrice != null"> stock_goods_price = #{stockGoodsPrice}</if>
         WHERE
         stock_goods_id = #{stockGoodsId}
     </update>

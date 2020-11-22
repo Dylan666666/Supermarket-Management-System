@@ -43,8 +43,13 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public int update(Stock stock) throws WareHouseManagerException {
-        if (stock != null && stock.getStockGoodsId() != null && stock.getStockInventory() != null &&
-                stock.getStockInventory() >= 0) {
+        if (stock != null && stock.getStockGoodsId() != null ) {
+            if (stock.getStockInventory() != null && stock.getStockInventory() < 0) {
+                throw new WareHouseManagerException("传入信息有误，更改库存失败");
+            }
+            if (stock.getStockGoodsPrice() != null && stock.getStockGoodsPrice() < 0) {
+                throw new WareHouseManagerException("传入信息有误，更改库存失败");
+            }
             try {
                 int res = stockMapper.update(stock);
                 if (res == 0) {

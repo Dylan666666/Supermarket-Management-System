@@ -194,14 +194,6 @@ public class GlobalExceptionHandler {
 
     /**
      * 处理参数绑定异常，并拼接出错的参数异常信息。
-     * <p>
-     * 创建人：leigq <br>
-     * 创建时间：2017年10月16日 下午9:09:22 <br>
-     * <p>
-     * 修改人： <br>
-     * 修改时间： <br>
-     * 修改备注： <br>
-     * </p>
      *
      * @param result
      */
