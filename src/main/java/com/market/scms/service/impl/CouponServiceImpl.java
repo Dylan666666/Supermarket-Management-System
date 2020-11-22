@@ -8,6 +8,7 @@ import com.market.scms.service.CouponService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,8 +24,9 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public int insert(Coupon coupon) throws WareHouseManagerException {
         if (coupon != null && coupon.getCouponGoodsId() != null && coupon.getCouponNum() != null &&
-        coupon.getCouponStaffId() != null && coupon.getCouponTime() != null && coupon.getCouponUnitId() != null) {
+        coupon.getCouponStaffId() != null && coupon.getCouponUnitId() != null) {
             try {
+                coupon.setCouponTime(new Date());
                 coupon.setCouponStatus(CouponStatusStateEnum.ORDERING.getState());
                 int res = couponMapper.insert(coupon);
                 if (res == 0) {

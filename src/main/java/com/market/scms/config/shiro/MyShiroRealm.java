@@ -90,7 +90,6 @@ public class MyShiroRealm extends AuthorizingRealm {
         
         //通过username从数据库中查找 User对象.
         SupermarketStaff staff = staffService.queryStaffByPhone(staffPhone);
-        System.out.println("MyShiroRealm测试：staff是否存在？："  + !(Objects.isNull(staff)));
         if (Objects.isNull(staff)) {
             return null;
         }

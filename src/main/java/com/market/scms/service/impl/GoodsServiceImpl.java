@@ -34,7 +34,7 @@ public class GoodsServiceImpl implements GoodsService {
                     addThumbnail(goods, thumbnail);
                 }
                 int res = goodsMapper.insertGoods(goods);
-                if (res != 1) {
+                if (res == 0) {
                     throw new WareHouseManagerException("创建商品失败");
                 }
                 return res;

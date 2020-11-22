@@ -147,7 +147,6 @@ public class StaffServiceImpl implements StaffService {
             currentUser.login(token);
             
             // 构建缓存用户信息返回给前端
-            System.out.println("构建缓存用户信息返回给前端");
             staff = (SupermarketStaff) currentUser.getPrincipals().getPrimaryPrincipal();
             //设置TOKEN返回给前端
             staff.setToken(currentUser.getSession().getId().toString());

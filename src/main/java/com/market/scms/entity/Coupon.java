@@ -72,4 +72,17 @@ public class Coupon {
     public void setCouponStaffId(Integer couponStaffId) {
         this.couponStaffId = couponStaffId;
     }
+
+    @Override
+    public String toString() {
+        return "Coupon{" +
+                "couponId=" + couponId +
+                ", couponGoodsId=" + couponGoodsId +
+                ", couponUnitId=" + couponUnitId +
+                ", couponNum=" + couponNum +
+                ", couponTime=" + couponTime +
+                ", couponStatus=" + couponStatus +
+                ", couponStaffId=" + couponStaffId +
+                '}';
+    }
 }

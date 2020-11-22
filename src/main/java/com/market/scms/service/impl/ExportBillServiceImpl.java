@@ -24,7 +24,8 @@ public class ExportBillServiceImpl implements ExportBillService {
     
     @Override
     public int insert(ExportBill exportBill, Long couponGoodsId) throws WareHouseManagerException {
-        if (exportBill != null && couponGoodsId != null && exportBill.getExportBillCouponId() != null) {
+        if (exportBill != null && couponGoodsId != null) {
+            exportBill.setExportBillCouponId(couponGoodsId);
             exportBill.setExportBillStatus(ExportBillStatusStateEnum.START.getState());
             exportBill.setExportBillId(ExportBillIdCreator.get(couponGoodsId));
             try {
