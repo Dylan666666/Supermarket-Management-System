@@ -68,6 +68,8 @@
         *
         FROM 
         tb_export_bill
+        ORDER BY export_bill_id DESC 
+        LIMIT #{rowIndex},#{pageSize}
     </select>
 
 </mapper>

@@ -41,7 +41,7 @@ public class ExportBillMapperTest {
         System.out.println(exportBillMapper.queryByBillId("1").getExportBillProductionDate());
         System.out.println(exportBillMapper.queryByBillStatus(0).get(0).getExportBillProductionDate());
         System.out.println(exportBillMapper.queryByCouponId(1L).getExportBillProductionDate());
-        System.out.println(exportBillMapper.queryAll().get(0).getExportBillProductionDate());
+        System.out.println(exportBillMapper.queryAll(0, 100).get(0).getExportBillProductionDate());
     }
     
     @Test

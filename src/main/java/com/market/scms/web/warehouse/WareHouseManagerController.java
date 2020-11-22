@@ -361,6 +361,7 @@ public class WareHouseManagerController {
         try {
             couponService.insert(coupon);
             ExportBill exportBill = new ExportBill();
+            exportBill.setExportBillCouponId(coupon.getCouponId());
             exportBillService.insert(exportBill, coupon.getCouponGoodsId());
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -436,6 +437,136 @@ public class WareHouseManagerController {
             modelMap.put("staff", staff);
             modelMap.put("unit", unit);
             modelMap.put("category", goodsCategory);
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.10 采购入库单
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchaselist")
+    @ResponseBody
+    @RequiresPermissions("/purchaselist")
+    public Map<String,Object> purchaseList(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 100;
+        }
+        try {
+            List<ExportBill> exportBillList = exportBillService.queryAll(pageIndex, pageSize);
+            modelMap.put("success", true);
+            modelMap.put("exportBillList", exportBillList);
+            modelMap.put("exportBillCount", exportBillList.size());
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.11 采购入库单 查看
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchaselist/purchasedetails")
+    @ResponseBody
+    @RequiresPermissions("/purchaselist/purchasedetails")
+    public Map<String,Object> purchasedetails(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        String exportBillId = HttpServletRequestUtil.getString(request, "exportBillId");
+        if (exportBillId == null) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "传入信息有误，查询失败");
+            return modelMap;
+        }
+        try {
+            ExportBill exportBill = exportBillService.queryByBillId(exportBillId);
+            System.out.println(exportBill);
+            if (exportBill == null) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "传入信息有误，查询失败");
+                return modelMap;
+            }
+            Coupon coupon = couponService.queryByCouponId(exportBill.getExportBillCouponId());
+            System.out.println(coupon);
+            if (coupon == null) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "传入信息有误，查询失败");
+                return modelMap;
+            }
+            Goods goods = goodsService.queryById(coupon.getCouponGoodsId());
+            System.out.println(goods);
+            if (goods == null) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "传入信息有误，查询失败");
+                return modelMap;
+            }
+            GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+            Unit unit = unitService.queryById(coupon.getCouponUnitId());
+            modelMap.put("exportBill", exportBill);
+            modelMap.put("coupon", coupon);
+            modelMap.put("goods", goods);
+            modelMap.put("category", category);
+            modelMap.put("unit", unit);
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.12 采购入库单 查看 修改
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchaselist/purchasedetails/modify")
+    @ResponseBody
+    @RequiresPermissions("/purchaselist/purchasedetails/modify")
+    public Map<String,Object> modify(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        String exportBillStr = HttpServletRequestUtil.getString(request, "exportBill");
+        ObjectMapper mapper = new ObjectMapper();
+        ExportBill exportBill = null;
+        try {
+            exportBill = mapper.readValue(exportBillStr, ExportBill.class);
+            if (exportBill == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "传入信息有误，修改失败");
+                return modelMap;
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "传入信息有误，修改失败");
+            return modelMap;
+        }
+        try {
+            int res = exportBillService.update(exportBill);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "修改失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());

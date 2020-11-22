@@ -6,6 +6,7 @@ import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.ExportBillMapper;
 import com.market.scms.service.ExportBillService;
 import com.market.scms.util.ExportBillIdCreator;
+import com.market.scms.util.PageCalculator;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,7 +26,6 @@ public class ExportBillServiceImpl implements ExportBillService {
     @Override
     public int insert(ExportBill exportBill, Long couponGoodsId) throws WareHouseManagerException {
         if (exportBill != null && couponGoodsId != null) {
-            exportBill.setExportBillCouponId(couponGoodsId);
             exportBill.setExportBillStatus(ExportBillStatusStateEnum.START.getState());
             exportBill.setExportBillId(ExportBillIdCreator.get(couponGoodsId));
             try {
@@ -101,9 +101,10 @@ public class ExportBillServiceImpl implements ExportBillService {
     }
 
     @Override
-    public List<ExportBill> queryAll() throws WareHouseManagerException {
+    public List<ExportBill> queryAll(int pageIndex, int pageSize) throws WareHouseManagerException {
         try {
-            List<ExportBill> res = exportBillMapper.queryAll();
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            List<ExportBill> res = exportBillMapper.queryAll(rowIndex, pageSize);
             return res;
         } catch (WareHouseManagerException e) {
             throw new WareHouseManagerException("查询失败");

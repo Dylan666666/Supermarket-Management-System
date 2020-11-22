@@ -1,6 +1,7 @@
 package com.market.scms.mapper;
 
 import com.market.scms.entity.ExportBill;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -52,7 +53,9 @@ public interface ExportBillMapper {
     /**
      * 一键查询入库单
      * 
+     * @param rowIndex
+     * @param pageSize
      * @return
      */
-    List<ExportBill> queryAll();
+    List<ExportBill> queryAll(@Param("rowIndex") int rowIndex,@Param("pageSize") int pageSize);
 }

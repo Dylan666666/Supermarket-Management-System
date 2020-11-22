@@ -55,5 +55,5 @@ public interface ExportBillService {
      *
      * @return
      */
-    List<ExportBill> queryAll();
+    List<ExportBill> queryAll(int pageIndex, int pageSize);
 }
