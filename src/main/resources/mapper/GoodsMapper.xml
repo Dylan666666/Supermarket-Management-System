@@ -46,26 +46,27 @@
         FROM
         tb_goods s
         <where>
-            <if test="goodsName != null">
+            <if test="goodsCondition.goodsName != null">
                 AND
                 s.goods_name
                 LIKE
-                '%${goodsName}%'
+                '%${goodsCondition.goodsName}%'
             </if>
             <if test="goodsId != null">
                 AND
-                s.goods_id = #{goodsId}
+                s.goods_id = #{goodsCondition.goodsId}
             </if>
             <if test="goodsCategoryId != null">
                 AND
-                s.goods_category_id = #{goodsCategoryId}
+                s.goods_category_id = #{goodsCondition.goodsCategoryId}
             </if>
             <if test="goodsBrand != null">
                 AND
-                s.goods_brand = #{goodsBrand}
+                s.goods_brand = #{goodsCondition.goodsBrand}
             </if>
         </where>
-        ORDER BY goods_id
+        ORDER BY s. goods_id
+        LIMIT #{rowIndex},#{pageSize}
     </select>
 
 </mapper>

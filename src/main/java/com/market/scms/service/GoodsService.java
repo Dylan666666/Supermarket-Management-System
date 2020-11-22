@@ -37,11 +37,15 @@ public interface GoodsService {
 
     /**
      * 条件查询产品
-     *
+     * 
      * @param goodsCondition
+     * @param pageIndex
+     * @param pageSize
      * @return
      */
-    List<Goods> queryByCondition(Goods goodsCondition);
+    List<Goods> queryByCondition(Goods goodsCondition,
+                                 int pageIndex,
+                                 int pageSize);
 
     /**
      * 删除商品

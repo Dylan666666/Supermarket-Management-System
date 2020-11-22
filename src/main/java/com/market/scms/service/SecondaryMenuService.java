@@ -24,6 +24,14 @@ public interface SecondaryMenuService {
     SecondaryMenu queryById(int secondaryMenuId);
 
     /**
+     * 通过二级菜单URL查询二级菜单
+     *
+     * @param secondaryMenuUrl
+     * @return
+     */
+    SecondaryMenu queryByUrl(String secondaryMenuUrl);
+
+    /**
      * 更改二级菜单
      *
      * @param secondaryMenu

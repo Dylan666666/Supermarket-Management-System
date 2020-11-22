@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.StockMapper">
+
+    <insert id="insert" parameterType="com.market.scms.entity.Stock"
+            useGeneratedKeys="true" keyProperty="stockGoodsId" keyColumn="stock_goods_id">
+        INSERT INTO
+        tb_stock(stock_id,goods_stock_id,stock_unit_id,stock_goods_batch_number,
+        stock_goods_production_date,stock_goods_shelf_life,stock_goods_price,
+        stock_inventory,stock_export_bill_id)
+        VALUES 
+        (#{stockId},#{goodsStockId},#{stockUnitId},#{stockGoodsBatchNumber},#{stockGoodsProductionDate},
+        #{stockGoodsShelfLife},#{stockGoodsPrice},#{stockInventory},#{stockExportBillId})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.Stock">
+        UPDATE
+        tb_stock
+        SET 
+        stock_inventory = #{stockInventory}
+        WHERE
+        stock_goods_id = #{stockGoodsId}
+    </update>
+
+    <select id="queryByGoodsId" resultType="com.market.scms.entity.Stock">
+        SELECT 
+        *
+        FROM 
+        tb_stock
+        WHERE 
+        goods_stock_id = #{goodsStockId}
+    </select>
+
+    <select id="queryByExportBillId" resultType="com.market.scms.entity.Stock">
+        SELECT 
+        *
+        FROM 
+        tb_stock
+        WHERE 
+        stock_export_bill_id = #{stockExportBillId}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.Stock">
+        SELECT
+        *
+        FROM
+        tb_stock s
+        <where>
+            <if test="goodsStockId != null">
+                AND
+                s.goods_stock_id = #{goodsStockId}
+            </if>
+            <if test="stockExportBillId != null">
+                AND
+                s.stock_export_bill_id = #{stockExportBillId}
+            </if>
+            <if test="stockGoodsId != null">
+                AND
+                s.stock_goods_id = #{stockGoodsId}
+            </if>
+            <if test="stockId != null">
+                AND
+                s.stock_id = #{stockId}
+            </if>
+        </where>
+        ORDER BY stock_goods_batch_number DESC
+    </select>
+
+    <select id="queryAll" resultType="com.market.scms.entity.Stock">
+        SELECT 
+        *
+        FROM 
+        tb_stock
+    </select>
+    
+</mapper>

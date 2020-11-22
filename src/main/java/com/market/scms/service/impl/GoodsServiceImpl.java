@@ -6,6 +6,7 @@ import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.GoodsMapper;
 import com.market.scms.service.GoodsService;
 import com.market.scms.util.ImageUtil;
+import com.market.scms.util.PageCalculator;
 import com.market.scms.util.PathUtil;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +54,7 @@ public class GoodsServiceImpl implements GoodsService {
                 if (thumbnail != null) {
                     Goods cur = new Goods();
                     cur.setGoodsId(goods.getGoodsId());
-                    cur = goodsMapper.queryByCondition(cur).get(0);
+                    cur = goodsMapper.queryByCondition(cur, 0, 100).get(0);
                     if (cur != null && cur.getGoodsPicture() != null) {
                         ImageUtil.deleteFileOrPath(cur.getGoodsPicture());
                     }
@@ -83,12 +84,18 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<Goods> queryByCondition(Goods goodsCondition) throws WareHouseManagerException {
+    public List<Goods> queryByCondition(Goods goodsCondition, int pageIndex, int pageSize) 
+            throws WareHouseManagerException {
         isNull(goodsCondition);
-        try {
-            List<Goods> res = goodsMapper.queryByCondition(goodsCondition);
-            return res;
-        } catch (WareHouseManagerException e) {
+        if (pageIndex != -1000 && pageSize != -1000) {
+            try {
+                int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+                List<Goods> res = goodsMapper.queryByCondition(goodsCondition, rowIndex, pageSize);
+                return res;
+            } catch (WareHouseManagerException e) {
+                throw new WareHouseManagerException("查询失败");
+            }   
+        } else {
             throw new WareHouseManagerException("查询失败");
         }
     }

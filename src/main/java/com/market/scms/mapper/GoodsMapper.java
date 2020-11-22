@@ -1,6 +1,7 @@
 package com.market.scms.mapper;
 
 import com.market.scms.entity.Goods;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -36,9 +37,13 @@ public interface GoodsMapper {
      * 条件查询产品
      * 
      * @param goodsCondition
+     * @param rowIndex
+     * @param pageSize
      * @return
      */
-    List<Goods> queryByCondition(Goods goodsCondition);
+    List<Goods> queryByCondition(@Param("goodsCondition") Goods goodsCondition, 
+                                 @Param("rowIndex") int rowIndex,
+                                 @Param("pageSize") int pageSize);
 
     /**
      * 删除商品

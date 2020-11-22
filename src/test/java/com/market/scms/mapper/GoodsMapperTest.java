@@ -36,7 +36,7 @@ public class GoodsMapperTest {
         Goods g = new Goods();
         g.setGoodsId(123L);
         System.out.println(goods.getGoodsName());
-        System.out.println(goodsMapper.queryByCondition(g).get(0).getGoodsName());
+        System.out.println(goodsMapper.queryByCondition(g, 0, 100).get(0).getGoodsName());
     }
     
     @Test

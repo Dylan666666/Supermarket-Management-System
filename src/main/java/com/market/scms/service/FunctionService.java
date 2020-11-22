@@ -2,6 +2,8 @@ package com.market.scms.service;
 
 import com.market.scms.entity.staff.Function;
 
+import java.util.List;
+
 /**
  * @Author: Mr_OO
  * @Date: 2020/11/10 9:42
@@ -38,4 +40,12 @@ public interface FunctionService {
      * @return
      */
     int update(Function function);
+
+    /**
+     * 通过二级菜单查询三级功能表集合
+     * 
+     * @param secondaryMenuId
+     * @return
+     */
+    List<Function> querySecondaryMenuId(int secondaryMenuId);
 }

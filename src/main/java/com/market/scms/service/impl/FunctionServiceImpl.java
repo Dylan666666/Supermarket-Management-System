@@ -2,11 +2,13 @@ package com.market.scms.service.impl;
 
 import com.market.scms.entity.staff.Function;
 import com.market.scms.exceptions.SupermarketStaffException;
+import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.FunctionMapper;
 import com.market.scms.service.FunctionService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Author: Mr_OO
@@ -68,7 +70,17 @@ public class FunctionServiceImpl implements FunctionService {
             throw new SupermarketStaffException("更改失败");
         }
     }
-    
+
+    @Override
+    public List<Function> querySecondaryMenuId(int secondaryMenuId) throws SupermarketStaffException {
+        try {
+            List<Function> res = functionMapper.queryBySecondaryMenuId(secondaryMenuId);
+            return res;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("查询失败");
+        }
+    }
+
     private void isNull(Function function) {
         if (function == null) {
             throw new SupermarketStaffException("信息不能为空");

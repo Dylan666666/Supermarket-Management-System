@@ -43,6 +43,16 @@ public class SecondaryMenuServiceImpl implements SecondaryMenuService {
     }
 
     @Override
+    public SecondaryMenu queryByUrl(String secondaryMenuUrl) {
+        try {
+            SecondaryMenu secondaryMenu = secondaryMenuMapper.queryByUrl(secondaryMenuUrl);
+            return secondaryMenu;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("查询失败");
+        }
+    }
+
+    @Override
     public int update(SecondaryMenu secondaryMenu) throws SupermarketStaffException {
         isNull(secondaryMenu);
         try {

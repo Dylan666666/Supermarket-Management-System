@@ -11,11 +11,12 @@
         ORDER BY unit_id
     </select>
 
-    <insert id="insert" parameterType="com.market.scms.entity.Unit">
+    <insert id="insert" parameterType="com.market.scms.entity.Unit"
+    useGeneratedKeys="true" keyColumn="unit_id" keyProperty="unitId">
         INSERT INTO
-        tb_unit(unit_id,unit_name)
+        tb_unit(unit_name)
         VALUES 
-        (#{unitId},#{unitName})
+        (#{unitName})
     </insert>
 
 </mapper>

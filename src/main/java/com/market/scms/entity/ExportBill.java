@@ -21,6 +21,15 @@ public class ExportBill {
     private Date exportBillTime;
     private Integer exportConfirmStaffId;
     private Integer exportSubmitStaffId;
+    private String exportBillMark;
+
+    public String getExportBillMark() {
+        return exportBillMark;
+    }
+
+    public void setExportBillMark(String exportBillMark) {
+        this.exportBillMark = exportBillMark;
+    }
 
     public String getExportBillId() {
         return exportBillId;
