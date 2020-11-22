@@ -41,4 +41,14 @@ public class UnitServiceImpl implements UnitService {
             throw new WareHouseManagerException("销售单位插入失败");
         }
     }
+
+    @Override
+    public Unit queryById(int unitId) throws WareHouseManagerException {
+        if (unitId > 0) {
+            Unit unit = unitMapper.queryById(unitId);
+            return unit;
+        } else {
+            throw new WareHouseManagerException("查询单位失败");
+        }
+    }
 }

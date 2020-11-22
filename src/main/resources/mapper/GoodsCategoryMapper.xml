@@ -18,4 +18,13 @@
         (#{categoryId},#{categoryName},#{stocktakingStaffId})
     </insert>
 
+    <select id="queryById" resultType="com.market.scms.entity.GoodsCategory">
+        SELECT 
+        *
+        FROM 
+        tb_goods_category
+        WHERE 
+        category_id = #{categoryId}
+    </select>
+
 </mapper>

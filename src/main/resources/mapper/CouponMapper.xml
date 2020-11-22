@@ -41,4 +41,13 @@
         coupon_id = #{couponId}
     </update>
 
+    <select id="queryAll" resultType="com.market.scms.entity.Coupon">
+        SELECT 
+        *
+        FROM 
+        tb_coupon
+        ORDER BY coupon_time DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
 </mapper>

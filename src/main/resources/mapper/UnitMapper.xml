@@ -19,4 +19,13 @@
         (#{unitName})
     </insert>
 
+    <select id="queryById" resultType="com.market.scms.entity.Unit">
+        SELECT 
+        *
+        FROM 
+        tb_unit
+        WHERE 
+        unit_id = #{unitId}
+    </select>
+
 </mapper>

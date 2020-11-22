@@ -23,4 +23,12 @@ public interface UnitMapper {
      * @return
      */
     int insert(Unit unit);
+
+    /**
+     * ID查询单位
+     * 
+     * @param unitId
+     * @return
+     */
+    Unit queryById(int unitId);
 }

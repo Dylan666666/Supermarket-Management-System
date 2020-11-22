@@ -68,4 +68,14 @@ public interface StaffService {
      * @param staffToken
      */
     void staffLogout(String staffToken);
+
+    /**
+     * 通过ID查询
+     *
+     * @param staffId
+     * @return
+     */
+    SupermarketStaff queryById(int staffId);
+    
+    
 }

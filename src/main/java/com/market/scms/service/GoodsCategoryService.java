@@ -23,4 +23,12 @@ public interface GoodsCategoryService {
      * @return
      */
     int insert(GoodsCategory goodsCategory);
+
+    /**
+     * 通过id查询
+     *
+     * @param categoryId
+     * @return
+     */
+    GoodsCategory queryById(int categoryId);
 }

@@ -92,4 +92,13 @@
         LIMIT #{rowIndex},#{pageSize}
     </select>
     
+    <select id="queryById" resultType="com.market.scms.entity.SupermarketStaff">
+        SELECT 
+        *
+        FROM 
+        tb_staff
+        WHERE 
+        staff_id = #{staffId}
+    </select>
+    
 </mapper>

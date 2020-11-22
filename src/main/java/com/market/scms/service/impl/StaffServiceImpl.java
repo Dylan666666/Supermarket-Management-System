@@ -182,4 +182,14 @@ public class StaffServiceImpl implements StaffService {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
     }
+
+    @Override
+    public SupermarketStaff queryById(int staffId) throws SupermarketStaffException {
+        if (staffId > 0) {
+            SupermarketStaff staff = staffMapper.queryById(staffId);
+            return staff;
+        } else {
+            throw new SupermarketStaffException("查询职工信息失败");
+        }
+    }
 }

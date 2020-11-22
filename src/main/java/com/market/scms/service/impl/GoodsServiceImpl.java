@@ -116,7 +116,17 @@ public class GoodsServiceImpl implements GoodsService {
             throw new WareHouseManagerException("删除失败");
         }
     }
-    
+
+    @Override
+    public Goods queryById(Long goodsId) throws WareHouseManagerException {
+        if (goodsId != null) {
+            Goods goods = goodsMapper.queryById(goodsId);
+            return goods;
+        } else {
+            throw new WareHouseManagerException("传入信息为空");
+        }
+    }
+
     private void isNull(Goods goods) throws WareHouseManagerException {
         if (goods == null) {
             throw new WareHouseManagerException("传入信息为空");

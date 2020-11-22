@@ -10,6 +10,15 @@
         tb_goods
     </select>
 
+    <select id="queryById" resultType="com.market.scms.entity.Goods">
+        SELECT 
+        *
+        FROM 
+        tb_goods
+        WHERE 
+        goods_id = #{goodsId}
+    </select>
+
     <insert id="insertGoods" parameterType="com.market.scms.entity.Goods">
         INSERT INTO
         tb_goods(goods_id,goods_name,goods_category_id,goods_brand,goods_specifications,

@@ -62,6 +62,12 @@ public interface SupermarketStaffMapper {
      */
     List<SupermarketStaff> queryStaffByCondition(@Param("staffCondition")SupermarketStaff staffCondition,
                                                  @Param("rowIndex") int rowIndex,@Param("pageSize") int pageSize);
-    
-    
+
+    /**
+     * 通过ID查询
+     * 
+     * @param staffId
+     * @return
+     */
+    SupermarketStaff queryById(int staffId);
 }

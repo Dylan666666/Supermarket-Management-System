@@ -1,6 +1,7 @@
 package com.market.scms.mapper;
 
 import com.market.scms.entity.Coupon;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -40,4 +41,13 @@ public interface CouponMapper {
      * @return
      */
     List<Coupon> queryByStaffId(int staffId);
+
+    /**
+     * 一键查询
+     * 
+     * @param rowIndex
+     * @param pageSize
+     * @return
+     */
+    List<Coupon> queryAll(@Param("rowIndex") int rowIndex, @Param("pageSize") int pageSize);
 }

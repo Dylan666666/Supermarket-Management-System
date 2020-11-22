@@ -5,6 +5,7 @@ import com.market.scms.enums.CouponStatusStateEnum;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.CouponMapper;
 import com.market.scms.service.CouponService;
+import com.market.scms.util.PageCalculator;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -83,6 +84,19 @@ public class CouponServiceImpl implements CouponService {
             }
         } else {
             throw new WareHouseManagerException("不具备查询条件");
+        }
+    }
+
+    @Override
+    public List<Coupon> queryAll(int pageIndex, int pageSize) throws WareHouseManagerException {
+        pageIndex = pageIndex >= 0 ? pageIndex : 0;
+        pageSize = pageSize > 0 ? pageSize : 100;
+        int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+        try {
+            List<Coupon> res = couponMapper.queryAll(rowIndex,  pageSize);
+            return res;
+        } catch (WareHouseManagerException e) {
+            throw new WareHouseManagerException("查询失败");
         }
     }
 }

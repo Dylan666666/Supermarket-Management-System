@@ -59,6 +59,9 @@ public class WareHouseManagerController {
     @Resource
     private SecondaryMenuService secondaryMenuService;
     
+    @Resource
+    private StaffService staffService;
+    
     @PostMapping("/showinventory")
     @ResponseBody
     @RequiresPermissions("/showinventory")
@@ -367,5 +370,77 @@ public class WareHouseManagerController {
         }
         return modelMap;
     }
-    
+
+    /**
+     * 3.8 订单信息
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/orderInformation")
+    @ResponseBody
+    @RequiresPermissions("/orderInformation")
+    public Map<String,Object> orderInformation(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 100;
+        }
+        try {
+            List<Coupon> couponList = couponService.queryAll(pageIndex, pageSize);
+            modelMap.put("couponList", couponList);
+            modelMap.put("couponCount", couponList.size());
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.9 订单信息 查看(订单详细信息)
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/orderInformation/orderdetails")
+    @ResponseBody
+    @RequiresPermissions("/orderInformation/orderdetails")
+    public Map<String,Object> orderdetails(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        Long couponId = HttpServletRequestUtil.getLong(request, "couponId");
+        try {
+            Coupon coupon = couponService.queryByCouponId(couponId);
+            if (coupon == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "查询失败");
+                return modelMap;
+            }
+            Goods goods = goodsService.queryById(coupon.getCouponGoodsId());
+            Unit unit = unitService.queryById(coupon.getCouponUnitId());
+            SupermarketStaff staff = staffService.queryById(coupon.getCouponStaffId()); 
+            if (goods == null || unit == null || staff == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "查询失败");
+                return modelMap;
+            }
+            GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+            modelMap.put("goods", goods);
+            modelMap.put("coupon", coupon);
+            modelMap.put("staff", staff);
+            modelMap.put("unit", unit);
+            modelMap.put("category", goodsCategory);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
+        return modelMap;
+    }
 }

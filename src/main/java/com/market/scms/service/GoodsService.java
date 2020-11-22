@@ -54,4 +54,12 @@ public interface GoodsService {
      * @return
      */
     int deleteGoods(Long goodsId);
+
+    /**
+     * 通过Id查询
+     * 
+     * @param goodsId
+     * @return
+     */
+    Goods queryById(Long goodsId);
 }
