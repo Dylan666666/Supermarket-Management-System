@@ -649,7 +649,9 @@ public class WareHouseManagerController {
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
-            
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
         }
         return modelMap;
     }
