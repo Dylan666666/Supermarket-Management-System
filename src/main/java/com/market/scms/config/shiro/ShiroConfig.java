@@ -82,9 +82,7 @@ public class ShiroConfig {
 
     /**
      * 将自己的验证方式加入容器
-     * create by: leigq
-     * create time: 2019/7/3 14:30
-     *
+     * 
      * @return MyShiroRealm
      */
     @Bean
@@ -96,9 +94,7 @@ public class ShiroConfig {
 
     /**
      * RedisSessionDAO shiro sessionDao层的实现 通过redis, 使用的是shiro-redis开源插件
-     * create by: leigq
-     * create time: 2019/7/3 14:30
-     *
+     * 
      * @return RedisSessionDAO
      */
     @Bean
@@ -112,11 +108,7 @@ public class ShiroConfig {
 
     /**
      * Session ID 生成器
-     * <br/>
-     * create by: leigq
-     * <br/>
-     * create time: 2019/7/3 16:08
-     *
+     * 
      * @return JavaUuidSessionIdGenerator
      */
     @Bean
@@ -126,9 +118,7 @@ public class ShiroConfig {
 
     /**
      * 自定义sessionManager
-     * create by: leigq
-     * create time: 2019/7/3 14:31
-     *
+     * 
      * @return SessionManager
      */
     @Bean
@@ -137,8 +127,7 @@ public class ShiroConfig {
         mySessionManager.setSessionDAO(redisSessionDAO());
         return mySessionManager;
     }
-
-//    @Value("${redis.hostname}")
+    
     private String host = "47.100.123.112:6379";
     @Value("${redis.port}")
     private int port;
@@ -147,11 +136,7 @@ public class ShiroConfig {
     
     /**
      * 配置shiro redisManager, 使用的是shiro-redis开源插件
-     * <br/>
-     * create by: leigq
-     * <br/>
-     * create time: 2019/7/3 14:33
-     *
+     * 
      * @return RedisManager
      */
     private RedisManager redisManager() {
@@ -164,11 +149,7 @@ public class ShiroConfig {
 
     /**
      * cacheManager 缓存 redis实现, 使用的是shiro-redis开源插件
-     * <br/>
-     * create by: leigq
-     * <br/>
-     * create time: 2019/7/3 14:33
-     *
+     * 
      * @return RedisCacheManager
      */
     @Bean
@@ -181,10 +162,8 @@ public class ShiroConfig {
     }
 
     /**
-     * create by: leigq
      * description: 权限管理，配置主要是Realm的管理认证
-     * create time: 2019/7/1 10:09
-     *
+     * 
      * @return SecurityManager
      */
     @Bean

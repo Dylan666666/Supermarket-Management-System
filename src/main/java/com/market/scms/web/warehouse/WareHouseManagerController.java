@@ -611,7 +611,47 @@ public class WareHouseManagerController {
             modelMap.put("errMsg", e.getMessage());
             return modelMap;
         }
-        
         return modelMap;
     }
+
+    /**
+     * 3.14 采购入库单 拒收
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchaselist/rejection")
+    @ResponseBody
+    @RequiresPermissions("/purchaselist/rejection")
+    public Map<String,Object> rejection(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        String exportBillId = HttpServletRequestUtil.getString(request, "exportBillId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (exportBillId == null || staffId <= 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
+        }
+        try {
+            ExportBill exportBill = exportBillService.queryByBillId(exportBillId);
+            if (exportBill == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该入库单不存在");
+                return modelMap;
+            }
+            exportBill.setExportBillStatus(ExportBillStatusStateEnum.WAREHOUSE_FAILURE.getState());
+            exportBill.setExportConfirmStaffId(staffId);
+            int res = exportBillService.update(exportBill);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "提交失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            
+        }
+        return modelMap;
+    }
+    
 }
