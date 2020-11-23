@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.DeliveryMapper">
+    <select id="queryByDeliveryId" resultType="com.market.scms.entity.Delivery">
+        SELECT 
+        *
+        FROM 
+        tb_delivery
+        WHERE 
+        delivery_id = #{deliveryId}
+    </select>
+
+    <select id="queryByGoodsId" resultType="com.market.scms.entity.Delivery">
+        SELECT 
+        *
+        FROM 
+        tb_delivery
+        WHERE 
+        delivery_stock_goods_id = #{deliveryStockGoodsId}
+    </select>
+
+    <insert id="insert" parameterType="com.market.scms.entity.Delivery">
+        INSERT INTO
+        tb_delivery(delivery_id,delivery_stock_goods_id,
+        delivery_price,delivery_num)
+        VALUES 
+        (#{deliveryId},#{deliveryStockGoodsId},#{deliveryPrice},#{deliveryNum})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.Delivery">
+        UPDATE
+        tb_delivery
+        <set>
+            <if test="deliveryPrice != null"> delivery_price = #{deliveryPrice},</if>
+            <if test="deliveryNum != null"> delivery_num = #{deliveryNum}</if>
+        </set>
+        WHERE
+        delivery_id = #{deliveryId}
+    </update>
+
+    <select id="queryAll" resultType="com.market.scms.entity.Delivery">
+        SELECT 
+        *
+        FROM 
+        tb_delivery
+        ORDER BY delivery_id DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+</mapper>

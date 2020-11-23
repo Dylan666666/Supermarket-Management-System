@@ -69,14 +69,19 @@ public class WareHouseManagerController {
         Map<String,Object> modelMap = new HashMap<>(16);
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
         if (pageIndex < 0) {
             pageIndex = 0;
         }
         if (pageSize <= 0) {
             pageSize = 100;
         }
+        if (secondaryMenuId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备请求条件，请求失败");
+            return modelMap;
+        }
         try {
-            int secondaryMenuId = secondaryMenuService.queryByUrl("/showinventory").getSecondaryMenuId();
             List<GoodsCategory> categoryList = goodsCategoryService.queryAll(); 
             List<Goods> goodsList = goodsService.queryByCondition(new Goods(), pageIndex, pageSize);
             List<GoodsStockA> goodsStockAList = new ArrayList<>(goodsList.size());
@@ -88,13 +93,10 @@ public class WareHouseManagerController {
                 goodsStockAList.add(goodsStockA);
             }
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
-//            Map<Integer, Object> functionMap =  new HashMap<>();
-//            for (Function function : functionList) {
-//                functionMap.put(function.getFunctionWeight(), function);
-//            }
             modelMap.put("success", true);
             modelMap.put("categoryList", categoryList);
             modelMap.put("goodsStockAList", goodsStockAList);
+            modelMap.put("recordSum", goodsList.size());
             modelMap.put("functionList", functionList);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
@@ -179,6 +181,12 @@ public class WareHouseManagerController {
         Map<String,Object> modelMap = new HashMap<>(16);
         String goodsStr = HttpServletRequestUtil.getString(request, "goods");
         String couponStr = HttpServletRequestUtil.getString(request, "coupon");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (staffId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "请求信息有误, 提交失败");
+            return modelMap;
+        }
         ObjectMapper mapper = new ObjectMapper();
         Goods goods = null;
         Coupon coupon = null;
@@ -211,6 +219,7 @@ public class WareHouseManagerController {
                     modelMap.put("errMsg", "补货失败");
                     return modelMap;
                 }
+                coupon.setCouponStaffId(staffId);
                 res = couponService.insert(coupon);
                 if (res == 0) {
                     modelMap.put("success",false);
@@ -299,6 +308,7 @@ public class WareHouseManagerController {
     @RequiresPermissions("/replenishmentapplication")
     public Map<String,Object> replenishmentApplication(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
         try {
             List<Goods> goodsList = goodsService.queryAll();
             List<GoodsCategory> goodsCategoryList = goodsCategoryService.queryAll();
@@ -321,6 +331,8 @@ public class WareHouseManagerController {
                 goodsStockB.setUnitName(unitMap.get(stock.getStockUnitId()));
                 goodsStockBList.add(goodsStockB);
             }
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            modelMap.put("functionList", functionList);
             modelMap.put("goodsStockBList", goodsStockBList);
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -344,6 +356,12 @@ public class WareHouseManagerController {
     public Map<String,Object> replenishmentCommit(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
         String couponStr = HttpServletRequestUtil.getString(request, "coupon");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (staffId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "传入信息有误,提交失败");
+            return modelMap;
+        }
         ObjectMapper mapper = new ObjectMapper();
         Coupon coupon = null;
         try {
@@ -362,6 +380,7 @@ public class WareHouseManagerController {
             couponService.insert(coupon);
             ExportBill exportBill = new ExportBill();
             exportBill.setExportBillCouponId(coupon.getCouponId());
+            exportBill.setExportConfirmStaffId(staffId);
             exportBillService.insert(exportBill, coupon.getCouponGoodsId());
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -385,6 +404,12 @@ public class WareHouseManagerController {
         Map<String,Object> modelMap = new HashMap<>(16);
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        if (secondaryMenuId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "传入信息有误，访问失败");
+            return modelMap;
+        }
         if (pageIndex < 0) {
             pageIndex = 0;
         }
@@ -392,7 +417,10 @@ public class WareHouseManagerController {
             pageSize = 100;
         }
         try {
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
             List<Coupon> couponList = couponService.queryAll(pageIndex, pageSize);
+            modelMap.put("functionList", functionList);
+            modelMap.put("recordSum", couponList.size());
             modelMap.put("couponList", couponList);
             modelMap.put("couponCount", couponList.size());
             modelMap.put("success", true);
@@ -459,6 +487,12 @@ public class WareHouseManagerController {
         Map<String,Object> modelMap = new HashMap<>(16);
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        if (secondaryMenuId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败");
+            return modelMap;
+        }
         if (pageIndex < 0) {
             pageIndex = 0;
         }
@@ -466,7 +500,10 @@ public class WareHouseManagerController {
             pageSize = 100;
         }
         try {
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
             List<ExportBill> exportBillList = exportBillService.queryAll(pageIndex, pageSize);
+            modelMap.put("functionList", functionList);
+            modelMap.put("recordSum", exportBillList.size());
             modelMap.put("success", true);
             modelMap.put("exportBillList", exportBillList);
             modelMap.put("exportBillCount", exportBillList.size());
@@ -653,6 +690,21 @@ public class WareHouseManagerController {
             modelMap.put("errMsg", e.getMessage());
             return modelMap;
         }
+        return modelMap;
+    }
+
+    /**
+     * 3.15 批发出库单
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/wholesaledeliverylist")
+    @ResponseBody
+    @RequiresPermissions("/wholesaledeliverylist")
+    public Map<String,Object> wholeSaleDeliveryList(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        
         return modelMap;
     }
     
