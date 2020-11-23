@@ -10,6 +10,9 @@ import java.util.List;
  * @Date: 2020/11/18 12:36
  */
 public interface GoodsService {
+
+    public final static String GOODS_LIST_KEY = "goodsList";
+    
     /**
      * 添加商品
      * 

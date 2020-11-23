@@ -95,5 +95,5 @@ public class RedisConfiguration {
         JedisUtil.Strings jedisStrings = jedisUtil.new Strings( );
         return jedisStrings;
     }
-
 }
+

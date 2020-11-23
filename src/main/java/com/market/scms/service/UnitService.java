@@ -9,6 +9,9 @@ import java.util.List;
  * @Date: 2020/11/18 13:48
  */
 public interface UnitService {
+
+    public final static String UNIT_LIST_KEY = "unitList";
+    
     /**
      * 查询销售单位列表
      *

@@ -1,16 +1,24 @@
 package com.market.scms.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.market.scms.cache.JedisUtil;
 import com.market.scms.dto.ImageHolder;
 import com.market.scms.entity.Goods;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.GoodsMapper;
+import com.market.scms.service.CacheService;
 import com.market.scms.service.GoodsService;
 import com.market.scms.util.ImageUtil;
 import com.market.scms.util.PageCalculator;
 import com.market.scms.util.PathUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,6 +30,15 @@ public class GoodsServiceImpl implements GoodsService {
     
     @Resource
     private GoodsMapper goodsMapper;
+
+    @Resource
+    private JedisUtil.Keys jedisKeys;
+    @Resource
+    private JedisUtil.Strings jedisStrings;
+    @Resource
+    private CacheService cacheService;
+
+    private static Logger logger = LoggerFactory.getLogger(GoodsServiceImpl.class);
     
     @Override
     public int insertGoods(Goods goods, ImageHolder thumbnail) throws WareHouseManagerException {
@@ -37,6 +54,7 @@ public class GoodsServiceImpl implements GoodsService {
                 if (res == 0) {
                     throw new WareHouseManagerException("创建商品失败");
                 }
+                cacheService.removeFromCache(GOODS_LIST_KEY);
                 return res;
             } catch (WareHouseManagerException e) {
                 throw new WareHouseManagerException("创建商品失败");
@@ -61,9 +79,10 @@ public class GoodsServiceImpl implements GoodsService {
                     addThumbnail(goods, thumbnail);
                 }
                 int res = goodsMapper.updateGoods(goods);
-                if (res != 1) {
+                if (res == 0) {
                     throw new WareHouseManagerException("更新商品失败");
                 }
+                cacheService.removeFromCache(GOODS_LIST_KEY);
                 return res;
             } catch (WareHouseManagerException e) {
                 throw new WareHouseManagerException("更新商品失败");
@@ -75,12 +94,32 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public List<Goods> queryAll() throws WareHouseManagerException {
-        try {
-            List<Goods> res = goodsMapper.queryAll();
-            return res;
-        } catch (WareHouseManagerException e) {
-            throw new WareHouseManagerException("查询失败");
+        String key = GOODS_LIST_KEY;
+        ObjectMapper mapper = new ObjectMapper();
+        List<Goods> res = null;
+        if (!jedisKeys.exists(key)) {
+            res = goodsMapper.queryAll();
+            String jsonString = null;
+            try {
+                jsonString = mapper.writeValueAsString(res);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
+                throw new WareHouseManagerException("查询商品失败");
+            }
+            jedisStrings.set(key, jsonString);
+        } else {
+            String jsonString = jedisStrings.get(key);
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, Goods.class);
+            try {
+                res = mapper.readValue(jsonString, javaType);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
+                throw new WareHouseManagerException("查询商品失败");
+            }
         }
+        return res;
     }
 
     @Override
@@ -108,6 +147,7 @@ public class GoodsServiceImpl implements GoodsService {
                 if (res == 0) {
                     throw new WareHouseManagerException("删除失败");
                 }
+                cacheService.removeFromCache(GOODS_LIST_KEY);
                 return res;
             } else {
                 throw new WareHouseManagerException("不具备删除条件");

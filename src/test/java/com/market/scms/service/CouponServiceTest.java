@@ -18,6 +18,8 @@ public class CouponServiceTest {
 
     @Resource
     private CouponService couponService;
+    @Resource
+    private CacheService cacheService;
     
     @Test
     public void insert() {
@@ -27,6 +29,12 @@ public class CouponServiceTest {
         coupon.setCouponNum(1000);
         coupon.setCouponStaffId(26);
         System.out.println(couponService.insert(coupon));
+    }
+    
+    @Test
+    public void query() {
+        cacheService.removeFromCache("");
+        System.out.println(couponService.queryAll(0 ,10).get(0).getCouponNum());
     }
     
 }

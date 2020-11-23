@@ -10,6 +10,9 @@ import java.util.List;
  * @Date: 2020/11/18 17:01
  */
 public interface CouponService {
+
+    public final static String COUPON_LIST_KEY = "couponList";
+    
     /**
      * 添加订货单
      *

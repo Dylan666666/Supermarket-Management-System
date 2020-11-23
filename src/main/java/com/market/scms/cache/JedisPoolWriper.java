@@ -34,5 +34,4 @@ public class JedisPoolWriper {
     public void setJedisPool(JedisPool jedisPool) {
         this.jedisPool = jedisPool;
     }
-    
 }

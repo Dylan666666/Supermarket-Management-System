@@ -17,8 +17,8 @@
     <properties>
         <java.version>11</java.version>
         <commons-collections4.version>4.1</commons-collections4.version>
-        <shiro-spring.version>1.7.0</shiro-spring.version>
-        <shiro-redis.version>3.2.3</shiro-redis.version>
+        <shiro-spring.version>1.4.0</shiro-spring.version>
+        <shiro-redis.version>3.1.0</shiro-redis.version>
     </properties>
 
     <dependencies>
@@ -94,7 +94,12 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>3.2.0</version>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <!-- junit测试 -->
         <dependency>

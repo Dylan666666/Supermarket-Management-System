@@ -9,6 +9,11 @@ import java.util.List;
  * @Date: 2020/11/18 16:26
  */
 public interface GoodsCategoryService {
+
+    public final static String GOODS_CATEGORY_KEY = "goodsCategoryList";
+    
+    
+    
     /**
      * 查询销售单位列表
      *

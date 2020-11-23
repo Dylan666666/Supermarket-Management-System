@@ -497,21 +497,18 @@ public class WareHouseManagerController {
         }
         try {
             ExportBill exportBill = exportBillService.queryByBillId(exportBillId);
-            System.out.println(exportBill);
             if (exportBill == null) {
                 modelMap.put("success", false);
                 modelMap.put("errMsg", "传入信息有误，查询失败");
                 return modelMap;
             }
             Coupon coupon = couponService.queryByCouponId(exportBill.getExportBillCouponId());
-            System.out.println(coupon);
             if (coupon == null) {
                 modelMap.put("success", false);
                 modelMap.put("errMsg", "传入信息有误，查询失败");
                 return modelMap;
             }
             Goods goods = goodsService.queryById(coupon.getCouponGoodsId());
-            System.out.println(goods);
             if (goods == null) {
                 modelMap.put("success", false);
                 modelMap.put("errMsg", "传入信息有误，查询失败");
@@ -572,6 +569,49 @@ public class WareHouseManagerController {
             modelMap.put("errMsg", e.getMessage());
             return modelMap;
         }
+        return modelMap;
+    }
+
+    /**
+     * 3.13 采购入库单 确认（入库）
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchaselist/confirm")
+    @ResponseBody
+    @RequiresPermissions("/purchaselist/confirm")
+    public Map<String,Object> confirm(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        String exportBillId = HttpServletRequestUtil.getString(request, "exportBillId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (exportBillId == null || staffId <= 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
+        }
+        try {
+            ExportBill exportBill = exportBillService.queryByBillId(exportBillId);
+            if (exportBill == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该入库单不存在");
+                return modelMap;
+            }
+            exportBill.setExportBillStatus(ExportBillStatusStateEnum.TO_STOCK.getState());
+            exportBill.setExportConfirmStaffId(staffId);
+            int res = exportBillService.update(exportBill);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "提交失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
+        
         return modelMap;
     }
 }

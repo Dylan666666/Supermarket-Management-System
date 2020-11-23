@@ -9,6 +9,9 @@ import java.util.List;
  * @Date: 2020/11/18 22:04
  */
 public interface StockService {
+
+    public final static String STOCK_LIST_KEY = "stockList";
+    
     /**
      * 添加库存
      *

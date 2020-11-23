@@ -9,6 +9,9 @@ import java.util.List;
  * @Date: 2020/11/18 20:09
  */
 public interface ExportBillService {
+
+    public final static String EXPORT_BILL_KEY = "exportBillList";
+    
     /**
      * 生成入库单
      * 
