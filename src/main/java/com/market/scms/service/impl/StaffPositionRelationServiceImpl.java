@@ -70,7 +70,17 @@ public class StaffPositionRelationServiceImpl implements StaffPositionRelationSe
             throw new SupermarketStaffException("更改状态失败");
         }
     }
-    
+
+    @Override
+    public List<StaffPositionRelation> queryAll() throws SupermarketStaffException {
+        try {
+            List<StaffPositionRelation> res = mapper.queryAll();
+            return res;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("查询职工职位失败");
+        }
+    }
+
     private void isNull(StaffPositionRelation relation) {
         if (relation == null) {
             throw new SupermarketStaffException("传入信息为空");

@@ -42,5 +42,11 @@ public interface StaffPositionRelationMapper {
      * @return
      */
     int update(StaffPositionRelation staffPositionRelation);
-    
+
+    /**
+     * 一键查询
+     * 
+     * @return
+     */
+    List<StaffPositionRelation> queryAll();
 }

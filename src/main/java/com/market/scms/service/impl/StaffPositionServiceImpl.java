@@ -7,6 +7,7 @@ import com.market.scms.service.StaffPositionService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Author: Mr_OO
@@ -68,7 +69,17 @@ public class StaffPositionServiceImpl implements StaffPositionService {
             throw new SupermarketStaffException("更改失败");
         }
     }
-    
+
+    @Override
+    public List<StaffPosition> queryAll() throws SupermarketStaffException {
+        try {
+            List<StaffPosition> staffPositionList = staffPositionMapper.queryAll();
+            return staffPositionList;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("查询职位字典失败");
+        }
+    }
+
     private void isNull(StaffPosition position) {
         if (position == null) {
             throw new SupermarketStaffException("传入信息为空");

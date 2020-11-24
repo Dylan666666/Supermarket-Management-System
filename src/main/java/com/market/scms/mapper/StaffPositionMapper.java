@@ -2,6 +2,8 @@ package com.market.scms.mapper;
 
 import com.market.scms.entity.staff.StaffPosition;
 
+import java.util.List;
+
 /**
  * @Author: Mr_OO
  * @Date: 2020/11/9 21:35
@@ -39,6 +41,11 @@ public interface StaffPositionMapper {
      * @return
      */
     int update(StaffPosition position);
-    
-    
+
+    /**
+     * 一键查询
+     * 
+     * @return
+     */
+    List<StaffPosition> queryAll();
 }

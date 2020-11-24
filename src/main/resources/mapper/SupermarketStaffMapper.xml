@@ -27,12 +27,13 @@
         tb_staff
         <set>
             <if test="staffPassword != null"> staff_password = #{staffPassword},</if>
+            <if test="staffPhone != null"> staff_phone = #{staffPhone},</if>
             <if test="staffName != null"> staff_name = #{staffName},</if>
             <if test="staffStatus != null"> staff_status = #{staffStatus},</if>
             <if test="lastEditTime != null"> last_edit_time = #{lastEditTime},</if>
             <if test="token != null"> staff_token = #{token},</if>
             <if test="loginTime != null"> staff_login_time = #{loginTime},</if>
-            <if test="expireTime != null"> staff_expire_time = #{expireTime}</if>
+            <if test="expireTime != null"> staff_expire_time = #{expireTime},</if>
             <if test="salt != null"> salt = #{salt}</if>
         </set>
         WHERE 

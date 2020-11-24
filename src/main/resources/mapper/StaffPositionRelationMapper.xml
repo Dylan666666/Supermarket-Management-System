@@ -39,4 +39,11 @@
         staff_position_id = #{staffPositionId}
     </update>
 
+    <select id="queryAll" resultType="com.market.scms.entity.staff.StaffPositionRelation">
+        SELECT 
+        *
+        FROM 
+        tb_staff_position_relation
+    </select>
+    
 </mapper>

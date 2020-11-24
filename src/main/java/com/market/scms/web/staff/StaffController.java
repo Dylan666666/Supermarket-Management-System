@@ -1,7 +1,10 @@
 package com.market.scms.web.staff;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.bean.StaffA;
+import com.market.scms.entity.Coupon;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.entity.staff.*;
 import com.market.scms.exceptions.SupermarketStaffException;
@@ -45,6 +48,9 @@ public class StaffController {
     
     @Resource
     private StaffPositionRelationService staffPositionRelationService;
+    
+    @Resource
+    private StaffPositionService staffPositionService;
     
     @PostMapping("/staff/insert")
     @ResponseBody
@@ -166,6 +172,14 @@ public class StaffController {
         try {
             SupermarketStaff staff = new SupermarketStaff();
             BeanUtils.copyProperties(staffA, staff);
+            if (staff.getStaffPhone() != null) {
+                SupermarketStaff cur = staffService.queryStaffByPhone(staff.getStaffPhone());
+                if (cur != null) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "该手机号已被注册，信息更改失败");
+                    return modelMap;
+                }
+            }
             //更改职工信息
             int res = staffService.updateStaff(staff);
             if (res == 0) {
@@ -328,4 +342,81 @@ public class StaffController {
         return modelMap;
     }
     
+    /**
+     * 1.5超级管理员 用户列表 角色分配
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stafflist/positiondistribution")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stafflist/positiondistribution")
+    public Map<String,Object> positionDistribution(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        try {
+            List<StaffPosition> staffPositionList = staffPositionService.queryAll();
+            List<StaffPositionRelation> staffPositionRelationList = staffPositionRelationService.queryAll();
+            modelMap.put("staffPositionList", staffPositionList);
+            modelMap.put("staffPositionRelationList", staffPositionRelationList);
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 1.6超级管理员 用户列表 角色分配提交
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stafflist/positiondistributioncommit")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stafflist/positiondistributioncommit")
+    public Map<String,Object> positionDistributionCommit(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        String staffPositionRelationListStr = HttpServletRequestUtil.getString(request, "staffPositionRelationList");
+        if (staffPositionRelationListStr == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "信息为空，提交失败");
+            return modelMap;
+        }
+        List<StaffPositionRelation> staffPositionRelationList = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JavaType javaType = mapper.getTypeFactory()
+                    .constructParametricType(ArrayList.class, StaffPositionRelation.class);
+            try {
+                staffPositionRelationList = mapper.readValue(staffPositionRelationListStr, javaType);
+            } catch (JsonProcessingException e) {
+                throw new SupermarketStaffException("");
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "传入信息有误，提交失败");
+            return modelMap;
+        }
+        //执行职位更改逻辑
+        try {
+            for (StaffPositionRelation relation : staffPositionRelationList) {
+                int res = staffPositionRelationService.update(relation);
+                if (res == 0) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "提交失败");
+                    return modelMap;
+                }
+            }
+            
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
+        return modelMap;
+    }
 }
