@@ -17,7 +17,6 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -49,7 +48,6 @@ public class MyShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-
         //也就是SimpleAuthenticationInfo构造的时候第一个参数传递需要staff对象
         SupermarketStaff staff = (SupermarketStaff) principalCollection.getPrimaryPrincipal();
             

@@ -50,7 +50,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**", "authc");
 
         // 配置退出 过滤器,其中的具体的退出代码Shiro已经替我们实现了, 位置放在 anon、authc下面
-        filterChainDefinitionMap.put("/staff/logout", "logout");
+        filterChainDefinitionMap.put("/logout", "logout");
 
         // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
         // 配器shiro认登录地址，前后端分离中登录累面跳转应由前端路由控制，后台仅返回json数据, 对应LoginController中unAuth请求
