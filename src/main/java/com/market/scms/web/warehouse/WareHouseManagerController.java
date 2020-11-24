@@ -6,6 +6,7 @@ import com.market.scms.bean.GoodsStockB;
 import com.market.scms.dto.ImageHolder;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.Function;
+import com.market.scms.enums.DeliveryStatusStateEnum;
 import com.market.scms.enums.ExportBillStatusStateEnum;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
@@ -725,7 +726,18 @@ public class WareHouseManagerController {
         }
         try {
            List<DeliveryRecord> deliveryRecordList = deliveryRecordService.queryAll(pageIndex, pageSize);
-           
+           List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+           List<SupermarketStaff> supermarketStaffList = staffService
+                   .queryStaffByCondition(new SupermarketStaff(), 0, 100);
+           Map<Integer, String> staffMap = new HashMap<>(supermarketStaffList.size());
+            for (SupermarketStaff staff : supermarketStaffList) {
+                staffMap.put(staff.getStaffId(), staff.getStaffName());
+            }
+            modelMap.put("deliveryRecordList", deliveryRecordList);
+            modelMap.put("functionList", functionList);
+            modelMap.put("staffMap", staffMap);
+            modelMap.put("recordSum", deliveryRecordList.size());
+            modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
@@ -733,5 +745,86 @@ public class WareHouseManagerController {
         }
         return modelMap;
     }
-    
+
+    /**
+     * 3.16 批发出库单 确认出库
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/wholesaledeliverylist/confirmwarehousing")
+    @ResponseBody
+    @RequiresPermissions("/wholesaledeliverylist/confirmwarehousing")
+    public Map<String,Object> confirmWarehousing(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        Long staffId = HttpServletRequestUtil.getLong(request, "staffId");
+        String deliveryId = HttpServletRequestUtil.getString(request, "deliveryId");
+        if (staffId < 0 || deliveryId == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "传入信息有误，提交失败");
+            return modelMap;
+        }
+        try {
+            DeliveryRecord deliveryRecord = deliveryRecordService.queryByDeliveryId(deliveryId);
+            if (deliveryRecord == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "传入信息有误，提交失败");
+                return modelMap;
+            }
+            deliveryRecord.setDeliveryLaunchedStaffId(staffId);
+            deliveryRecord.setDeliveryStatus(DeliveryStatusStateEnum.SUCCESS.getState());
+            int res = deliveryRecordService.update(deliveryRecord);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "提交入库失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.17 批发出库单 查看
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/wholesaledeliverylist/warehousingdetails")
+    @ResponseBody
+    @RequiresPermissions("/wholesaledeliverylist/warehousingdetails")
+    public Map<String,Object> warehousingDetails(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String deliveryId = HttpServletRequestUtil.getString(request, "deliveryId");
+        if (deliveryId == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "传入信息有误，查看失败");
+            return modelMap;
+        }
+        try {
+            Delivery delivery = deliveryService.queryByDeliveryId(deliveryId);
+            if (delivery == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "传入信息有误，查看失败");
+                return modelMap;
+            }
+            Stock stock = stockService.queryByGoodsId(delivery.getDeliveryStockGoodsId());
+            Goods goods = goodsService.queryById(delivery.getDeliveryStockGoodsId());
+            
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败");
+            return modelMap;
+        }
+        
+        return modelMap;
+    }
 }
