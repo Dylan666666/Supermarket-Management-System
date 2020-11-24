@@ -288,8 +288,9 @@ public class StaffController {
                 BeanUtils.copyProperties(staff, staffA);
                 staffAList.add(staffA);
             }
+            int recordSum = staffService.countStaffAll();
             modelMap.put("staffAList", staffAList);
-            modelMap.put("recordSum", staffAList.size());
+            modelMap.put("recordSum", recordSum);
             if (pageIndex == 0) {
                 SecondaryMenu secondaryMenu = secondaryMenuService.queryByUrl("/stafflist");
                 List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenu.getSecondaryMenuId());

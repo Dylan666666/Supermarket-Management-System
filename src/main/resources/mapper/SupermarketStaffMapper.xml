@@ -109,4 +109,11 @@
         staff_id = #{staffId}
     </delete>
     
+    <select id="countStaffAll" resultType="int">
+        SELECT 
+        count(1)
+		FROM 
+		tb_staff
+    </select>
+    
 </mapper>

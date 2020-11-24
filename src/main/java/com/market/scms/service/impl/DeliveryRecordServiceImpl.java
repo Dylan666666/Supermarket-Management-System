@@ -92,9 +92,9 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
 
     @Override
     public List<DeliveryRecord> queryAll(int pageIndex, int pageSize) throws WareHouseManagerException {
-        String key = DELIVERY_RECORD_LIST_KEY;
+        String key = DELIVERY_RECORD_LIST_KEY + pageIndex + pageSize;
         pageIndex = pageIndex >= 0 ? pageIndex : 0;
-        pageSize = pageSize > 0 ? pageSize : 100;
+        pageSize = pageSize > 0 ? pageSize : 10000;
         int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
         List<DeliveryRecord> res = null;
         ObjectMapper mapper = new ObjectMapper();

@@ -108,9 +108,9 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public List<Coupon> queryAll(int pageIndex, int pageSize) throws WareHouseManagerException {
-        String key = COUPON_LIST_KEY;
+        String key = COUPON_LIST_KEY + pageIndex + pageSize;
         pageIndex = pageIndex >= 0 ? pageIndex : 0;
-        pageSize = pageSize > 0 ? pageSize : 100;
+        pageSize = pageSize > 0 ? pageSize : 10000;
         int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
         List<Coupon> res = null;
         ObjectMapper mapper = new ObjectMapper();

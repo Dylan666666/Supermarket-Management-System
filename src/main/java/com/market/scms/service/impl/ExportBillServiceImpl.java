@@ -121,9 +121,9 @@ public class ExportBillServiceImpl implements ExportBillService {
 
     @Override
     public List<ExportBill> queryAll(int pageIndex, int pageSize) throws WareHouseManagerException {
-        String key = EXPORT_BILL_KEY;
+        String key = EXPORT_BILL_KEY + pageIndex + pageSize;
         pageIndex = pageIndex >= 0 ? pageIndex : 0;
-        pageSize = pageSize > 0 ? pageSize : 100;
+        pageSize = pageSize > 0 ? pageSize : 10000;
         int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
         List<ExportBill> res = null;
         ObjectMapper mapper = new ObjectMapper();

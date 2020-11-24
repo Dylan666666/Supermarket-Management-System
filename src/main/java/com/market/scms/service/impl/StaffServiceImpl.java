@@ -1,10 +1,16 @@
 package com.market.scms.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.market.scms.cache.JedisUtil;
 import com.market.scms.entity.staff.StaffPositionRelation;
+import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.*;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
+import com.market.scms.service.CacheService;
 import com.market.scms.service.StaffService;
 import com.market.scms.util.PageCalculator;
 import com.market.scms.util.PasswordHelper;
@@ -15,9 +21,12 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +42,15 @@ public class StaffServiceImpl implements StaffService {
     
     @Resource
     private StaffPositionRelationMapper staffPositionRelationMapper;
+
+    @Resource
+    private JedisUtil.Keys jedisKeys;
+    @Resource
+    private JedisUtil.Strings jedisStrings;
+    @Resource
+    private CacheService cacheService;
+
+    private static Logger logger = LoggerFactory.getLogger(CouponServiceImpl.class);
     
     @Override
     public SupermarketStaff queryStaffByPhone(String staffPhone) throws SupermarketStaffException {
@@ -65,6 +83,7 @@ public class StaffServiceImpl implements StaffService {
                 if (res == 0) {
                     throw new SupermarketStaffException("注册失败");
                 }
+                cacheService.removeFromCache(STAFF_LIST_KEY);
                 return res;
             } catch (SupermarketStaffException e) {
                 throw new SupermarketStaffException("注册失败");
@@ -83,6 +102,7 @@ public class StaffServiceImpl implements StaffService {
                 if (res == 0) {
                     throw new SupermarketStaffException("信息更改失败");
                 }
+                cacheService.removeFromCache(STAFF_LIST_KEY);
                 return res;
             } catch (SupermarketStaffException e) {
                 throw new SupermarketStaffException("信息更改失败");
@@ -164,17 +184,48 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public List<SupermarketStaff> queryStaffByCondition(SupermarketStaff staffCondition, int pageIndex, int pageSize)
             throws SupermarketStaffException{
-        if (staffCondition != null && pageIndex != -1000 && pageSize != -1000) {
-            try {
-                int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
-                List<SupermarketStaff> list = staffMapper.queryStaffByCondition(staffCondition, rowIndex, pageSize);
-                return list;
-            } catch (SupermarketStaffException staffException) {
-                throw new SupermarketStaffException("查询失败");
+        if (staffCondition == null) {
+            throw new WareHouseManagerException("传入信息为空，查询失败");
+        }
+        String key = STAFF_LIST_KEY + pageIndex + pageSize;
+        pageIndex = pageIndex >= 0 ? pageIndex : 0;
+        pageSize = pageSize > 0 ? pageSize : 10000;
+        int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+        List<SupermarketStaff> res = null;
+        ObjectMapper mapper = new ObjectMapper();
+        if (pageIndex == 0) {
+            if (!jedisKeys.exists(key)) {
+                res = staffMapper.queryStaffByCondition(staffCondition, rowIndex, pageSize);
+                String jsonString = null;
+                try {
+                    jsonString = mapper.writeValueAsString(res);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                    logger.error(e.getMessage());
+                    throw new WareHouseManagerException("查询失败");
+                }
+                jedisStrings.set(key, jsonString);
+            } else {
+                String jsonString = jedisStrings.get(key);
+                JavaType javaType = mapper.getTypeFactory()
+                        .constructParametricType(ArrayList.class, SupermarketStaff.class);
+                try {
+                    res = mapper.readValue(jsonString, javaType);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                    logger.error(e.getMessage());
+                    throw new WareHouseManagerException("查询失败");
+                }
             }
         } else {
-            throw new SupermarketStaffException("信息不足，查询失败");
+            try {
+                res = staffMapper.queryStaffByCondition(staffCondition, rowIndex, pageSize);
+                return res;
+            } catch (WareHouseManagerException e) {
+                throw new WareHouseManagerException("查询失败");
+            }
         }
+        return res;
     }
 
     @Override
@@ -186,8 +237,12 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public SupermarketStaff queryById(int staffId) throws SupermarketStaffException {
         if (staffId > 0) {
-            SupermarketStaff staff = staffMapper.queryById(staffId);
-            return staff;
+            try {
+                SupermarketStaff staff = staffMapper.queryById(staffId);
+                return staff;
+            } catch (SupermarketStaffException e) {
+                throw new SupermarketStaffException("查询职工信息失败");
+            }
         } else {
             throw new SupermarketStaffException("查询职工信息失败");
         }
@@ -196,10 +251,28 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public int deleteStaff(int staffId) throws SupermarketStaffException {
         if (staffId > 0) {
-            int res = staffMapper.deleteStaff(staffId);
-            return res;
+            try {
+                int res = staffMapper.deleteStaff(staffId);
+                if (res == 0) {
+                    throw new SupermarketStaffException("删除职工失败");
+                }
+                cacheService.removeFromCache(STAFF_LIST_KEY);
+                return res;
+            } catch (SupermarketStaffException e) {
+                throw new SupermarketStaffException("删除职工失败");
+            }
         } else {
             throw new SupermarketStaffException("删除职工失败");
+        }
+    }
+
+    @Override
+    public int countStaffAll() throws SupermarketStaffException {
+        try {
+            int res = staffMapper.countStaffAll();
+            return res;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("查询职工数量失败");
         }
     }
 }

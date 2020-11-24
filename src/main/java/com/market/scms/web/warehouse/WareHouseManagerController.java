@@ -67,7 +67,13 @@ public class WareHouseManagerController {
     
     @Resource
     private DeliveryRecordService deliveryRecordService;
-    
+
+    /**
+     * 3.1库房管理员 查库存
+     * 
+     * @param request
+     * @return
+     */
     @PostMapping("/showinventory")
     @ResponseBody
     @RequiresPermissions("/showinventory")
@@ -90,6 +96,7 @@ public class WareHouseManagerController {
         try {
             List<GoodsCategory> categoryList = goodsCategoryService.queryAll(); 
             List<Goods> goodsList = goodsService.queryByCondition(new Goods(), pageIndex, pageSize);
+            List<Goods> goodsList2 = goodsService.queryByCondition(new Goods(), 0, 10000);
             List<GoodsStockA> goodsStockAList = new ArrayList<>(goodsList.size());
             for (Goods goods : goodsList) {
                 GoodsStockA goodsStockA = new GoodsStockA();
@@ -102,7 +109,7 @@ public class WareHouseManagerController {
             modelMap.put("success", true);
             modelMap.put("categoryList", categoryList);
             modelMap.put("goodsStockAList", goodsStockAList);
-            modelMap.put("recordSum", goodsList.size());
+            modelMap.put("recordSum", goodsList2.size());
             modelMap.put("functionList", functionList);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
@@ -113,7 +120,7 @@ public class WareHouseManagerController {
     }
 
     /**
-     * 修改库存
+     * 3.2 修改库存
      * 
      * @param request
      * @return
@@ -150,7 +157,7 @@ public class WareHouseManagerController {
     }
 
     /**
-     * 新货补充
+     * 3.3 新货补充
      *
      * @param request
      * @return
@@ -425,8 +432,9 @@ public class WareHouseManagerController {
         try {
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
             List<Coupon> couponList = couponService.queryAll(pageIndex, pageSize);
+            List<Coupon> couponList2 = couponService.queryAll(0, 10000);
             modelMap.put("functionList", functionList);
-            modelMap.put("recordSum", couponList.size());
+            modelMap.put("recordSum", couponList2.size());
             modelMap.put("couponList", couponList);
             modelMap.put("couponCount", couponList.size());
             modelMap.put("success", true);
@@ -508,8 +516,9 @@ public class WareHouseManagerController {
         try {
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
             List<ExportBill> exportBillList = exportBillService.queryAll(pageIndex, pageSize);
+            List<ExportBill> exportBillList2 = exportBillService.queryAll(0, 10000);
             modelMap.put("functionList", functionList);
-            modelMap.put("recordSum", exportBillList.size());
+            modelMap.put("recordSum", exportBillList2.size());
             modelMap.put("success", true);
             modelMap.put("exportBillList", exportBillList);
             modelMap.put("exportBillCount", exportBillList.size());
@@ -726,6 +735,7 @@ public class WareHouseManagerController {
         }
         try {
            List<DeliveryRecord> deliveryRecordList = deliveryRecordService.queryAll(pageIndex, pageSize);
+           List<DeliveryRecord> deliveryRecordList2 = deliveryRecordService.queryAll(0, 10000);
            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
            List<SupermarketStaff> supermarketStaffList = staffService
                    .queryStaffByCondition(new SupermarketStaff(), 0, 100);
@@ -736,7 +746,7 @@ public class WareHouseManagerController {
             modelMap.put("deliveryRecordList", deliveryRecordList);
             modelMap.put("functionList", functionList);
             modelMap.put("staffMap", staffMap);
-            modelMap.put("recordSum", deliveryRecordList.size());
+            modelMap.put("recordSum", deliveryRecordList2.size());
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);

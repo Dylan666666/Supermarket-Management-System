@@ -9,6 +9,9 @@ import java.util.List;
  * @Date: 2020/11/2 14:15
  */
 public interface StaffService {
+
+    public final static String STAFF_LIST_KEY = "staffList";
+    
     /**
      * 通过电话号码查询职工信息
      *
@@ -84,5 +87,12 @@ public interface StaffService {
      * @return
      */
     int deleteStaff(int staffId);
+
+    /**
+     * 查的用户总数
+     *
+     * @return
+     */
+    int countStaffAll();
     
 }

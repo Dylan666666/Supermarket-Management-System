@@ -78,4 +78,11 @@ public interface SupermarketStaffMapper {
      * @return
      */
     int deleteStaff(int staffId);
+
+    /**
+     * 查的用户总数
+     * 
+     * @return
+     */
+    int countStaffAll();
 }
