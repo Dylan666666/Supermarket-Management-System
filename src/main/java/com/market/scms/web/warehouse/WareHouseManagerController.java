@@ -61,6 +61,12 @@ public class WareHouseManagerController {
     @Resource
     private StaffService staffService;
     
+    @Resource
+    private DeliveryService deliveryService;
+    
+    @Resource
+    private DeliveryRecordService deliveryRecordService;
+    
     @PostMapping("/showinventory")
     @ResponseBody
     @RequiresPermissions("/showinventory")
@@ -718,7 +724,8 @@ public class WareHouseManagerController {
             pageSize = 100;
         }
         try {
-            
+           List<DeliveryRecord> deliveryRecordList = deliveryRecordService.queryAll(pageIndex, pageSize);
+           
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());

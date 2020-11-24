@@ -126,6 +126,9 @@ public class StaffController {
                         }
                     }
                 }
+                StaffA staffA1 = new StaffA();
+                BeanUtils.copyProperties(staff, staffA1);
+                modelMap.put("staffA", staffA1);
                 modelMap.put("staffToken", staff.getToken());
                 modelMap.put("primaryMenuList", primaryMenuList);
                 modelMap.put("secondaryMenuList", secondaryMenuList);
@@ -133,6 +136,10 @@ public class StaffController {
             } catch (SupermarketStaffException staffException) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", staffException.getMessage());
+                return modelMap;
+            } catch (Exception e) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "登录失败");
                 return modelMap;
             }
         } else {

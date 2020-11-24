@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.cache.JedisUtil;
-import com.market.scms.entity.Coupon;
 import com.market.scms.entity.Delivery;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.DeliveryMapper;
