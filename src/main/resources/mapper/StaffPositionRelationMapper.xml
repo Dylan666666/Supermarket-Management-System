@@ -24,19 +24,18 @@
         tb_staff_position_relation
         WHERE 
         staff_id = #{staffId}
-        AND 
-        staff_position_id = #{staffPositionId}
     </delete>
 
     <update id="update" parameterType="com.market.scms.entity.staff.StaffPositionRelation">
         UPDATE
         tb_staff_position_relation
-        SET 
-        staff_position_status = #{staffPositionStatus}
+        SET
+        <set>
+            <if test="staffPositionStatus != null"> staff_position_status = #{staffPositionStatus},</if>
+            <if test="staffPositionId != null"> staff_position_id = #{staffPositionId}</if>
+        </set>
         WHERE
         staff_id = #{staffId}
-        AND 
-        staff_position_id = #{staffPositionId}
     </update>
 
     <select id="queryAll" resultType="com.market.scms.entity.staff.StaffPositionRelation">
