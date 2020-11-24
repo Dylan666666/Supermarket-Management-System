@@ -62,4 +62,9 @@ public class SupermarketStaffMapperTest {
         }
     }
     
+    @Test
+    public void delete() {
+        System.out.println(supermarketStaffMapper.deleteStaff(25));
+    }
+    
 }

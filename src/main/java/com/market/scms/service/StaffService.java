@@ -76,6 +76,13 @@ public interface StaffService {
      * @return
      */
     SupermarketStaff queryById(int staffId);
-    
+
+    /**
+     * 1.4超级管理员 用户列表 删除
+     *
+     * @param staffId
+     * @return
+     */
+    int deleteStaff(int staffId);
     
 }

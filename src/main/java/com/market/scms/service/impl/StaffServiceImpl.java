@@ -192,4 +192,14 @@ public class StaffServiceImpl implements StaffService {
             throw new SupermarketStaffException("查询职工信息失败");
         }
     }
+
+    @Override
+    public int deleteStaff(int staffId) throws SupermarketStaffException {
+        if (staffId > 0) {
+            int res = staffMapper.deleteStaff(staffId);
+            return res;
+        } else {
+            throw new SupermarketStaffException("删除职工失败");
+        }
+    }
 }

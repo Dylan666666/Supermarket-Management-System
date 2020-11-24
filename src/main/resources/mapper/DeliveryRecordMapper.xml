@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.DeliveryRecordMapper">
+
+    <insert id="insert" parameterType="com.market.scms.entity.DeliveryRecord">
+        INSERT INTO
+        tb_delivery_record(delivery_id,delivery_paid,delivery_status,delivery_launched_staff_id,
+        delivery_check_out_status,delivery_refund_status,delivery_create_date)
+        VALUES 
+        (#{deliveryId},#{deliveryPaid},#{deliveryStatus},#{deliveryLaunchedStaffId},
+        #{deliveryCheckOutStatus},#{deliveryRefundStatus},#{deliveryCreateDate})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.DeliveryRecord">
+        UPDATE
+        tb_delivery_record
+        <set>
+            <if test="deliveryPaid != null"> delivery_paid = #{deliveryPaid},</if>
+            <if test="deliveryStatus != null"> delivery_status = #{deliveryStatus},</if>
+            <if test="deliveryLaunchedStaffId != null"> delivery_launched_staff_id = #{deliveryLaunchedStaffId},</if>
+            <if test="deliveryHandleStaffId != null"> delivery_handle_staff_id = #{deliveryHandleStaffId},</if>
+            <if test="deliveryCheckOutStatus != null"> delivery_check_out_status = #{deliveryCheckOutStatus},</if>
+            <if test="deliveryRefundStatus != null"> delivery_refund_status = #{deliveryRefundStatus}</if>
+        </set>
+        WHERE
+        delivery_id = #{deliveryId}
+    </update>
+
+    <select id="queryByDeliveryId" resultType="com.market.scms.entity.DeliveryRecord">
+        SELECT 
+        *
+        FROM 
+        tb_delivery_record
+        WHERE 
+        delivery_id = #{deliveryId}
+    </select>
+    
+    <select id="queryAll" resultType="com.market.scms.entity.DeliveryRecord">
+        SELECT 
+        *
+        FROM 
+        tb_delivery_record
+        ORDER BY delivery_create_date DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.DeliveryRecord">
+        SELECT
+        *
+        FROM
+        tb_delivery_record
+        <where>
+            <if test="deliveryRecordCondition.deliveryId != null">
+                AND 
+                delivery_id = #{deliveryRecordCondition.deliveryId}
+            </if>
+            <if test="deliveryRecordCondition.deliveryStatus != null">
+                AND
+                delivery_status = #{deliveryRecordCondition.deliveryStatus}
+            </if>
+            <if test="deliveryRecordCondition.deliveryLaunchedStaffId != null">
+                AND
+                delivery_launched_staff_id = #{deliveryRecordCondition.deliveryLaunchedStaffId}
+            </if>
+            <if test="deliveryRecordCondition.deliveryHandleStaffId != null">
+                AND
+                delivery_handle_staff_id = #{deliveryRecordCondition.deliveryHandleStaffId}
+            </if>
+            <if test="deliveryRecordCondition.deliveryRefundStatus != null">
+                AND
+                delivery_refund_status = #{deliveryRecordCondition.deliveryRefundStatus}
+            </if>
+        </where>
+        ORDER BY delivery_create_date DESC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+</mapper>

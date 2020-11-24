@@ -101,4 +101,11 @@
         staff_id = #{staffId}
     </select>
     
+    <delete id="deleteStaff" parameterType="int">
+        DELETE FROM 
+        tb_staff
+        WHERE 
+        staff_id = #{staffId}
+    </delete>
+    
 </mapper>

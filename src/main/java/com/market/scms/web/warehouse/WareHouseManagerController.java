@@ -10,7 +10,6 @@ import com.market.scms.enums.ExportBillStatusStateEnum;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
 import com.market.scms.util.DoubleUtil;
-import com.market.scms.util.ExportBillIdCreator;
 import com.market.scms.util.HttpServletRequestUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;

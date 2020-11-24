@@ -13,7 +13,7 @@ public class DeliveryRecord {
     private Double deliveryPaid;
     private Integer deliveryStatus;
     private Long deliveryLaunchedStaffId;
-    private Long deliveryHandlerStaffId;
+    private Long deliveryHandleStaffId;
     private Double deliveryTotalPrice;
     private Integer deliveryCheckOutStatus;
     private Integer deliveryRefundStatus;
@@ -51,12 +51,12 @@ public class DeliveryRecord {
         this.deliveryLaunchedStaffId = deliveryLaunchedStaffId;
     }
 
-    public Long getDeliveryHandlerStaffId() {
-        return deliveryHandlerStaffId;
+    public Long getDeliveryHandleStaffId() {
+        return deliveryHandleStaffId;
     }
 
-    public void setDeliveryHandlerStaffId(Long deliveryHandlerStaffId) {
-        this.deliveryHandlerStaffId = deliveryHandlerStaffId;
+    public void setDeliveryHandleStaffId(Long deliveryHandleStaffId) {
+        this.deliveryHandleStaffId = deliveryHandleStaffId;
     }
 
     public Double getDeliveryTotalPrice() {

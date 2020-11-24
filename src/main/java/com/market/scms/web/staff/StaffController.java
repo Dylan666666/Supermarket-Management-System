@@ -1,22 +1,24 @@
 package com.market.scms.web.staff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.market.scms.bean.StaffA;
 import com.market.scms.entity.SupermarketStaff;
+import com.market.scms.entity.staff.*;
 import com.market.scms.exceptions.SupermarketStaffException;
-import com.market.scms.service.StaffService;
+import com.market.scms.exceptions.WareHouseManagerException;
+import com.market.scms.service.*;
 import com.market.scms.util.HttpServletRequestUtil;
 import com.market.scms.util.PasswordHelper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author: Mr_OO
@@ -24,13 +26,27 @@ import java.util.Map;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/staff")
 public class StaffController {
 
     @Resource
     private StaffService staffService;
     
-    @PostMapping("/insert")
+    @Resource
+    private PrimaryMenuService primaryMenuService;
+    
+    @Resource
+    private SecondaryMenuService secondaryMenuService;
+    
+    @Resource
+    private FunctionService functionService;
+    
+    @Resource
+    private StaffJurisdictionService staffJurisdictionService;
+    
+    @Resource
+    private StaffPositionRelationService staffPositionRelationService;
+    
+    @PostMapping("/staff/insert")
     @ResponseBody
     public Map<String,Object> insertStaff(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
@@ -60,17 +76,57 @@ public class StaffController {
         return modelMap;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/staff/login")
     @ResponseBody
     @Transactional
     public Map<String,Object> staffLogin(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
-        String staffPhone = HttpServletRequestUtil.getString(request, "staffPhone");
-        String staffPassword = HttpServletRequestUtil.getString(request, "staffPassword");
-        if (staffPhone != null && staffPassword != null) {
+        String staffAStr = HttpServletRequestUtil.getString(request, "staffA");
+        ObjectMapper mapper = new ObjectMapper();
+        StaffA staffA = null;
+        if (staffAStr == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "传入信息为空,登录失败");
+            return modelMap;
+        }
+        try {
+            staffA = mapper.readValue(staffAStr, StaffA.class);
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "登录失败-01");
+            return modelMap;
+        }
+        if (staffA != null && staffA.getStaffPhone() != null && staffA.getStaffPassword() != null) {
             try {
-                SupermarketStaff staff = staffService.staffLogin(staffPhone, staffPassword);
-                modelMap.put("staff", staff);
+                SupermarketStaff staff = staffService.staffLogin(staffA.getStaffPhone(), staffA.getStaffPassword());
+                if (staff == null) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "登录失败");
+                    return modelMap;
+                }
+                List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staff.getStaffId());
+                Set<Integer> secondaryIdSet = new HashSet<>();
+                Set<Integer> primaryIdSet = new HashSet<>();
+                List<SecondaryMenu> secondaryMenuList = new ArrayList<>();
+                List<PrimaryMenu> primaryMenuList = new ArrayList<>();
+                for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                    Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                    SecondaryMenu curSe = secondaryMenuService.queryById(function.getSecondaryMenuId());
+                    if (secondaryIdSet.contains(curSe.getSecondaryMenuId())) {
+                        continue;
+                    } else {
+                        secondaryIdSet.add(curSe.getSecondaryMenuId());
+                        secondaryMenuList.add(curSe);
+                        PrimaryMenu curPri =primaryMenuService.queryById(curSe.getPrimaryMenuId());
+                        if (!primaryIdSet.contains(curPri.getPrimaryMenuId())) {
+                            primaryIdSet.add(curPri.getPrimaryMenuId());
+                            primaryMenuList.add(curPri);
+                        }
+                    }
+                }
+                modelMap.put("staffToken", staff.getToken());
+                modelMap.put("primaryMenuList", primaryMenuList);
+                modelMap.put("secondaryMenuList", secondaryMenuList);
                 modelMap.put("success",true);
             } catch (SupermarketStaffException staffException) {
                 modelMap.put("success",false);
@@ -79,43 +135,39 @@ public class StaffController {
             }
         } else {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "输入信息为空");
+            modelMap.put("errMsg", "登录信息不完整");
             return modelMap;
         }
         return modelMap;
     }
 
-    @PostMapping("/update")
+    /**
+     * 1.3超级管理员 用户列表 提交修改
+     * 
+     * @param request
+     * @return
+     */
+    @PostMapping("/stafflist/modifycommit")
     @ResponseBody
     @Transactional
-    @RequiresPermissions("/staff/update")
+    @RequiresPermissions("/stafflist/modifycommit")
     public Map<String,Object> staffUpdate(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
-        String staffStr = HttpServletRequestUtil.getString(request, "staff");
+        String staffAStr = HttpServletRequestUtil.getString(request, "staffA");
         ObjectMapper mapper = new ObjectMapper();
-        SupermarketStaff staff = null;
+        StaffA staffA = null;
         try {
-            staff = mapper.readValue(staffStr, SupermarketStaff.class);
+            staffA = mapper.readValue(staffAStr, StaffA.class);
         } catch (Exception e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "信息更改失败-01");
             return modelMap;
         }
         try {
-            //先判断职位是否被更改了，是则更新职位相关权限表
-            SupermarketStaff curStaff = staffService.queryStaffByPhone(staff.getStaffPhone());
-            if (staff.getStaffPosition() != null && 
-                    !curStaff.getStaffPosition().equals(staff.getStaffPosition())) {
-                int res = staffService.updateStaffPosition(staff);
-                if (res != 1) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "信息更改失败");
-                    return modelMap;
-                }
-            }
+            SupermarketStaff staff = new SupermarketStaff();
+            BeanUtils.copyProperties(staffA, staff);
             //更改职工信息
             int res = staffService.updateStaff(staff);
-            System.out.println("res = " + res);
             if (res == 0) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", "信息更改失败");
@@ -123,6 +175,10 @@ public class StaffController {
             }
             modelMap.put("success",true);
         } catch (SupermarketStaffException staffException) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "信息更改失败");
+            return modelMap;
+        } catch (Exception e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "信息更改失败");
             return modelMap;
@@ -186,12 +242,17 @@ public class StaffController {
     }
 
 
-    @PostMapping("/query")
+    /**
+     * 1.2超级管理员 用户列表
+     * 
+     * @param request
+     * @return
+     */
+    @PostMapping("/stafflist")
     @ResponseBody
-    @RequiresPermissions("/staff/query")
+    @RequiresPermissions("/stafflist")
     public Map<String,Object> staffQuery(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
-        String staffStr = HttpServletRequestUtil.getString(request, "staff");
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         if (pageIndex < 0) {
@@ -200,29 +261,68 @@ public class StaffController {
         if (pageSize <= 0) {
             pageSize = 100;
         }
-        ObjectMapper mapper = new ObjectMapper();
-        SupermarketStaff staff = null;
+        
         try {
-            staff = mapper.readValue(staffStr, SupermarketStaff.class);
-        } catch (Exception e) {
-            modelMap.put("success",false);
-            modelMap.put("errMsg", "信息查询失败-01");
-            return modelMap;
-        }
-        if (staff != null) {
-            try {
-                List<SupermarketStaff> list = staffService.queryStaffByCondition(staff, pageIndex, pageSize);
-                modelMap.put("success", true);
-                modelMap.put("staffList", list);
-                modelMap.put("staffCount", list.size());
-            } catch (SupermarketStaffException e) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "查询失败");
-                return modelMap;
+            List<SupermarketStaff> list = staffService
+                    .queryStaffByCondition(new SupermarketStaff(), pageIndex, pageSize);
+            List<StaffA> staffAList = new ArrayList<>(list.size());
+            for (SupermarketStaff staff : list) {
+                StaffA staffA = new StaffA();
+                BeanUtils.copyProperties(staff, staffA);
+                staffAList.add(staffA);
             }
-        } else {
+            modelMap.put("staffAList", staffAList);
+            modelMap.put("recordSum", staffAList.size());
+            if (pageIndex == 0) {
+                SecondaryMenu secondaryMenu = secondaryMenuService.queryByUrl("/stafflist");
+                List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenu.getSecondaryMenuId());
+                modelMap.put("functionList", functionList);
+            }
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 1.4超级管理员 用户列表 删除
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stafflist/deletestaff")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stafflist/deletestaff")
+    public Map<String,Object> deleteStaff(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        try {
+            int res = staffService.deleteStaff(staffId);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "删除失败");
+                return modelMap;
+            }
+            StaffPositionRelation staffPositionRelation = new StaffPositionRelation();
+            staffPositionRelation.setStaffId(staffId);
+            res = staffPositionRelationService.delete(staffPositionRelation);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "删除失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "删除失败");
             return modelMap;
         }
         return modelMap;
