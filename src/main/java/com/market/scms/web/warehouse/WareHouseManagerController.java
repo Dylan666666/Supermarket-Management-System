@@ -703,7 +703,27 @@ public class WareHouseManagerController {
     @RequiresPermissions("/wholesaledeliverylist")
     public Map<String,Object> wholeSaleDeliveryList(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
-        
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        if (secondaryMenuId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 100;
+        }
+        try {
+            
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        }
         return modelMap;
     }
     

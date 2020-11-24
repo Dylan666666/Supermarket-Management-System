@@ -89,7 +89,7 @@
                 s.staff_status = #{staffCondition.staffStatus}
             </if>
         </where>
-        ORDER BY staff_position ASC 
+        ORDER BY create_time DESC 
         LIMIT #{rowIndex},#{pageSize}
     </select>
     
