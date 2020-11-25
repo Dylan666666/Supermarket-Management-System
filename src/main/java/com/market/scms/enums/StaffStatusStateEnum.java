@@ -5,8 +5,8 @@ package com.market.scms.enums;
  * @Date: 2020/10/8 10:43
  */
 public enum StaffStatusStateEnum {
-    JUST_REGISTERED(1001, "刚注册"), NO_PERMISSION(1000, "正常"),
-    NORMAL(0, "无权限"), QUIT(-1, "离职");
+    JUST_REGISTERED(1001, "刚注册"), NORMAL(1000, "正常"),
+    NO_PERMISSION(0, "无权限"), QUIT(-1, "离职");
 
     private int state;
     private String stateInfo;

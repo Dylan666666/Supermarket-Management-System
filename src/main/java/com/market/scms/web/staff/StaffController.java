@@ -230,20 +230,20 @@ public class StaffController {
         if (pageSize <= 0) {
             pageSize = 100;
         }
-        
         try {
             List<SupermarketStaff> list = staffService
                     .queryStaffByCondition(new SupermarketStaff(), pageIndex, pageSize);
             List<StaffA> staffAList = new ArrayList<>(list.size());
             for (SupermarketStaff staff : list) {
                 StaffA staffA = new StaffA();
-                StaffPosition staffPosition = staffPositionService.queryById(staff.getStaffId());
-                List<StaffPositionRelation> relationList = staffPositionRelationService.queryById(staff.getStaffId());
-                if (relationList.size() != 0) {
+                Integer staffPositionId = staff.getStaffPosition();
+                if (staffPositionId != null) {
+                    StaffPosition staffPosition = staffPositionService.queryById(staff.getStaffPosition());
+                    BeanUtils.copyProperties(staffPosition, staffA);
+                    List<StaffPositionRelation> relationList = staffPositionRelationService.queryById(staff.getStaffId());
                     BeanUtils.copyProperties(relationList.get(0), staffA);
                 }
                 BeanUtils.copyProperties(staff, staffA);
-                BeanUtils.copyProperties(staffPosition, staffA);
                 staffAList.add(staffA);
             }
             int recordSum = staffService.countStaffAll();
@@ -451,27 +451,53 @@ public class StaffController {
             return modelMap;
         }
         try {
-            StaffPositionRelation cur = staffPositionRelationService.queryById(staffPositionRelation.getStaffId()).get(0);
-            if (cur != null) {
-                if (cur.getStaffPositionStatus().equals(staffPositionRelation.getStaffPositionStatus()) &&
-                        cur.getStaffPositionId().equals(staffPositionRelation.getStaffPositionId())) {
+            SupermarketStaff curStaff = staffService.queryById(staffPositionRelation.getStaffId());
+            if (curStaff == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该职工不存在");
+                return modelMap;
+            }
+            List<StaffPositionRelation> cur = staffPositionRelationService.queryById(staffPositionRelation.getStaffId());
+            if (cur.size() == 0) {
+                int res = staffPositionRelationService.insert(staffPositionRelation);
+                if (res == 0) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "修改失败");
+                    return modelMap;
+                }
+                SupermarketStaff staff = staffService.queryById(staffPositionRelation.getStaffId());
+                staff.setStaffStatus(StaffStatusStateEnum.NORMAL.getState());
+                res = staffService.updateStaff(staff);
+                if (res == 0) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "修改失败");
+                    return modelMap;
+                }
+            } else {
+                if (cur.get(0).getStaffPositionStatus().equals(staffPositionRelation.getStaffPositionStatus()) &&
+                        cur.get(0).getStaffPositionId().equals(staffPositionRelation.getStaffPositionId())) {
                     modelMap.put("success",false);
                     modelMap.put("errMsg", "信息无变化，更改失败");
                     return modelMap;
                 }
-                if (cur.getStaffPositionId().equals(staffPositionRelation.getStaffPositionId())) {
+                //只是状态改变
+                if (cur.get(0).getStaffPositionId().equals(staffPositionRelation.getStaffPositionId())) {
+                    staffPositionRelation.setStaffPositionId(null);
                     staffPositionRelationService.update(staffPositionRelation);
                 } else {
-                    staffPositionRelationService.delete(cur);
+                    //只是职位修改
+                    staffPositionRelationService.delete(cur.get(0));
                     staffPositionRelationService.insert(staffPositionRelation);
                 }
-            } else {
-                staffPositionRelationService.insert(staffPositionRelation);
             }
             modelMap.put("success", true);
         } catch (SupermarketStaffException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "修改失败！");
             return modelMap;
         }
         return modelMap;

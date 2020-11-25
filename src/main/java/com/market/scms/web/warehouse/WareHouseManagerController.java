@@ -68,7 +68,13 @@ public class WareHouseManagerController {
     
     @Resource
     private DeliveryRecordService deliveryRecordService;
-
+    
+    @Resource
+    private RetailRecordService retailRecordService;
+    
+    @Resource
+    private RetailService retailService;
+    
     /**
      * 3.1库房管理员 查库存
      * 
@@ -940,7 +946,83 @@ public class WareHouseManagerController {
         }
         try {
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
-            //TODO
+            List<RetailRecord> retailRecordList = retailRecordService.queryAll(pageIndex, pageSize);
+            List<RetailRecord> retailRecordList2 = retailRecordService.queryAll(0, 10000);
+            List<SupermarketStaff> staffList = staffService
+                    .queryStaffByCondition(new SupermarketStaff(), 0, 10000);
+            modelMap.put("functionList", functionList);
+            modelMap.put("staffList", staffList);
+            modelMap.put("retailRecordList", retailRecordList);
+            modelMap.put("recordSum", retailRecordList2.size());
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.20库房管理员 零售出库单 查看
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/retaildeliverylist/retaildetails")
+    @ResponseBody
+    @RequiresPermissions("/retaildeliverylist/retaildetails")
+    public Map<String,Object> retaildetails(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String retailId = HttpServletRequestUtil.getString(request, "retailId");
+        if (request == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败");
+            return modelMap;
+        }
+        try {
+            List<Retail> retailList = retailService.queryByRetailId(retailId);
+            modelMap.put("retailList", retailList);
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.21库房管理员 零售出库单 查看 查看详情
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/retaildeliverylist/retailgoodsdetails")
+    @ResponseBody
+    @RequiresPermissions("/retaildeliverylist/retailgoodsdetails")
+    public Map<String,Object> retailgoodsdetails(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String retailId = HttpServletRequestUtil.getString(request, "retailId");
+        Long retailStockGoodsId = HttpServletRequestUtil.getLong(request, "retailStockGoodsId");
+        if (retailId == null || retailStockGoodsId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，查看失败");
+            return modelMap;
+        }
+        try {
+            Retail retail = retailService.queryByGoodsId(retailId, retailStockGoodsId);
+            if (retail == null) {
+                //TODO
+            }
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
