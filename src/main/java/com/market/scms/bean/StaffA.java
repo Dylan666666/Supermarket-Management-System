@@ -1,7 +1,7 @@
 package com.market.scms.bean;
 
 /**
- * staff中转对象
+ * staff中转对象 Staff+staff_position_relation+staff_position
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/24 9:33
@@ -12,7 +12,10 @@ public class StaffA {
     private String staffPassword;
     private String staffPhone;
     private Integer staffStatus;
-
+    private Integer staffPositionId;
+    private String staffPositionName;
+    private Integer staffPositionStatus;
+    
     public Integer getStaffId() {
         return staffId;
     }
@@ -51,5 +54,29 @@ public class StaffA {
 
     public void setStaffStatus(Integer staffStatus) {
         this.staffStatus = staffStatus;
+    }
+
+    public Integer getStaffPositionId() {
+        return staffPositionId;
+    }
+
+    public void setStaffPositionId(Integer staffPositionId) {
+        this.staffPositionId = staffPositionId;
+    }
+
+    public String getStaffPositionName() {
+        return staffPositionName;
+    }
+
+    public void setStaffPositionName(String staffPositionName) {
+        this.staffPositionName = staffPositionName;
+    }
+
+    public Integer getStaffPositionStatus() {
+        return staffPositionStatus;
+    }
+
+    public void setStaffPositionStatus(Integer staffPositionStatus) {
+        this.staffPositionStatus = staffPositionStatus;
     }
 }

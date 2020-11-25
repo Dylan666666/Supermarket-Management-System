@@ -10,9 +10,9 @@ import java.util.Date;
  * @Date: 2020/11/23 21:25
  */
 public class DeliveryIdCreator {
-    public static String get(Long goodsId) {
+    public static String get(int staffId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
         String str = sdf.format(new Date());
-        return goodsId + str;
+        return str + staffId;
     }
 }

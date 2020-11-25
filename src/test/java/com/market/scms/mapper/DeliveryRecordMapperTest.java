@@ -24,7 +24,7 @@ public class DeliveryRecordMapperTest {
     @Test
     public void insert() {
         DeliveryRecord deliveryRecord = new DeliveryRecord();
-        deliveryRecord.setDeliveryId(DeliveryIdCreator.get(1234567890123L));
+        deliveryRecord.setDeliveryId(DeliveryIdCreator.get(2));
         deliveryRecord.setDeliveryPaid(0D);
         deliveryRecord.setDeliveryStatus(0);
         deliveryRecord.setDeliveryLaunchedStaffId(25L);

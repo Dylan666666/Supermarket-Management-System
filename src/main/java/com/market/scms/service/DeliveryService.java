@@ -33,15 +33,16 @@ public interface DeliveryService {
      * @param deliveryId
      * @return
      */
-    Delivery queryByDeliveryId(String deliveryId);
+    List<Delivery> queryByDeliveryId(String deliveryId);
 
     /**
      * 通过商品ID查询出库单
      *
+     * @param deliveryId
      * @param goodsId
      * @return
      */
-    Delivery queryByGoodsId(Long goodsId);
+    Delivery queryByGoodsId(String deliveryId, Long goodsId);
 
     /**
      * 一键查询出库单

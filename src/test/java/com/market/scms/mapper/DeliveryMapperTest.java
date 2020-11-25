@@ -24,7 +24,7 @@ public class DeliveryMapperTest {
     public void insert() {
         Delivery delivery = new Delivery();
         delivery.setDeliveryStockGoodsId(1234567890123L);
-        delivery.setDeliveryId(DeliveryIdCreator.get(1234567890123L));
+        delivery.setDeliveryId(DeliveryIdCreator.get(2));
         delivery.setDeliveryNum(100);
         delivery.setDeliveryPrice(1.8);
         System.out.println(deliveryMapper.insert(delivery));
@@ -33,13 +33,14 @@ public class DeliveryMapperTest {
     @Test
     public void query() {
         System.out.println(deliveryMapper.queryAll(0, 10).get(0).getDeliveryPrice());
-        System.out.println(deliveryMapper.queryByDeliveryId("1234567890123201123212757").getDeliveryPrice());
-        System.out.println(deliveryMapper.queryByGoodsId(1234567890123L).getDeliveryPrice());
+        System.out.println(deliveryMapper.queryByDeliveryId("1234567890123201123212757").get(0).getDeliveryPrice());
+        System.out.println(deliveryMapper
+                .queryByGoodsId("1234567890123201123212757", 1234567890123L).getDeliveryPrice());
     }
     
     @Test
     public void update() {
-        Delivery delivery = deliveryMapper.queryByGoodsId(1234567890123L);
+        Delivery delivery = deliveryMapper.queryByGoodsId("1234567890123201123212757", 1234567890123L);
         delivery.setDeliveryPrice(1.79);
         System.out.println(deliveryMapper.update(delivery));
     }

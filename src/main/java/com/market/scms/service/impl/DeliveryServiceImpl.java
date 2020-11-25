@@ -74,24 +74,43 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public Delivery queryByDeliveryId(String deliveryId) throws WareHouseManagerException {
-        if (deliveryId != null) {
+    public List<Delivery> queryByDeliveryId(String deliveryId) throws WareHouseManagerException {
+        if (deliveryId == null) {
+             throw new WareHouseManagerException("传入信息为空，查询失败");
+        }
+        String key = DELIVERY_LIST_KEY + "deliveryId" + deliveryId;
+        List<Delivery> res = null;
+        ObjectMapper mapper = new ObjectMapper();
+        if (!jedisKeys.exists(key)) {
+            res = deliveryMapper.queryByDeliveryId(deliveryId);
+            String jsonString = null;
             try {
-                Delivery delivery = deliveryMapper.queryByDeliveryId(deliveryId);
-                return delivery;
-            } catch (WareHouseManagerException e) {
+                jsonString = mapper.writeValueAsString(res);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
                 throw new WareHouseManagerException("查询失败");
             }
+            jedisStrings.set(key, jsonString);
         } else {
-            throw new WareHouseManagerException("传入信息为空，查询失败");
+            String jsonString = jedisStrings.get(key);
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, Delivery.class);
+            try {
+                res = mapper.readValue(jsonString, javaType);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
+                throw new WareHouseManagerException("查询失败");
+            }
         }
+        return res;
     }
 
     @Override
-    public Delivery queryByGoodsId(Long goodsId) throws WareHouseManagerException {
+    public Delivery queryByGoodsId(String deliveryId, Long goodsId) throws WareHouseManagerException {
         if (goodsId != null) {
             try {
-                Delivery delivery = deliveryMapper.queryByGoodsId(goodsId);
+                Delivery delivery = deliveryMapper.queryByGoodsId(deliveryId, goodsId);
                 return delivery;
             } catch (WareHouseManagerException e) {
                 throw new WareHouseManagerException("查询失败");

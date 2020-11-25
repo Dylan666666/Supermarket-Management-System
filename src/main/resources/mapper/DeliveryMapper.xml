@@ -18,6 +18,8 @@
         FROM 
         tb_delivery
         WHERE 
+        delivery_id = #{deliveryId}
+        AND
         delivery_stock_goods_id = #{deliveryStockGoodsId}
     </select>
 
@@ -38,6 +40,8 @@
         </set>
         WHERE
         delivery_id = #{deliveryId}
+        AND
+        delivery_stock_goods_id = #{deliveryStockGoodsId}
     </update>
 
     <select id="queryAll" resultType="com.market.scms.entity.Delivery">

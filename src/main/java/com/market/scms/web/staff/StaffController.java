@@ -127,7 +127,11 @@ public class StaffController {
                     }
                 }
                 StaffA staffA1 = new StaffA();
+                StaffPositionRelation relation = staffPositionRelationService.queryById(staff.getStaffId()).get(0);
+                StaffPosition staffPosition = staffPositionService.queryById(relation.getStaffPositionId());
                 BeanUtils.copyProperties(staff, staffA1);
+                BeanUtils.copyProperties(staffPosition, staffA1);
+                BeanUtils.copyProperties(relation, staffA1);
                 modelMap.put("staffA", staffA1);
                 modelMap.put("staffToken", staff.getToken());
                 modelMap.put("primaryMenuList", primaryMenuList);
@@ -285,7 +289,11 @@ public class StaffController {
             List<StaffA> staffAList = new ArrayList<>(list.size());
             for (SupermarketStaff staff : list) {
                 StaffA staffA = new StaffA();
+                StaffPositionRelation relation = staffPositionRelationService.queryById(staff.getStaffId()).get(0);
+                StaffPosition staffPosition = staffPositionService.queryById(relation.getStaffPositionId());
                 BeanUtils.copyProperties(staff, staffA);
+                BeanUtils.copyProperties(staffPosition, staffA);
+                BeanUtils.copyProperties(relation, staffA);
                 staffAList.add(staffA);
             }
             int recordSum = staffService.countStaffAll();

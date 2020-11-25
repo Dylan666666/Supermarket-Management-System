@@ -1,6 +1,7 @@
 package com.market.scms.web.warehouse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.market.scms.bean.DeliveryGoods;
 import com.market.scms.bean.GoodsStockA;
 import com.market.scms.bean.GoodsStockB;
 import com.market.scms.dto.ImageHolder;
@@ -816,15 +817,38 @@ public class WareHouseManagerController {
             return modelMap;
         }
         try {
-            Delivery delivery = deliveryService.queryByDeliveryId(deliveryId);
-            if (delivery == null) {
+            List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
+            if (deliveryList == null) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", "传入信息有误，查看失败");
                 return modelMap;
             }
-            Stock stock = stockService.queryByGoodsId(delivery.getDeliveryStockGoodsId());
-            Goods goods = goodsService.queryById(delivery.getDeliveryStockGoodsId());
-            
+            List<DeliveryGoods> deliveryGoodsList = new ArrayList<>(deliveryList.size());
+            for (Delivery delivery : deliveryList) {
+                if (delivery == null) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "传入信息有误，查看失败");
+                    return modelMap;
+                }
+                Stock stock = stockService.queryByGoodsId(delivery.getDeliveryStockGoodsId());
+                Goods goods = goodsService.queryById(delivery.getDeliveryStockGoodsId());
+                if (stock == null || goods == null) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "数据有误，查看失败");
+                    return modelMap;
+                }
+                GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+                Unit unit = unitService.queryById(stock.getStockUnitId());
+                DeliveryGoods deliveryGoods = new DeliveryGoods();
+                BeanUtils.copyProperties(delivery, deliveryGoods);
+                BeanUtils.copyProperties(stock, deliveryGoods);
+                BeanUtils.copyProperties(goods, deliveryGoods);
+                BeanUtils.copyProperties(goodsCategory, deliveryGoods);
+                BeanUtils.copyProperties(unit, deliveryGoods);
+                deliveryGoodsList.add(deliveryGoods);
+            }
+            modelMap.put("deliveryGoodsList", deliveryGoodsList);
+            modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
@@ -834,7 +858,6 @@ public class WareHouseManagerController {
             modelMap.put("errMsg", "查看失败");
             return modelMap;
         }
-        
         return modelMap;
     }
 }
