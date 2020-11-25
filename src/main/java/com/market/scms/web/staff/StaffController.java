@@ -7,12 +7,12 @@ import com.market.scms.entity.staff.*;
 import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.*;
-import com.market.scms.util.EncryptionUtil;
 import com.market.scms.util.HttpServletRequestUtil;
 import com.market.scms.util.PasswordHelper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -129,11 +129,13 @@ public class StaffController {
                     }
                 }
                 StaffA staffA1 = new StaffA();
-                StaffPositionRelation relation = staffPositionRelationService.queryById(staff.getStaffId()).get(0);
-                StaffPosition staffPosition = staffPositionService.queryById(relation.getStaffPositionId());
+                List<StaffPositionRelation> relationList = staffPositionRelationService.queryById(staff.getStaffId());
+                if (relationList.size() > 0) {
+                    StaffPosition staffPosition = staffPositionService.queryById(relationList.get(0).getStaffPositionId());
+                    BeanUtils.copyProperties(staffPosition, staffA1);
+                    BeanUtils.copyProperties(relationList.get(0), staffA1);
+                }
                 BeanUtils.copyProperties(staff, staffA1);
-                BeanUtils.copyProperties(staffPosition, staffA1);
-                BeanUtils.copyProperties(relation, staffA1);
                 modelMap.put("staffA", staffA1);
                 modelMap.put("staffToken", staff.getToken());
                 modelMap.put("primaryMenuList", primaryMenuList);
@@ -315,10 +317,11 @@ public class StaffController {
                     return modelMap;
                 }
                 staff.setStaffPhone(staffA.getStaffPhone());
+                staff.setSalt(ByteSource.Util.bytes(staff.getStaffPhone()).toString());
             }
             if (!staffA.getStaffPassword().equals(staff.getStaffPassword())) {
-                String newPassword = EncryptionUtil.getMd5(staffA.getStaffPassword());
-                staff.setStaffPassword(newPassword);
+                staff.setStaffPassword(staffA.getStaffPassword());
+                new PasswordHelper().encryptPassword(staff);
             }
             if (staffA.getStaffName() != null) {
                 staff.setStaffName(staffA.getStaffName());
