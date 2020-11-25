@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.RetailRecordMapper">
+
+    <insert id="insert" parameterType="com.market.scms.entity.RetailRecord">
+        INSERT INTO
+        tb_retail_record(retail_id,retail_time,retail_collection_staff_id,retail_total_price,
+        retail_refund_status)
+        VALUES 
+        (#{retailId},#{retailTime},#{retailCollectionStaffId},#{retailTotalPrice},
+        #{retailRefundStatus})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.RetailRecord">
+        UPDATE
+        tb_retail_record
+        SET 
+        retail_refund_status = #{retailRefundStatus}
+        WHERE
+        retail_id = #{retailId}
+    </update>
+
+    <select id="queryByRetailId" resultType="com.market.scms.entity.RetailRecord">
+        SELECT 
+        *
+        FROM 
+        tb_retail_record
+        WHERE 
+        retail_id = #{retailId}
+    </select>
+
+    <select id="queryAll" resultType="com.market.scms.entity.RetailRecord">
+        SELECT 
+        *
+        FROM 
+        tb_retail_record
+        ORDER BY retail_time DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.RetailRecord">
+        SELECT
+        *
+        FROM
+        tb_retail_record
+        <where>
+            <if test="retailRecordCondition.retailId != null">
+                AND
+                retail_id = #{retailRecordCondition.retailId}
+            </if>
+            <if test="retailRecordCondition.retailCollectionStaffId != null">
+                AND
+                retail_collection_staff_id = #{retailRecordCondition.retailCollectionStaffId}
+            </if>
+            <if test="retailRecordCondition.retailRefundStatus != null">
+                AND
+                retail_refund_status = #{retailRecordCondition.retailRefundStatus}
+            </if>
+        </where>
+        ORDER BY retail_time DESC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+</mapper>

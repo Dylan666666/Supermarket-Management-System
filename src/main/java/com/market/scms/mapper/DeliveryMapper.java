@@ -41,7 +41,7 @@ public interface DeliveryMapper {
      * @param goodsId
      * @return
      */
-    Delivery queryByGoodsId(String deliveryId, Long goodsId);
+    Delivery queryByGoodsId(@Param("deliveryId") String deliveryId,@Param("goodsId") Long goodsId);
     
     /**
      * 一键查询出库单

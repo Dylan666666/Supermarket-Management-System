@@ -768,7 +768,7 @@ public class WareHouseManagerController {
     @RequiresPermissions("/wholesaledeliverylist/confirmwarehousing")
     public Map<String,Object> confirmWarehousing(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
-        Long staffId = HttpServletRequestUtil.getLong(request, "staffId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         String deliveryId = HttpServletRequestUtil.getString(request, "deliveryId");
         if (staffId < 0 || deliveryId == null) {
             modelMap.put("success",false);
@@ -849,6 +849,98 @@ public class WareHouseManagerController {
             }
             modelMap.put("deliveryGoodsList", deliveryGoodsList);
             modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.18库房管理员 批发出库单 查看 查看详情
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/wholesaledeliverylist/warehousinggoodsdetails")
+    @ResponseBody
+    @RequiresPermissions("/wholesaledeliverylist/warehousinggoodsdetails")
+    public Map<String,Object> wareHousingGoodsDetails(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String deliveryId = HttpServletRequestUtil.getString(request, "deliveryId");
+        Long deliveryStockGoodsId = HttpServletRequestUtil.getLong(request, "deliveryStockGoodsId");
+        if (deliveryId == null || deliveryStockGoodsId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "信息不足，查看失败");
+            return modelMap;
+        }
+        try {
+            Delivery delivery = deliveryService.queryByGoodsId(deliveryId, deliveryStockGoodsId);
+            DeliveryRecord deliveryRecord = deliveryRecordService.queryByDeliveryId(deliveryId);
+            if (delivery == null || deliveryRecord == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该单不存在");
+                return modelMap;
+            }
+            SupermarketStaff staff = staffService.queryById(deliveryRecord.getDeliveryLaunchedStaffId());
+            Stock stock = stockService.queryByGoodsId(deliveryStockGoodsId);
+            Goods goods = goodsService.queryById(deliveryStockGoodsId);
+            GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+            Unit unit = unitService.queryById(stock.getStockUnitId());
+            System.out.println("no 3------------");
+            modelMap.put("success", true);
+            modelMap.put("staff", staff);
+            modelMap.put("goods", goods);
+            modelMap.put("category", category);
+            modelMap.put("unit", unit);
+            modelMap.put("delivery", delivery);
+            modelMap.put("deliveryRecord", deliveryRecord);
+            modelMap.put("stock", stock);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.19库房管理员 零售出库单
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/retaildeliverylist")
+    @ResponseBody
+    @RequiresPermissions("/retaildeliverylist")
+    public Map<String,Object> retailDeliveryList(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        if (secondaryMenuId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 100;
+        }
+        try {
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            //TODO
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());

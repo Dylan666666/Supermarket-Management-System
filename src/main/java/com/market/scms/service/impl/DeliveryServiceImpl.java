@@ -35,11 +35,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Resource
     private CacheService cacheService;
 
-    private static Logger logger = LoggerFactory.getLogger(CouponServiceImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(DeliveryServiceImpl.class);
     
     @Override
     public int insert(Delivery delivery) throws WareHouseManagerException {
-        if (delivery != null) {
+        if (delivery != null && delivery.getDeliveryId() != null && delivery.getDeliveryStockGoodsId() != null) {
             try {
                 int res = deliveryMapper.insert(delivery);
                 if (res == 0) {
@@ -57,7 +57,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public int update(Delivery delivery) throws WareHouseManagerException {
-        if (delivery != null) {
+        if (delivery != null && delivery.getDeliveryId() != null && delivery.getDeliveryStockGoodsId() != null
+        && delivery.getDeliveryPrice() >= 0 && delivery.getDeliveryNum() >= 0) {
             try {
                 int res = deliveryMapper.update(delivery);
                 if (res == 0) {
@@ -108,7 +109,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Delivery queryByGoodsId(String deliveryId, Long goodsId) throws WareHouseManagerException {
-        if (goodsId != null) {
+        if (deliveryId != null && goodsId > 0) {
             try {
                 Delivery delivery = deliveryMapper.queryByGoodsId(deliveryId, goodsId);
                 return delivery;

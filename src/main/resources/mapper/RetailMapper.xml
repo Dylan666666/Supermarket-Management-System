@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.RetailMapper">
+    <select id="queryByRetailId" resultType="com.market.scms.entity.Retail">
+        SELECT 
+        *
+        FROM 
+        tb_retail
+        WHERE 
+        retail_id = #{retailId}
+    </select>
+
+    <select id="queryByGoodsId" resultType="com.market.scms.entity.Retail">
+        SELECT 
+        *
+        FROM 
+        tb_retail
+        WHERE 
+        retail_id = #{retailId}
+        AND
+        retail_stock_goods_id = #{retailStockGoodsId}
+    </select>
+
+    <insert id="insert" parameterType="com.market.scms.entity.Retail">
+        INSERT INTO
+        tb_retail(retail_id,retail_stock_goods_id,retail_num,retail_price)
+        VALUES 
+        (#{retailId},#{retailStockGoodsId},#{retailNum},#{retailPrice})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.Retail">
+        UPDATE
+        tb_retail
+        <set>
+            <if test="retailNum != null"> retail_num = #{retailNum},</if>
+            <if test="retailPrice != null"> retail_price = #{retailPrice}</if>
+        </set>
+        WHERE
+        retail_id = #{retailId}
+        AND
+        retail_stock_goods_id = #{retailStockGoodsId}
+    </update>
+
+    <select id="queryAll" resultType="com.market.scms.entity.Retail">
+        SELECT 
+        *
+        FROM 
+        tb_retail
+        ORDER BY retail_id DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+</mapper>

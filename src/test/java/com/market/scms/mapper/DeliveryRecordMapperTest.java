@@ -27,7 +27,7 @@ public class DeliveryRecordMapperTest {
         deliveryRecord.setDeliveryId(DeliveryIdCreator.get(2));
         deliveryRecord.setDeliveryPaid(0D);
         deliveryRecord.setDeliveryStatus(0);
-        deliveryRecord.setDeliveryLaunchedStaffId(25L);
+        deliveryRecord.setDeliveryLaunchedStaffId(25);
         deliveryRecord.setDeliveryCheckOutStatus(0);
         deliveryRecord.setDeliveryRefundStatus(0);
         deliveryRecord.setDeliveryCreateDate(new Date());
@@ -46,7 +46,7 @@ public class DeliveryRecordMapperTest {
     @Test
     public void update() {
         DeliveryRecord deliveryRecord = deliveryRecordMapper.queryByDeliveryId("1234567890123201124101043");
-        deliveryRecord.setDeliveryLaunchedStaffId(26L);
+        deliveryRecord.setDeliveryLaunchedStaffId(26);
         System.out.println(deliveryRecordMapper.update(deliveryRecord));
     }
     
