@@ -12,6 +12,13 @@
         primary_menu_id = #{primaryMenuId}
     </select>
 
+    <select id="queryAll" resultType="com.market.scms.entity.staff.PrimaryMenu">
+        SELECT 
+        *
+        FROM 
+        tb_primary_menu
+    </select>
+
     <insert id="insert" parameterType="com.market.scms.entity.staff.PrimaryMenu">
         INSERT INTO
         tb_primary_menu(primary_menu_id,primary_menu_name,primary_menu_weight)

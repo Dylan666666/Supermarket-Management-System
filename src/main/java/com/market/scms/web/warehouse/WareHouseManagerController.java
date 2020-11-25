@@ -93,7 +93,7 @@ public class WareHouseManagerController {
             pageIndex = 0;
         }
         if (pageSize <= 0) {
-            pageSize = 100;
+            pageSize = 10000;
         }
         if (secondaryMenuId < 0) {
             modelMap.put("success",false);
@@ -434,7 +434,7 @@ public class WareHouseManagerController {
             pageIndex = 0;
         }
         if (pageSize <= 0) {
-            pageSize = 100;
+            pageSize = 10000;
         }
         try {
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
@@ -518,7 +518,7 @@ public class WareHouseManagerController {
             pageIndex = 0;
         }
         if (pageSize <= 0) {
-            pageSize = 100;
+            pageSize = 10000;
         }
         try {
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
@@ -738,7 +738,7 @@ public class WareHouseManagerController {
             pageIndex = 0;
         }
         if (pageSize <= 0) {
-            pageSize = 100;
+            pageSize = 10000;
         }
         try {
            List<DeliveryRecord> deliveryRecordList = deliveryRecordService.queryAll(pageIndex, pageSize);
@@ -942,7 +942,7 @@ public class WareHouseManagerController {
             pageIndex = 0;
         }
         if (pageSize <= 0) {
-            pageSize = 100;
+            pageSize = 10000;
         }
         try {
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);

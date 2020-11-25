@@ -48,4 +48,11 @@ public interface FunctionService {
      * @return
      */
     List<Function> querySecondaryMenuId(int secondaryMenuId);
+
+    /**
+     * 一键查询
+     *
+     * @return
+     */
+    List<Function> queryAll();
 }

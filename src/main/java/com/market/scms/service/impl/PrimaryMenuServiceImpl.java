@@ -7,6 +7,7 @@ import com.market.scms.service.PrimaryMenuService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Author: Mr_OO
@@ -68,7 +69,17 @@ public class PrimaryMenuServiceImpl implements PrimaryMenuService {
             throw new SupermarketStaffException("删除失败");
         }
     }
-    
+
+    @Override
+    public List<PrimaryMenu> queryAll() throws SupermarketStaffException {
+        try {
+            List<PrimaryMenu> primaryMenuList = primaryMenuMapper.queryAll();
+            return primaryMenuList;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("删除失败");
+        }
+    }
+
     private void isNull(PrimaryMenu primaryMenu) {
         if (primaryMenu == null) {
             throw new SupermarketStaffException("信息不能为空"); 

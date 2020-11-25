@@ -230,7 +230,7 @@ public class StaffController {
             pageIndex = 0;
         }
         if (pageSize <= 0) {
-            pageSize = 100;
+            pageSize = 10000;
         }
         try {
             List<SupermarketStaff> list = staffService

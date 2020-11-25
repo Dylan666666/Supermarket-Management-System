@@ -49,4 +49,11 @@
         secondary_menu_id = #{secondaryMenuId}
     </select>
 
+    <select id="queryAll" resultType="com.market.scms.entity.staff.Function">
+        SELECT 
+        *
+        FROM 
+        tb_function
+    </select>
+
 </mapper>

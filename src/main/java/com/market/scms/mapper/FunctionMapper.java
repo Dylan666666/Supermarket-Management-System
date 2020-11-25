@@ -50,4 +50,11 @@ public interface FunctionMapper {
      * @return
      */
     int update(Function function);
+
+    /**
+     * 一键查询
+     * 
+     * @return
+     */
+    List<Function> queryAll();
 }

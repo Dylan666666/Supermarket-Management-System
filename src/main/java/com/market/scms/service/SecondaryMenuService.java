@@ -2,6 +2,8 @@ package com.market.scms.service;
 
 import com.market.scms.entity.staff.SecondaryMenu;
 
+import java.util.List;
+
 /**
  * @Author: Mr_OO
  * @Date: 2020/11/10 16:07
@@ -46,4 +48,19 @@ public interface SecondaryMenuService {
      * @return
      */
     int delete(int secondaryMenuId);
+
+    /**
+     * 一键查询
+     *
+     * @return
+     */
+    List<SecondaryMenu> queryAll();
+
+    /**
+     * 通过secondaryMenuId查询功能集合
+     *
+     * @param primaryMenuId
+     * @return
+     */
+    List<SecondaryMenu> queryByPrimaryMenuId(int primaryMenuId);
 }

@@ -7,6 +7,7 @@ import com.market.scms.service.SecondaryMenuService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Author: Mr_OO
@@ -78,7 +79,27 @@ public class SecondaryMenuServiceImpl implements SecondaryMenuService {
             throw new SupermarketStaffException("删除失败");
         }
     }
-    
+
+    @Override
+    public List<SecondaryMenu> queryAll() throws SupermarketStaffException {
+        try {
+            List<SecondaryMenu> secondaryMenuList = secondaryMenuMapper.queryAll();
+            return secondaryMenuList;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("查询失败");
+        }
+    }
+
+    @Override
+    public List<SecondaryMenu> queryByPrimaryMenuId(int primaryMenuId) {
+        try {
+            List<SecondaryMenu> secondaryMenuList = secondaryMenuMapper.queryByPrimaryMenuId(primaryMenuId);
+            return secondaryMenuList;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("查询失败");
+        }
+    }
+
     private void isNull(SecondaryMenu secondaryMenu) {
         if (secondaryMenu == null) {
             throw new SupermarketStaffException("传入信息为空");

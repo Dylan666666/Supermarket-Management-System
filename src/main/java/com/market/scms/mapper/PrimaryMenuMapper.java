@@ -2,6 +2,8 @@ package com.market.scms.mapper;
 
 import com.market.scms.entity.staff.PrimaryMenu;
 
+import java.util.List;
+
 /**
  * @Author: Mr_OO
  * @Date: 2020/11/9 21:34
@@ -39,4 +41,11 @@ public interface PrimaryMenuMapper {
      * @return
      */
     int delete(int primaryMenuId);
+
+    /**
+     * 一键查询
+     * 
+     * @return
+     */
+    List<PrimaryMenu> queryAll();
 }

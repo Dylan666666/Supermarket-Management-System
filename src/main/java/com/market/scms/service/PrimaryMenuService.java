@@ -2,6 +2,8 @@ package com.market.scms.service;
 
 import com.market.scms.entity.staff.PrimaryMenu;
 
+import java.util.List;
+
 /**
  * @Author: Mr_OO
  * @Date: 2020/11/10 10:53
@@ -38,4 +40,11 @@ public interface PrimaryMenuService {
      * @return
      */
     int delete(int primaryMenuId);
+
+    /**
+     * 一键查询
+     *
+     * @return
+     */
+    List<PrimaryMenu> queryAll();
 }

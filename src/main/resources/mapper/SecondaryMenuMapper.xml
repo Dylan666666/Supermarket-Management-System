@@ -21,6 +21,22 @@
         secondary_menu_url = #{secondaryMenuUrl}
     </select>
 
+    <select id="queryAll" resultType="com.market.scms.entity.staff.SecondaryMenu">
+        SELECT 
+        *
+        FROM 
+        tb_secondary_menu
+    </select>
+
+    <select id="queryByPrimaryMenuId" resultType="com.market.scms.entity.staff.SecondaryMenu">
+        SELECT 
+        *
+        FROM 
+        tb_secondary_menu
+        WHERE 
+        primary_menu_id = #{primaryMenuId}
+    </select>
+
     <insert id="insert" parameterType="com.market.scms.entity.staff.SecondaryMenu">
         INSERT INTO
         tb_secondary_menu(secondary_menu_weight,primary_menu_id,

@@ -81,6 +81,16 @@ public class FunctionServiceImpl implements FunctionService {
         }
     }
 
+    @Override
+    public List<Function> queryAll() throws SupermarketStaffException {
+        try {
+            List<Function> res = functionMapper.queryAll();
+            return res;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("查询失败");
+        }
+    }
+
     private void isNull(Function function) {
         if (function == null) {
             throw new SupermarketStaffException("信息不能为空");
