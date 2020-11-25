@@ -238,11 +238,11 @@ public class StaffController {
             List<StaffA> staffAList = new ArrayList<>(list.size());
             for (SupermarketStaff staff : list) {
                 StaffA staffA = new StaffA();
-                Integer staffPositionId = staff.getStaffPosition();
-                if (staffPositionId != null) {
-                    StaffPosition staffPosition = staffPositionService.queryById(staff.getStaffPosition());
+                List<StaffPositionRelation> relationList = staffPositionRelationService.queryById(staff.getStaffId());
+                if (relationList.size() != 0) {
+                    Integer staffPositionId = relationList.get(0).getStaffPositionId();
+                    StaffPosition staffPosition = staffPositionService.queryById(staffPositionId);
                     BeanUtils.copyProperties(staffPosition, staffA);
-                    List<StaffPositionRelation> relationList = staffPositionRelationService.queryById(staff.getStaffId());
                     BeanUtils.copyProperties(relationList.get(0), staffA);
                 }
                 BeanUtils.copyProperties(staff, staffA);
