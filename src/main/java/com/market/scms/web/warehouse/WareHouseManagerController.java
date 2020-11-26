@@ -1009,7 +1009,7 @@ public class WareHouseManagerController {
     @PostMapping("/retaildeliverylist/retailgoodsdetails")
     @ResponseBody
     @RequiresPermissions("/retaildeliverylist/retailgoodsdetails")
-    public Map<String,Object> retailgoodsdetails(HttpServletRequest request) {
+    public Map<String,Object> retailGoodsDetails(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         String retailId = HttpServletRequestUtil.getString(request, "retailId");
         Long retailStockGoodsId = HttpServletRequestUtil.getLong(request, "retailStockGoodsId");
@@ -1021,7 +1021,9 @@ public class WareHouseManagerController {
         try {
             Retail retail = retailService.queryByGoodsId(retailId, retailStockGoodsId);
             if (retail == null) {
-                //TODO
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该批发单不存在，查看失败");
+                return modelMap;
             }
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);

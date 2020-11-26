@@ -350,10 +350,14 @@ public class JurisdictionController {
             return modelMap;
         }
         try {
-            if (staffJurisdictionService.delete(staffJurisdictionList.get(0).getStaffId()) == 0) {
-                modelMap.put("success", false);
-                modelMap.put("errMsg", "提交失败");
-                return modelMap;
+            int staffId = staffJurisdictionList.get(0).getStaffId();
+            List<StaffPositionRelation> staffPositionRelationList = staffPositionRelationService.queryById(staffId);
+            if (staffPositionRelationList.size() != 0) {
+                if (staffJurisdictionService.delete(staffJurisdictionList.get(0).getStaffId()) == 0) {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", "提交失败");
+                    return modelMap;
+                }
             }
             for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
                 int res = staffJurisdictionService.insert(staffJurisdiction);
@@ -494,10 +498,14 @@ public class JurisdictionController {
             return modelMap;
         }
         try {
-            if (staffJurisdictionService.delete(staffJurisdictionList.get(0).getStaffId()) == 0) {
-                modelMap.put("success", false);
-                modelMap.put("errMsg", "提交失败");
-                return modelMap;
+            int staffId = staffJurisdictionList.get(0).getStaffId();
+            List<StaffPositionRelation> staffPositionRelationList = staffPositionRelationService.queryById(staffId);
+            if (staffPositionRelationList.size() != 0) {
+                if (staffJurisdictionService.delete(staffJurisdictionList.get(0).getStaffId()) == 0) {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", "提交失败");
+                    return modelMap;
+                }
             }
             for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
                 int res = staffJurisdictionService.insert(staffJurisdiction);
