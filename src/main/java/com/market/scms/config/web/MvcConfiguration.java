@@ -54,7 +54,6 @@ public class MvcConfiguration implements WebMvcConfigurer, ApplicationContextAwa
                 HttpServletRequest request = (HttpServletRequest) req;
                 HttpServletResponse response = (HttpServletResponse) res;
                 String method = request.getMethod();
-                // this origin value could just as easily have come from a database
                 response.setHeader("Access-Control-Allow-Origin", "http://localhost:8081");
                 response.setHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, OPTIONS");
                 response.setHeader("Access-Control-Max-Age", "3600");
@@ -69,12 +68,10 @@ public class MvcConfiguration implements WebMvcConfigurer, ApplicationContextAwa
             }
 
             @Override
-            public void init(FilterConfig filterConfig) {
-            }
+            public void init(FilterConfig filterConfig) {}
 
             @Override
-            public void destroy() {
-            }
+            public void destroy() {}
         });
     }
     

@@ -2,10 +2,11 @@ package com.market.scms.web.staff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.bean.StaffA;
-import com.market.scms.entity.SupermarketStaff;
+import com.market.scms.entity.*;
 import com.market.scms.entity.staff.*;
 import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
+import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
 import com.market.scms.util.HttpServletRequestUtil;
 import com.market.scms.util.PasswordHelper;
@@ -50,6 +51,27 @@ public class StaffController {
     @Resource
     private StaffPositionService staffPositionService;
     
+    @Resource
+    private ExportBillService exportBillService;
+    
+    @Resource
+    private CouponService couponService;
+    
+    @Resource
+    private GoodsCategoryService goodsCategoryService;
+    
+    @Resource
+    private UnitService  unitService;
+    
+    @Resource
+    private GoodsService goodsService;
+
+    /**
+     * 1.1 职工注册
+     * 
+     * @param request
+     * @return
+     */
     @PostMapping("/staff/insert")
     @ResponseBody
     public Map<String,Object> insertStaff(HttpServletRequest request) {
@@ -80,6 +102,12 @@ public class StaffController {
         return modelMap;
     }
 
+    /**
+     * 1.2 职工登录
+     * 
+     * @param request
+     * @return
+     */
     @PostMapping("/staff/login")
     @ResponseBody
     @Transactional
@@ -158,6 +186,86 @@ public class StaffController {
         return modelMap;
     }
 
+    /**
+     * 1.3职工信息更新
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/staff/update")
+    @ResponseBody
+    @Transactional
+    public Map<String,Object> staffUpdate(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String staffAStr = HttpServletRequestUtil.getString(request, "staffA");
+        if (staffAStr == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "传入信息为空，提交修改失败");
+            return modelMap;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        StaffA staffA = null;
+        try {
+            staffA = mapper.readValue(staffAStr, StaffA.class);
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "信息更改失败-01");
+            return modelMap;
+        }
+        try {
+            SupermarketStaff staff = staffService.queryById(staffA.getStaffId());
+            if (staff == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该用户不存在");
+                return modelMap;
+            }
+            if (staffA.getStaffName() == null || staffA.getStaffPhone() == null
+                    || staffA.getStaffPassword() == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "必要信息不能为空");
+                return modelMap;
+            }
+            if (!staffA.getStaffPhone().equals(staff.getStaffPhone())) {
+                SupermarketStaff cur = staffService.queryStaffByPhone(staffA.getStaffPhone());
+                if (cur != null) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "该手机号已被注册,修改失败");
+                    return modelMap;
+                }
+                staff.setStaffPhone(staffA.getStaffPhone());
+                staff.setSalt(ByteSource.Util.bytes(staff.getStaffPhone()).toString());
+            }
+            if (!staffA.getStaffPassword().equals(staff.getStaffPassword())) {
+                staff.setStaffPassword(staffA.getStaffPassword());
+                new PasswordHelper().encryptPassword(staff);
+            }
+            if (staffA.getStaffName() != null) {
+                staff.setStaffName(staffA.getStaffName());
+            }
+            int res = staffService.updateStaff(staff);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "修改失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 1.4 职工退出
+     * 
+     * @param request
+     */
     @PostMapping("/logout")
     @ResponseBody
     public void staffLogout(HttpServletRequest request) {
@@ -167,6 +275,12 @@ public class StaffController {
         } catch (Exception e) {}
     }
 
+    /**
+     * 1.5 职工密码更改
+     * 
+     * @param request
+     * @return
+     */
     @PostMapping("/changePassword")
     @ResponseBody
     @Transactional
@@ -192,6 +306,7 @@ public class StaffController {
                 }
                 staff.setStaffPassword(newPassword);
                 helper.encryptPassword(staff);
+                staff.setSalt(ByteSource.Util.bytes(staff.getStaffPhone()).toString());
                 int res = staffService.updateStaff(staff);
                 if (res == 0) {
                     modelMap.put("success",false);
@@ -212,20 +327,25 @@ public class StaffController {
         return modelMap;
     }
 
-
     /**
-     * 1.2超级管理员 用户列表
-     * 
+     * 3.22职工 入库检查
+     *
      * @param request
      * @return
      */
-    @PostMapping("/stafflist")
+    @PostMapping("/exportinspect")
     @ResponseBody
-    @RequiresPermissions("/stafflist")
-    public Map<String,Object> staffQuery(HttpServletRequest request) {
-        Map<String,Object> modelMap = new HashMap<>(16);
+    @RequiresPermissions("/exportinspect")
+    public Map<String,Object> exportInspect(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        if (secondaryMenuId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败");
+            return modelMap;
+        }
         if (pageIndex < 0) {
             pageIndex = 0;
         }
@@ -233,112 +353,59 @@ public class StaffController {
             pageSize = 10000;
         }
         try {
-            List<SupermarketStaff> list = staffService
-                    .queryStaffByCondition(new SupermarketStaff(), pageIndex, pageSize);
-            List<StaffA> staffAList = new ArrayList<>(list.size());
-            for (SupermarketStaff staff : list) {
-                StaffA staffA = new StaffA();
-                List<StaffPositionRelation> relationList = staffPositionRelationService.queryById(staff.getStaffId());
-                if (relationList.size() != 0) {
-                    Integer staffPositionId = relationList.get(0).getStaffPositionId();
-                    StaffPosition staffPosition = staffPositionService.queryById(staffPositionId);
-                    BeanUtils.copyProperties(staffPosition, staffA);
-                    BeanUtils.copyProperties(relationList.get(0), staffA);
-                }
-                BeanUtils.copyProperties(staff, staffA);
-                staffAList.add(staffA);
-            }
-            int recordSum = staffService.countStaffAll();
-            modelMap.put("staffAList", staffAList);
-            modelMap.put("recordSum", recordSum);
-            if (pageIndex == 0) {
-                SecondaryMenu secondaryMenu = secondaryMenuService.queryByUrl("/stafflist");
-                List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenu.getSecondaryMenuId());
-                modelMap.put("functionList", functionList);
-            }
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<ExportBill> exportBillList = exportBillService.queryAll(pageIndex, pageSize);
+            List<ExportBill> exportBillListMax = exportBillService.queryAll(0, 10000);
+            modelMap.put("exportBillList", exportBillList);
+            modelMap.put("exportBillListCount", exportBillList.size());
+            modelMap.put("functionList", functionList);
+            modelMap.put("recordSum", exportBillListMax.size());
             modelMap.put("success", true);
-        } catch (SupermarketStaffException e) {
+        } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "查询失败");
+            modelMap.put("errMsg", e.getMessage());
             return modelMap;
         } catch (Exception e) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "查询失败");
+            modelMap.put("errMsg", "访问失败");
             return modelMap;
         }
         return modelMap;
     }
 
     /**
-     * 1.3超级管理员 用户列表 提交修改
+     * 3.23职工 入库检查 确认信息
      *
      * @param request
      * @return
      */
-    @PostMapping("/stafflist/modifycommit")
+    @PostMapping("/exportinspect/confirm")
     @ResponseBody
-    @Transactional
-    @RequiresPermissions("/stafflist/modifycommit")
-    public Map<String,Object> modifyCommit(HttpServletRequest request) {
+    @RequiresPermissions("/exportinspect/confirm")
+    public Map<String,Object> exportInspectConfirm(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
-        String staffAStr = HttpServletRequestUtil.getString(request, "staffA");
-        if (staffAStr == null) {
+        String exportBillId = HttpServletRequestUtil.getString(request, "exportBillId");
+        if (exportBillId == null) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "传入信息为空，提交修改失败");
-            return modelMap;
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        StaffA staffA = null;
-        try {
-            staffA = mapper.readValue(staffAStr, StaffA.class);
-        } catch (Exception e) {
-            modelMap.put("success",false);
-            modelMap.put("errMsg", "信息更改失败-01");
+            modelMap.put("errMsg", "不具备访问条件，访问失败");
             return modelMap;
         }
         try {
-            SupermarketStaff staff = staffService.queryById(staffA.getStaffId());
-            if (staff == null) {
+            ExportBill exportBill = exportBillService.queryByBillId(exportBillId);
+            if (exportBill == null) {
                 modelMap.put("success",false);
-                modelMap.put("errMsg", "该用户不存在");
+                modelMap.put("errMsg", "该入库单不存在");
                 return modelMap;
             }
-            if (staffA.getStaffName() == null || staffA.getStaffPhone() == null 
-                    || staffA.getStaffPassword() == null || staff.getStaffStatus() == null) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "必要信息不能为空");
-                return modelMap;
-            }
-            if (!staffA.getStaffPhone().equals(staff.getStaffPhone())) {
-                SupermarketStaff cur = staffService.queryStaffByPhone(staffA.getStaffPhone());
-                if (cur != null) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "该手机号已被注册,修改失败");
-                    return modelMap;
-                }
-                staff.setStaffPhone(staffA.getStaffPhone());
-                staff.setSalt(ByteSource.Util.bytes(staff.getStaffPhone()).toString());
-            }
-            if (!staffA.getStaffPassword().equals(staff.getStaffPassword())) {
-                staff.setStaffPassword(staffA.getStaffPassword());
-                new PasswordHelper().encryptPassword(staff);
-            }
-            if (staffA.getStaffName() != null) {
-                staff.setStaffName(staffA.getStaffName());
-            } 
-            StaffStatusStateEnum staffStatusStateEnum = StaffStatusStateEnum.stateOf(staffA.getStaffStatus());
-            if (staffStatusStateEnum == null) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "该状态非法,修改失败");
-                return modelMap;
-            }
-            staff.setStaffStatus(staffA.getStaffStatus());
-            int res = staffService.updateStaff(staff);
-            if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "修改失败");
-                return modelMap;
-            }
+            Coupon coupon = couponService.queryByCouponId(exportBill.getExportBillCouponId());
+            Goods goods = goodsService.queryById(coupon.getCouponGoodsId());
+            GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+            Unit unit = unitService.queryById(coupon.getCouponUnitId());
+            modelMap.put("exportBill", exportBill);
+            modelMap.put("coupon", coupon);
+            modelMap.put("goods", goods);
+            modelMap.put("category", category);
+            modelMap.put("unit", unit);
             modelMap.put("success", true);
         } catch (SupermarketStaffException e) {
             modelMap.put("success",false);
@@ -346,152 +413,48 @@ public class StaffController {
             return modelMap;
         } catch (Exception e) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "提交失败");
-            return modelMap;
-        }
-        return modelMap;
-    }
-    
-    /**
-     * 1.4超级管理员 用户列表 删除
-     *
-     * @param request
-     * @return
-     */
-    @PostMapping("/stafflist/deletestaff")
-    @ResponseBody
-    @Transactional
-    @RequiresPermissions("/stafflist/deletestaff")
-    public Map<String,Object> deleteStaff(HttpServletRequest request) {
-        Map<String,Object> modelMap = new HashMap<>(16);
-        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
-        try {
-            int res = staffService.deleteStaff(staffId);
-            if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "删除失败");
-                return modelMap;
-            }
-            List<StaffPositionRelation> staffPositionRelationList = staffPositionRelationService.queryById(staffId);
-            if (staffPositionRelationList.size() != 0) {
-                res = staffPositionRelationService.delete(staffPositionRelationList.get(0));
-                if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "删除失败");
-                    return modelMap;
-                }
-            }
-            modelMap.put("success", true);
-        } catch (SupermarketStaffException e) {
-            modelMap.put("success",false);
-            modelMap.put("errMsg", "删除失败");
-            return modelMap;
-        }
-        return modelMap;
-    }
-    
-    /**
-     * 1.5超级管理员 用户列表 角色分配
-     *
-     * @param request
-     * @return
-     */
-    @PostMapping("/stafflist/positiondistribution")
-    @ResponseBody
-    @Transactional
-    @RequiresPermissions("/stafflist/positiondistribution")
-    public Map<String,Object> positionDistribution(HttpServletRequest request) {
-        Map<String,Object> modelMap = new HashMap<>(16);
-        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
-        if (staffId < 0) {
-            modelMap.put("success",false);
-            modelMap.put("errMsg", "提供信息为空，查询失败");
-            return modelMap;
-        }
-        try {
-            List<StaffPosition> staffPositionList = staffPositionService.queryAll();
-            List<StaffPositionRelation> staffPositionRelationList = staffPositionRelationService.queryById(staffId);
-            if (staffPositionRelationList.size() != 0) {
-                modelMap.put("staffPositionRelation", staffPositionRelationList.get(0));   
-            } else {
-                modelMap.put("staffPositionRelation", null);
-            }
-            modelMap.put("staffPositionList", staffPositionList);
-            modelMap.put("success", true);
-        } catch (SupermarketStaffException e) {
-            modelMap.put("success",false);
-            modelMap.put("errMsg", e.getMessage());
+            modelMap.put("errMsg", "访问失败");
             return modelMap;
         }
         return modelMap;
     }
 
     /**
-     * 1.6超级管理员 用户列表 角色分配提交
+     * 3.24职工 入库检查 提交
      *
      * @param request
      * @return
      */
-    @PostMapping("/stafflist/positiondistributioncommit")
+    @PostMapping("/exportinspect/submit")
     @ResponseBody
-    @Transactional
-    @RequiresPermissions("/stafflist/positiondistributioncommit")
-    public Map<String,Object> positionDistributionCommit(HttpServletRequest request) {
-        Map<String,Object> modelMap = new HashMap<>(16);
-        String staffPositionRelationStr = HttpServletRequestUtil.getString(request, "staffPositionRelation");
-        if (staffPositionRelationStr == null) {
+    @RequiresPermissions("/exportinspect/submit")
+    public Map<String,Object> submit(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String exportBillStr = HttpServletRequestUtil.getString(request, "exportBill");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (exportBillStr == null || staffId < 0) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "信息为空，提交失败");
+            modelMap.put("errMsg", "不具备访问条件，提交失败");
             return modelMap;
         }
+        ExportBill exportBill = null;
         ObjectMapper mapper = new ObjectMapper();
-        StaffPositionRelation staffPositionRelation = null;
         try {
-            staffPositionRelation = mapper.readValue(staffPositionRelationStr, StaffPositionRelation.class);
+            exportBill = mapper.readValue(exportBillStr, ExportBill.class);
+            if (exportBill == null) {
+                throw new Exception();
+            }
         } catch (Exception e) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "信息更改失败-01");
+            modelMap.put("errMsg", "提交失败-01");
             return modelMap;
         }
         try {
-            SupermarketStaff curStaff = staffService.queryById(staffPositionRelation.getStaffId());
-            if (curStaff == null) {
+            int res = exportBillService.update(exportBill);
+            if (res == 0) {
                 modelMap.put("success",false);
-                modelMap.put("errMsg", "该职工不存在");
+                modelMap.put("errMsg", "提交失败");
                 return modelMap;
-            }
-            List<StaffPositionRelation> cur = staffPositionRelationService.queryById(staffPositionRelation.getStaffId());
-            if (cur.size() == 0) {
-                int res = staffPositionRelationService.insert(staffPositionRelation);
-                if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "修改失败");
-                    return modelMap;
-                }
-                SupermarketStaff staff = staffService.queryById(staffPositionRelation.getStaffId());
-                staff.setStaffStatus(StaffStatusStateEnum.NORMAL.getState());
-                res = staffService.updateStaff(staff);
-                if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "修改失败");
-                    return modelMap;
-                }
-            } else {
-                if (cur.get(0).getStaffPositionStatus().equals(staffPositionRelation.getStaffPositionStatus()) &&
-                        cur.get(0).getStaffPositionId().equals(staffPositionRelation.getStaffPositionId())) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "信息无变化，更改失败");
-                    return modelMap;
-                }
-                //只是状态改变
-                if (cur.get(0).getStaffPositionId().equals(staffPositionRelation.getStaffPositionId())) {
-                    staffPositionRelation.setStaffPositionId(null);
-                    staffPositionRelationService.update(staffPositionRelation);
-                } else {
-                    //只是职位修改
-                    staffPositionRelationService.delete(cur.get(0));
-                    staffPositionRelationService.insert(staffPositionRelation);
-                }
             }
             modelMap.put("success", true);
         } catch (SupermarketStaffException e) {
@@ -500,9 +463,10 @@ public class StaffController {
             return modelMap;
         } catch (Exception e) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "修改失败！");
+            modelMap.put("errMsg", "访问失败");
             return modelMap;
         }
         return modelMap;
     }
+    
 }

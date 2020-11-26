@@ -6,7 +6,6 @@ import com.market.scms.bean.FunctionTree;
 import com.market.scms.bean.PrimaryMenuTree;
 import com.market.scms.bean.SecondaryMenuTree;
 import com.market.scms.bean.StaffA;
-import com.market.scms.entity.Coupon;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.entity.staff.*;
 import com.market.scms.enums.StaffStatusStateEnum;
@@ -15,7 +14,6 @@ import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
 import com.market.scms.util.HttpServletRequestUtil;
 import com.market.scms.util.PasswordHelper;
-import net.sf.saxon.expr.Literal;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
+ * RBAC 二类 - 权限
+ * 
  * @Author: Mr_OO
  * @Date: 2020/11/25 16:21
  */
