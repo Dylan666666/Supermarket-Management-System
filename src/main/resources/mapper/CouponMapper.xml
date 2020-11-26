@@ -20,6 +20,15 @@
         WHERE 
         coupon_staff_id = #{couponStaffId}
     </select>
+
+    <select id="queryByTime" resultType="com.market.scms.entity.Coupon">
+        SELECT 
+        *
+        FROM 
+        tb_coupon
+        WHERE 
+        coupon_time = #{couponTime}
+    </select>
     
     <insert id="insert" parameterType="com.market.scms.entity.Coupon"
     useGeneratedKeys="true" keyColumn="coupon_id" keyProperty="couponId">
@@ -46,6 +55,33 @@
         *
         FROM 
         tb_coupon
+        ORDER BY coupon_time DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.Coupon">
+        SELECT 
+        *
+        FROM 
+        tb_coupon c
+        <where>
+            <if test="couponCondition.couponId != null">
+                AND
+                c.coupon_id = #{couponCondition.couponId}
+            </if>
+            <if test="couponCondition.couponGoodsId != null">
+                AND
+                c.coupon_goods_id = #{couponCondition.couponGoodsId}
+            </if>
+            <if test="couponCondition.couponStatus != null">
+                AND
+                c.coupon_status = #{couponCondition.couponStatus}
+            </if>
+            <if test="couponCondition.couponStaffId != null">
+                AND
+                c.coupon_staff_id = #{couponCondition.couponStaffId}
+            </if>
+        </where>
         ORDER BY coupon_time DESC 
         LIMIT #{rowIndex},#{pageSize}
     </select>

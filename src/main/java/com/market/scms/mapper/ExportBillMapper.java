@@ -58,4 +58,16 @@ public interface ExportBillMapper {
      * @return
      */
     List<ExportBill> queryAll(@Param("rowIndex") int rowIndex,@Param("pageSize") int pageSize);
+
+    /**
+     * 模糊查询入库单
+     * 
+     * @param exportBillCondition
+     * @param rowIndex
+     * @param pageSize
+     * @return
+     */
+    List<ExportBill> queryByCondition(@Param("exportBillCondition") ExportBill exportBillCondition,
+                                      @Param("rowIndex") int rowIndex,
+                                      @Param("pageSize") int pageSize);
 }

@@ -31,8 +31,12 @@ public class CouponMapperTest {
         coupon.setCouponUnitId(1);
         System.out.println(couponMapper.insert(coupon));
     }
-    
-    
+
+    @Test
+    public void query2() {
+        System.out.println(couponMapper.queryAll(0, 100).get(0).getCouponNum());
+        System.out.println(couponMapper.queryByCondition(new Coupon(), 0, 100).get(0).getCouponNum());
+    }
     
     @Test
     public void query() {

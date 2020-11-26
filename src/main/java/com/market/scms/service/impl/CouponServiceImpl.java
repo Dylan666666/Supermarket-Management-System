@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.cache.JedisUtil;
 import com.market.scms.entity.Coupon;
+import com.market.scms.entity.ExportBill;
 import com.market.scms.enums.CouponStatusStateEnum;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.CouponMapper;
 import com.market.scms.service.CacheService;
 import com.market.scms.service.CouponService;
+import com.market.scms.service.ExportBillService;
 import com.market.scms.util.PageCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,9 @@ public class CouponServiceImpl implements CouponService {
     
     @Resource
     private CouponMapper couponMapper;
+    
+    @Resource
+    private ExportBillService exportBillService;
 
     @Resource
     private JedisUtil.Keys jedisKeys;
@@ -44,13 +49,22 @@ public class CouponServiceImpl implements CouponService {
         if (coupon != null && coupon.getCouponGoodsId() != null && coupon.getCouponNum() != null &&
         coupon.getCouponStaffId() != null && coupon.getCouponUnitId() != null) {
             try {
-                coupon.setCouponTime(new Date());
+                Date time = new Date();
+                coupon.setCouponTime(time);
                 coupon.setCouponStatus(CouponStatusStateEnum.ORDERING.getState());
                 int res = couponMapper.insert(coupon);
                 if (res == 0) {
                     throw new WareHouseManagerException("添加订单失败");
                 }
                 cacheService.removeFromCache(COUPON_LIST_KEY);
+                Coupon couponNow = couponMapper.queryByTime(time);
+                ExportBill exportBill = new ExportBill();
+                exportBill.setExportBillCouponId(couponNow.getCouponId());
+                res = exportBillService.insert(exportBill, coupon.getCouponGoodsId());
+                if (res == 0) {
+                    throw new WareHouseManagerException("添加订单失败");
+                }
+                cacheService.removeFromCache(ExportBillService.EXPORT_BILL_KEY);
                 return res;
             } catch (WareHouseManagerException e) {
                 throw new WareHouseManagerException("添加订单失败");
@@ -146,5 +160,21 @@ public class CouponServiceImpl implements CouponService {
             } 
         }
         return res;
+    }
+
+    @Override
+    public List<Coupon> queryByCondition(Coupon couponCondition, int pageIndex, int pageSize) 
+            throws WareHouseManagerException {
+        if (couponCondition != null) {
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            try {
+                List<Coupon> couponList = couponMapper.queryByCondition(couponCondition, rowIndex, pageSize);
+                return couponList;
+            } catch (WareHouseManagerException e) {
+                throw new WareHouseManagerException("查询失败");
+            }
+        } else {
+            throw new WareHouseManagerException("查询失败");
+        }
     }
 }

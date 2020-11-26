@@ -55,8 +55,22 @@ public interface ExportBillService {
 
     /**
      * 一键查询入库单
-     *
+     * 
+     * @param pageIndex
+     * @param pageSize
      * @return
      */
     List<ExportBill> queryAll(int pageIndex, int pageSize);
+
+    /**
+     * 模糊查询入库单
+     *
+     * @param exportBillCondition
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
+    List<ExportBill> queryByCondition(ExportBill exportBillCondition,
+                                      int pageIndex,
+                                      int pageSize);
 }

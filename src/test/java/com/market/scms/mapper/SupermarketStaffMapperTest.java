@@ -55,7 +55,6 @@ public class SupermarketStaffMapperTest {
     @Test
     public void queryByConditionTest() {
         SupermarketStaff staff = new SupermarketStaff();
-        staff.setStaffName("666");
         List<SupermarketStaff> staffList = supermarketStaffMapper.queryStaffByCondition(staff, 0, 100);
         for (SupermarketStaff supermarketStaff : staffList) {
             System.out.println(supermarketStaff.getStaffName());

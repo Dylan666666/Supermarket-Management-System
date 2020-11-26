@@ -1,7 +1,6 @@
 package com.market.scms.service;
 
 import com.market.scms.entity.Coupon;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -53,4 +52,14 @@ public interface CouponService {
      * @return
      */
     List<Coupon> queryAll(int pageIndex, int pageSize);
+
+    /**
+     * 订货单模糊查询
+     *
+     * @param couponCondition
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
+    List<Coupon> queryByCondition(Coupon couponCondition, int pageIndex, int pageSize);
 }

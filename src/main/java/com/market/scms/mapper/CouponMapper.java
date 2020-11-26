@@ -3,6 +3,7 @@ package com.market.scms.mapper;
 import com.market.scms.entity.Coupon;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,4 +51,24 @@ public interface CouponMapper {
      * @return
      */
     List<Coupon> queryAll(@Param("rowIndex") int rowIndex, @Param("pageSize") int pageSize);
+
+    /**
+     * 插入时，立刻查询生成入库单时使用
+     * 
+     * @param couponTime
+     * @return
+     */
+    Coupon queryByTime(Date couponTime);
+
+    /**
+     * 订货单模糊查询
+     *
+     * @param couponCondition
+     * @param rowIndex
+     * @param pageSize
+     * @return
+     */
+    List<Coupon> queryByCondition(@Param("couponCondition")Coupon couponCondition,
+                                  @Param("rowIndex")int rowIndex,
+                                  @Param("pageSize")int pageSize);
 }

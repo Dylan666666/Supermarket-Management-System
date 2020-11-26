@@ -1148,7 +1148,7 @@ public class WareHouseManagerController {
     }
 
     /**
-     * 3.23职工 入库检查 确认信息
+     * 3.24职工 入库检查 提交
      *
      * @param request
      * @return
@@ -1197,5 +1197,283 @@ public class WareHouseManagerController {
         return modelMap;
     }
     
-    
+    /**
+     * 3.25库房管理员订货请求
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchase/order")
+    @ResponseBody
+    @RequiresPermissions("/purchase/order")
+    public Map<String,Object> purchaseOrder(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String couponStr = HttpServletRequestUtil.getString(request, "coupon");
+        Coupon coupon = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            coupon = objectMapper.readValue(couponStr, Coupon.class);
+            if (coupon == null) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败-01");
+            return modelMap;
+        }
+        try {
+            int res = couponService.insert(coupon);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "提交失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.26库房管理员补货请求
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchase/replenish")
+    @ResponseBody
+    @RequiresPermissions("/purchase/replenish")
+    public Map<String,Object> purchaseReplenish(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String couponStr = HttpServletRequestUtil.getString(request, "coupon");
+        Coupon coupon = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            coupon = objectMapper.readValue(couponStr, Coupon.class);
+            if (coupon == null) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "补货失败-01");
+            return modelMap;
+        }
+        try {
+            int res = couponService.insert(coupon);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "补货失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "补货失败 ");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.27订货单模糊查询
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchase/queryOrder")
+    @ResponseBody
+    @RequiresPermissions("/purchase/queryOrder")
+    public Map<String,Object> purchaseQueryOrder(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String couponStr = HttpServletRequestUtil.getString(request, "coupon");
+        Coupon coupon = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            coupon = objectMapper.readValue(couponStr, Coupon.class);
+            if (coupon == null) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败-01");
+            return modelMap;
+        }
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            List<Coupon> couponList = couponService.queryByCondition(coupon, pageIndex, pageSize);
+            modelMap.put("couponList", couponList);         
+            modelMap.put("couponListCount", couponList.size());         
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败 ");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.28入库单模糊查询
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchase/queryExportBill")
+    @ResponseBody
+    @RequiresPermissions("/purchase/queryExportBill")
+    public Map<String,Object> purchaseQueryExportBill(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String exportBillStr = HttpServletRequestUtil.getString(request, "exportBill");
+        ExportBill exportBill = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            exportBill = objectMapper.readValue(exportBillStr, ExportBill.class);
+            if (exportBill == null) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "查询失败-01");
+            return modelMap;
+        }
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            List<ExportBill> billList = exportBillService.queryByCondition(exportBill, pageIndex, pageSize);
+            modelMap.put("billList", billList);
+            modelMap.put("billListCount", billList.size());
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败 ");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.29入库单信息填写
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchase/insertExportBill")
+    @ResponseBody
+    @RequiresPermissions("/purchase/insertExportBill")
+    public Map<String,Object> purchaseInsertExportBill(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String exportBillStr = HttpServletRequestUtil.getString(request, "exportBill");
+        ExportBill exportBill = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            exportBill = objectMapper.readValue(exportBillStr, ExportBill.class);
+            if (exportBill == null) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "提交失败-01");
+            return modelMap;
+        }
+        try {
+            int res = exportBillService.update(exportBill);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "提交失败");
+                return modelMap;
+            }
+            List<ExportBill> billList = exportBillService.queryAll(0, 10000);
+            modelMap.put("billList", billList);
+            modelMap.put("billListCount", billList.size());
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 3.29入库单信息填写
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/purchase/updateBillState")
+    @ResponseBody
+    @RequiresPermissions("/purchase/updateBillState")
+    public Map<String,Object> purchaseUpdateBillState(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String exportBillStr = HttpServletRequestUtil.getString(request, "exportBill");
+        ExportBill exportBill = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            exportBill = objectMapper.readValue(exportBillStr, ExportBill.class);
+            if (exportBill == null || exportBill.getExportBillCouponId() == null || exportBill.getExportBillStatus() == null) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "提交失败-01");
+            return modelMap;
+        }
+        try {
+            ExportBill cur = new ExportBill();
+            exportBill.setExportBillCouponId(exportBill.getExportBillCouponId());
+            exportBill.setExportBillStatus(exportBill.getExportBillStatus());
+            int res = exportBillService.update(cur);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "更改失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
 }

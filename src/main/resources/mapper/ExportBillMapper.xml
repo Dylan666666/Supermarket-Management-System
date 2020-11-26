@@ -33,7 +33,7 @@
             <if test="exportBillMark != null"> export_bill_mark = #{exportBillMark}</if>
         </set>
         WHERE
-        export_bill_id = #{exportBillId}
+        export_bill_coupon_id = #{exportBillCouponId}
     </update>
     
     <select id="queryByBillId" resultType="com.market.scms.entity.ExportBill">
@@ -68,6 +68,45 @@
         *
         FROM 
         tb_export_bill
+        ORDER BY export_bill_id DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.ExportBill">
+        SELECT 
+        *
+        FROM 
+        tb_export_bill c
+        <where>
+            <if test="exportBillCondition.exportBillId != null">
+                AND
+                c.export_bill_id = #{exportBillCondition.exportBillId}
+            </if>
+            <if test="exportBillCondition.exportBillCouponId != null">
+                AND
+                c.export_bill_coupon_id = #{exportBillCondition.exportBillCouponId}
+            </if>
+            <if test="exportBillCondition.exportBillSupplierId != null">
+                AND
+                c.export_bill_supplier_id = #{exportBillCondition.exportBillSupplierId}
+            </if>
+            <if test="exportBillCondition.exportBillGoodsBatchNumber != null">
+                AND
+                c.export_bill_goods_batch_number = #{exportBillCondition.exportBillGoodsBatchNumber}
+            </if>
+            <if test="exportBillCondition.exportBillStatus != null">
+                AND
+                c.export_bill_status = #{exportBillCondition.exportBillStatus}
+            </if>
+            <if test="exportBillCondition.exportConfirmStaffId != null">
+                AND
+                c.export_confirm_staff_id = #{exportBillCondition.exportConfirmStaffId}
+            </if>
+            <if test="exportBillCondition.exportSubmitStaffId != null">
+                AND
+                c.export_submit_staff_id = #{exportBillCondition.exportSubmitStaffId}
+            </if>
+        </where>
         ORDER BY export_bill_id DESC 
         LIMIT #{rowIndex},#{pageSize}
     </select>
