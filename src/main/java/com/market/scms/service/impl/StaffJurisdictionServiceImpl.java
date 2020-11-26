@@ -56,7 +56,21 @@ public class StaffJurisdictionServiceImpl implements StaffJurisdictionService {
             throw new SupermarketStaffException("更新失败");
         }
     }
-    
+
+    @Override
+    public int delete(int staffId) throws SupermarketStaffException {
+        try {
+            int res = staffJurisdictionMapper.delete(staffId);
+            if (res == 0) {
+                throw new SupermarketStaffException("删除职工功能信息失败");
+            }
+            return res;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("删除职工功能信息失败");
+        }
+    }
+
+
     private void isNull(StaffJurisdiction staffJurisdiction) {
         if (staffJurisdiction == null) {
             throw new SupermarketStaffException("传入信息为空");

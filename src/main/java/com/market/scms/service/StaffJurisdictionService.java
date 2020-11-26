@@ -32,4 +32,12 @@ public interface StaffJurisdictionService {
      * @return
      */
     int update(StaffJurisdiction staffJurisdiction);
+
+    /**
+     * 删除功能权限
+     *
+     * @param staffId
+     * @return
+     */
+    int delete(int staffId);
 }

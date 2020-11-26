@@ -1,10 +1,12 @@
 package com.market.scms.web.supper;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.bean.FunctionTree;
 import com.market.scms.bean.PrimaryMenuTree;
 import com.market.scms.bean.SecondaryMenuTree;
 import com.market.scms.bean.StaffA;
+import com.market.scms.entity.Coupon;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.entity.staff.*;
 import com.market.scms.enums.StaffStatusStateEnum;
@@ -13,9 +15,11 @@ import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
 import com.market.scms.util.HttpServletRequestUtil;
 import com.market.scms.util.PasswordHelper;
+import net.sf.saxon.expr.Literal;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.BeanUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -260,7 +264,6 @@ public class JurisdictionController {
             //三层顺序查找并封装
             //一级
             List<PrimaryMenuTree> primaryMenuTreeList = new ArrayList<>(primaryMenuList.size());
-            System.out.println("primaryMenuList.size() = " + primaryMenuList.size());
             
             for (PrimaryMenu primaryMenu : primaryMenuList) {
                 PrimaryMenuTree primaryMenuTree = new PrimaryMenuTree();
@@ -306,7 +309,6 @@ public class JurisdictionController {
                     }
                 }
             }
-            
             modelMap.put("primaryMenuTreeList", primaryMenuTreeList);
             modelMap.put("success", true);
         } catch (SupermarketStaffException e) {
@@ -318,7 +320,203 @@ public class JurisdictionController {
             modelMap.put("errMsg", "访问失败");
             return modelMap;
         }
-        
+        return modelMap;
+    }
+
+    /**
+     * 1.5超级管理员 用户列表（权限管理） 权限分配提交
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stafflistjurisdiction/jurisdictiondistributioncommit")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stafflistjurisdiction/jurisdictiondistributioncommit")
+    public Map<String,Object> jurisdictionDistributionCommit(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String staffJurisdictionListStr = HttpServletRequestUtil.getString(request, "staffJurisdictionList");
+        List<StaffJurisdiction> staffJurisdictionList = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, StaffJurisdiction.class);
+            staffJurisdictionList = mapper.readValue(staffJurisdictionListStr, javaType);
+            if (staffJurisdictionList.size() == 0) {
+                throw new SupermarketStaffException("传入无数据,提交失败");
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败-01");
+            return modelMap;
+        }
+        try {
+            if (staffJurisdictionService.delete(staffJurisdictionList.get(0).getStaffId()) == 0) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "提交失败");
+                return modelMap;
+            }
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                int res = staffJurisdictionService.insert(staffJurisdiction);
+                if (res == 0) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "提交失败");
+                    return modelMap;
+                }
+            }
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 1.6超级管理员 用户列表（权限管理） 权限删除
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stafflistjurisdiction/jurisdictiondelete")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stafflistjurisdiction/jurisdictiondelete")
+    public Map<String,Object> jurisdictionDelete(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (staffId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败-01");
+            return modelMap;
+        }
+        try {
+            //记录一级和二级的ID
+            Set<Integer> secondNumSet = new HashSet<>();
+            Set<Integer> primaryNumSet = new HashSet<>();
+            List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
+            List<FunctionTree> functionTreeList = new ArrayList<>(staffJurisdictionList.size());
+            
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                FunctionTree functionTree = new FunctionTree();
+                BeanUtils.copyProperties(function, functionTree);
+                functionTree.setIsSelected(1);
+                functionTreeList.add(functionTree);
+                secondNumSet.add(function.getSecondaryMenuId());
+            }
+            
+            List<SecondaryMenuTree> secondaryMenuTreeList = new ArrayList<>(secondNumSet.size());
+            Map<Integer, List<FunctionTree>> secondMap = new HashMap<>(secondNumSet.size());
+            for (Integer integer : secondNumSet) {
+                secondMap.put(integer,  new ArrayList<FunctionTree>());
+                SecondaryMenu secondaryMenu = secondaryMenuService.queryById(integer);
+                SecondaryMenuTree secondaryMenuTree = new SecondaryMenuTree();
+                BeanUtils.copyProperties(secondaryMenu, secondaryMenuTree);
+                secondaryMenuTreeList.add(secondaryMenuTree);
+                primaryNumSet.add(secondaryMenu.getPrimaryMenuId());
+            }
+            for (FunctionTree functionTree : functionTreeList) {
+                List<FunctionTree> curFunctionList = secondMap
+                        .getOrDefault(functionTree.getSecondaryMenuId(), new ArrayList<FunctionTree>());
+                curFunctionList.add(functionTree);
+                secondMap.put(functionTree.getSecondaryMenuId(), curFunctionList);
+            }
+            
+            //赋一级菜单集合
+            for (SecondaryMenuTree secondaryMenuTree : secondaryMenuTreeList) {
+                secondaryMenuTree.setFunctionTreeList(secondMap.get(secondaryMenuTree.getSecondaryMenuId()));
+            }
+
+            List<PrimaryMenuTree> primaryMenuTreeList = new ArrayList<>();
+            Map<Integer, List<SecondaryMenuTree>> primaryMap = new HashMap<>(primaryNumSet.size());
+            for (Integer integer : primaryNumSet) {
+                primaryMap.put(integer, new ArrayList<SecondaryMenuTree>());
+                PrimaryMenu primaryMenu = primaryMenuService.queryById(integer);
+                PrimaryMenuTree primaryMenuTree = new PrimaryMenuTree();
+                BeanUtils.copyProperties(primaryMenu, primaryMenuTree);
+                primaryMenuTreeList.add(primaryMenuTree);
+            }
+
+            for (SecondaryMenuTree secondaryMenuTree : secondaryMenuTreeList) {
+                List<SecondaryMenuTree> curSecondaryMenuTreeList = primaryMap
+                        .getOrDefault(secondaryMenuTree.getPrimaryMenuId(), new ArrayList<SecondaryMenuTree>());
+                curSecondaryMenuTreeList.add(secondaryMenuTree);
+                primaryMap.put(secondaryMenuTree.getPrimaryMenuId(), curSecondaryMenuTreeList);
+            }
+
+            //赋二级菜单集合
+            for (PrimaryMenuTree primaryMenuTree : primaryMenuTreeList) {
+                primaryMenuTree.setSecondaryMenuTreeList(primaryMap.get(primaryMenuTree.getPrimaryMenuId()));
+            }
+            modelMap.put("success", true);
+            modelMap.put("primaryMenuTreeList", primaryMenuTreeList);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+    
+    /**
+     * 1.7超级管理员 用户列表（权限管理） 权限删除提交
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stafflistjurisdiction/jurisdictiondeletecommit")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stafflistjurisdiction/jurisdictiondeletecommit")
+    public Map<String,Object> jurisdictionDeleteCommit(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String staffJurisdictionListStr = HttpServletRequestUtil.getString(request, "staffJurisdictionList");
+        List<StaffJurisdiction> staffJurisdictionList = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, StaffJurisdiction.class);
+            staffJurisdictionList = mapper.readValue(staffJurisdictionListStr, javaType);
+            if (staffJurisdictionList.size() == 0) {
+                throw new SupermarketStaffException("传入无数据,提交失败");
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败-01");
+            return modelMap;
+        }
+        try {
+            if (staffJurisdictionService.delete(staffJurisdictionList.get(0).getStaffId()) == 0) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "提交失败");
+                return modelMap;
+            }
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                int res = staffJurisdictionService.insert(staffJurisdiction);
+                if (res == 0) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "提交失败");
+                    return modelMap;
+                }
+            }
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
+        }
         return modelMap;
     }
 }
