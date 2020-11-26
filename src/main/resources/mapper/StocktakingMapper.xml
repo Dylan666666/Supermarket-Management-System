@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.StocktakingMapper">
+    <insert id="insert" parameterType="com.market.scms.entity.Stocktaking">
+        INSERT INTO
+        tb_stocktaking(stocktaking_id,stocktaking_stock_goods_id,stock_num,
+        stocktaking_num,stocking_staff_id,stocktaking_status,stocking_remarks,
+        stocking_time,stocktaking_profit_loss_status,stocking_price)
+        VALUES 
+        (#{stocktakingId},#{stocktakingStockGoodsId},#{stockNum},#{stocktakingNum}
+        ,#{stocktakingStaffId},#{stocktakingStatus},#{stocktakingRemarks},#{stocktakingTime},
+        #{stocktakingProfitLossStatus},#{stocktakingPrice})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.Stocktaking">
+        UPDATE
+        tb_stocktaking
+        <set>
+            <if test="stockNum != null"> stock_num = #{stockNum},</if>
+            <if test="stocktakingNum != null"> stocktaking_num = #{stocktakingNum},</if>
+            <if test="stocktakingStaffId"> stocking_staff_id = #{stocktakingStaffId},</if>
+            <if test="stocktakingStatus != null"> stocktaking_status = #{stocktakingStatus},</if>
+            <if test="stocktakingRemarks != null"> stocking_remarks = #{stocktakingRemarks},</if>
+            <if test="stocktakingProfitLossStatus != null"> stocktaking_profit_loss_status = #{stocktakingProfitLossStatus},</if>
+            <if test="stocktakingPrice != null"> stocking_price = #{stocktakingPrice}</if>
+        </set>
+        WHERE
+        stocktaking_id = #{stocktakingId}
+        AND
+        stocktaking_stock_goods_id = #{stocktakingStockGoodsId}
+    </update>
+
+    <select id="queryById" resultType="com.market.scms.entity.Stocktaking">
+        SELECT 
+        *
+        FROM 
+        tb_stocktaking
+        WHERE 
+        stocktaking_id = #{stocktakingId}
+        AND
+        stocktaking_stock_goods_id = #{stocktakingStockGoodsId}
+    </select>
+
+    <select id="queryAll" resultType="com.market.scms.entity.Stocktaking">
+        SELECT 
+        *
+        FROM 
+        tb_stocktaking
+        ORDER BY stocking_time DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.Stocktaking">
+        SELECT 
+        *
+        FROM
+        tb_stocktaking s
+        <where>
+            <if test="stocktakingCondition.stocktakingId != null">
+                AND
+                s.stocktaking_id = #{stocktakingCondition.stocktakingId}
+            </if>
+            <if test="stocktakingCondition.stocktakingStockGoodsId != null">
+                AND
+                s.stocktaking_stock_goods_id = #{stocktakingCondition.stocktakingStockGoodsId}
+            </if>
+            <if test="stocktakingCondition.stocktakingStatus != null">
+                AND
+                s.stocktaking_status = #{stocktakingCondition.stocktakingStatus}
+            </if>
+            <if test="stocktakingCondition.stocktakingProfitLossStatus != null">
+                AND
+                s.stocktaking_profit_loss_status = #{stocktakingCondition.stocktakingProfitLossStatus}
+            </if>
+        </where>
+        ORDER BY stocking_time DESC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="int">
+        SELECT 
+        count(*)
+        FROM 
+        tb_stocktaking
+        WHERE 
+        DATE_FORMAT(stocking_time,'%Y-%m-%d') = #{dateFormat}
+    </select>
+
+</mapper>

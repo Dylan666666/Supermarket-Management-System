@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class Stocktaking {
     private Long stocktakingId;
-    private Long stocktakingStockGoodId;
+    private Long stocktakingStockGoodsId;
     private Integer stockNum;
     private Integer stocktakingNum;
     private Long stocktakingStaffId;
@@ -28,12 +28,12 @@ public class Stocktaking {
         this.stocktakingId = stocktakingId;
     }
 
-    public Long getStocktakingStockGoodId() {
-        return stocktakingStockGoodId;
+    public Long getStocktakingStockGoodsId() {
+        return stocktakingStockGoodsId;
     }
 
-    public void setStocktakingStockGoodId(Long stocktakingStockGoodId) {
-        this.stocktakingStockGoodId = stocktakingStockGoodId;
+    public void setStocktakingStockGoodsId(Long stocktakingStockGoodsId) {
+        this.stocktakingStockGoodsId = stocktakingStockGoodsId;
     }
 
     public Integer getStockNum() {

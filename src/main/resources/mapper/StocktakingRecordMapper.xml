@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.StocktakingRecordMapper">
+    <insert id="insert" parameterType="com.market.scms.entity.StocktakingRecord">
+        INSERT INTO
+        tb_stocktaking_record(stocktaking_id,stocktaking_launched_staff_id,stocktaking_submit_staff_id,
+        stocktaking_profit_loss_price,stocktaking_all_status,stocktaking_launched_date,stocktaking_commit_date)
+        VALUES 
+        (#{stocktakingId},#{stocktakingLaunchedStaffId},#{stocktakingSubmitStaffId},
+        #{stocktakingProfitLossPrice},#{stocktakingAllStatus},
+        #{stocktakingLaunchedDate},#{stocktakingCommitDate})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.StocktakingRecord">
+        UPDATE
+        tb_stocktaking_record
+        <set>
+            <if test="stocktakingSubmitStaffId != null"> stocktaking_submit_staff_id = #{stocktakingSubmitStaffId},</if>
+            <if test="stocktakingProfitLossPrice != null"> stocktaking_profit_loss_price = #{stocktakingProfitLossPrice},</if>
+            <if test="stocktakingAllStatus"> stocktaking_all_status = #{stocktakingAllStatus},</if>
+            <if test="stocktakingLaunchedDate != null"> stocktaking_launched_date = #{stocktakingLaunchedDate},</if>
+            <if test="stocktakingCommitDate != null"> stocktaking_commit_date = #{stocktakingCommitDate}</if>
+        </set>
+        WHERE
+        stocktaking_id = #{stocktakingId}
+    </update>
+
+    <select id="queryById" resultType="com.market.scms.entity.StocktakingRecord">
+        SELECT 
+        *
+        FROM 
+        tb_stocktaking_record
+        WHERE 
+        stocktaking_id = #{stocktakingId}
+    </select>
+
+    <select id="queryAll" resultType="com.market.scms.entity.StocktakingRecord">
+        SELECT 
+        *
+        FROM 
+        tb_stocktaking_record
+        ORDER BY stocktaking_launched_date DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.StocktakingRecord">
+        SELECT
+        *
+        FROM
+        tb_stocktaking_record s
+        <where>
+            <if test="condition.stocktakingId != null">
+                AND
+                s.stocktaking_id = #{condition.stocktakingId}
+            </if>
+            <if test="condition.stocktakingLaunchedStaffId != null">
+                AND
+                s.stocktaking_launched_staff_id = #{condition.stocktakingLaunchedStaffId}
+            </if>
+            <if test="condition.stocktakingSubmitStaffId != null">
+                AND
+                s.stocktaking_submit_staff_id = #{condition.stocktakingSubmitStaffId}
+            </if>
+            <if test="condition.stocktakingAllStatus != null">
+                AND
+                s.stocktaking_all_status = #{condition.stocktakingAllStatus}
+            </if>
+        </where>
+        ORDER BY stocktaking_launched_date DESC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+</mapper>

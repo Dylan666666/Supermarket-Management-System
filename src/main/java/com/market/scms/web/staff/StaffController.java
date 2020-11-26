@@ -2,9 +2,9 @@ package com.market.scms.web.staff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.bean.StaffA;
+import com.market.scms.bean.StockingGoods;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.*;
-import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
@@ -65,6 +65,18 @@ public class StaffController {
     
     @Resource
     private GoodsService goodsService;
+    
+    @Resource
+    private StocktakingService stocktakingService;
+    
+    @Resource
+    private StocktakingRecordService stocktakingRecordService;
+    
+    @Resource
+    private StockService stockService;
+    
+    @Resource
+    private RetailRecordService retailRecordService;
 
     /**
      * 1.1 职工注册
@@ -468,5 +480,111 @@ public class StaffController {
         }
         return modelMap;
     }
-    
+
+
+    /**
+     * 6.9职工 货品盘点
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/viewStocktakingGoodsList")
+    @ResponseBody
+    @RequiresPermissions("/stocktaking/viewStocktakingGoodsList")
+    public Map<String,Object> viewStocktakingGoodsList(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        if (secondaryMenuId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
+            
+            List<Stocktaking> stocktakingList = stocktakingService.queryAll(pageIndex, pageSize);
+            List<StockingGoods> stockingGoodsList = new ArrayList<>(stocktakingList.size());
+            for (Stocktaking stocktaking : stocktakingList) {
+                StockingGoods stockingGoods = new StockingGoods();
+                Goods goods = goodsService.queryById(stocktaking.getStocktakingStockGoodsId());
+                Stock stock = stockService.queryByGoodsId(stocktaking.getStocktakingStockGoodsId());
+                BeanUtils.copyProperties(stocktaking, stockingGoods);
+                BeanUtils.copyProperties(goods, stockingGoods);
+                BeanUtils.copyProperties(stock, stockingGoods);
+                stockingGoodsList.add(stockingGoods);
+            }
+            List<Stocktaking> stocktakingList2 = stocktakingService.queryAll(0, 10000);
+            modelMap.put("stockingGoodsList", stockingGoodsList);
+            modelMap.put("recordSum", stocktakingList2.size());
+            modelMap.put("categoryList", categoryList);
+            modelMap.put("functionList", functionList);
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.10职工 货品盘点 盘点(详情查看填写页面)
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/stocktaking")
+    @ResponseBody
+    @RequiresPermissions("/stocktaking/stocktaking")
+    public Map<String,Object> stocktakingStocktaking(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        Long stocktakingId = HttpServletRequestUtil.getLong(request, "stocktakingId");
+        Long stockGoodsId = HttpServletRequestUtil.getLong(request, "stockGoodsId");
+        if (stockGoodsId < 0 || stocktakingId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败-01");
+            return modelMap;
+        }
+        try {
+            Stocktaking stocktaking = stocktakingService.queryById(stocktakingId, stockGoodsId);
+            if (stocktaking == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该盘点单不存在，访问失败");
+                return modelMap;
+            }
+            //TODO
+            Stock stock = stockService.queryByGoodsId(stocktaking.getStocktakingStockGoodsId());
+            Goods goods = goodsService.queryById(stocktaking.getStocktakingStockGoodsId());
+            GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+            Unit unit = unitService.queryById(stock.getStockUnitId());
+            modelMap.put("stock", stock);
+            modelMap.put("stocktaking", stocktaking);
+            modelMap.put("goods", goods);
+            modelMap.put("category", category);
+            modelMap.put("unit", unit);
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
 }
