@@ -11,7 +11,7 @@ import java.util.Date;
 public class RetailRecord {
     private String retailId;
     private Date retailTime;
-    private Long retailCollectionStaffId;
+    private Integer retailCollectionStaffId;
     private Double retailTotalPrice;
     private Integer retailRefundStatus;
 
@@ -31,11 +31,11 @@ public class RetailRecord {
         this.retailTime = retailTime;
     }
 
-    public Long getRetailCollectionStaffId() {
+    public Integer getRetailCollectionStaffId() {
         return retailCollectionStaffId;
     }
 
-    public void setRetailCollectionStaffId(Long retailCollectionStaffId) {
+    public void setRetailCollectionStaffId(Integer retailCollectionStaffId) {
         this.retailCollectionStaffId = retailCollectionStaffId;
     }
 

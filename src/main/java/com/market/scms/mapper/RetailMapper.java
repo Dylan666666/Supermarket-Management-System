@@ -41,7 +41,7 @@ public interface RetailMapper {
      * @param retailStockGoodsId
      * @return
      */
-    Retail queryByGoodsId(@Param("deliveryId") String retailId, @Param("retailStockGoodsId") Long retailStockGoodsId);
+    Retail queryByGoodsId(@Param("retailId") String retailId, @Param("retailStockGoodsId") Long retailStockGoodsId);
 
     /**
      * 一键查询订货单

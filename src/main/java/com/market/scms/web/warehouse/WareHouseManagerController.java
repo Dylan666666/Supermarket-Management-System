@@ -1019,12 +1019,29 @@ public class WareHouseManagerController {
             return modelMap;
         }
         try {
+            System.out.println("开始查询");
             Retail retail = retailService.queryByGoodsId(retailId, retailStockGoodsId);
-            if (retail == null) {
+            RetailRecord retailRecord = retailRecordService.queryByRetailId(retailId);
+            if (retail == null || retailRecord == null) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", "该批发单不存在，查看失败");
                 return modelMap;
             }
+            System.out.println("-----------批发单是在的");
+            Stock stock = stockService.queryByGoodsId(retailStockGoodsId);
+            SupermarketStaff staff = staffService.queryById(retailRecord.getRetailCollectionStaffId());
+            Goods goods = goodsService.queryById(retailStockGoodsId);
+            GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+            Unit unit = unitService.queryById(stock.getStockUnitId());
+            System.out.println("都过了");
+            modelMap.put("retail", retail);
+            modelMap.put("retailRecord", retailRecord);
+            modelMap.put("stock", stock);
+            modelMap.put("staff", staff);
+            modelMap.put("goods", goods);
+            modelMap.put("category", category);
+            modelMap.put("unit", unit);
+            modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
@@ -1036,4 +1053,6 @@ public class WareHouseManagerController {
         }
         return modelMap;
     }
+    
+    
 }
