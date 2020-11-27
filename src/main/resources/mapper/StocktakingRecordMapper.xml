@@ -72,4 +72,13 @@
         LIMIT #{rowIndex},#{pageSize}
     </select>
 
+    <select id="queryStocktakingCount" resultType="int">
+        SELECT 
+        count(*)
+        FROM 
+        tb_stocktaking_record
+        WHERE 
+        stocktaking_all_status = #{state}
+    </select>
+
 </mapper>

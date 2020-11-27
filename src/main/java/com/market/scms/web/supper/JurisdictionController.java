@@ -185,9 +185,7 @@ public class JurisdictionController {
             staff.setStaffStatus(staffA.getStaffStatus());
             int res = staffService.updateStaff(staff);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "修改失败");
-                return modelMap;
+                throw new SupermarketStaffException("提交失败");
             }
             modelMap.put("success", true);
         } catch (SupermarketStaffException e) {
@@ -225,9 +223,7 @@ public class JurisdictionController {
             if (staffPositionRelationList.size() != 0) {
                 res = staffPositionRelationService.delete(staffPositionRelationList.get(0));
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "删除失败");
-                    return modelMap;
+                    throw new SupermarketStaffException("删除失败");
                 }
             }
             modelMap.put("success", true);
@@ -362,9 +358,7 @@ public class JurisdictionController {
             for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
                 int res = staffJurisdictionService.insert(staffJurisdiction);
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "提交失败");
-                    return modelMap;
+                    throw new SupermarketStaffException("提交失败");
                 }
             }
             modelMap.put("success", true);
@@ -510,9 +504,7 @@ public class JurisdictionController {
             for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
                 int res = staffJurisdictionService.insert(staffJurisdiction);
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "提交失败");
-                    return modelMap;
+                    throw new SupermarketStaffException("提交失败");
                 }
             }
             modelMap.put("success", true);

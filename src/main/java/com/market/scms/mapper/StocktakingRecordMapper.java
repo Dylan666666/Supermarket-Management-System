@@ -54,4 +54,12 @@ public interface StocktakingRecordMapper {
     List<StocktakingRecord> queryByCondition(@Param("condition")StocktakingRecord condition, 
                                              @Param("rowIndex") int rowIndex, 
                                              @Param("pageSize") int pageSize);
+
+    /**
+     * 查询是否有正在盘点的订单
+     * 
+     * @param state
+     * @return
+     */
+    int queryStocktakingCount(int state);
 }

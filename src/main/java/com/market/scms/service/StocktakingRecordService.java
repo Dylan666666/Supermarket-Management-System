@@ -54,4 +54,12 @@ public interface StocktakingRecordService {
      * @return
      */
     List<StocktakingRecord> queryByCondition(StocktakingRecord condition, int pageIndex, int pageSize);
+
+    /**
+     * 查询是否有正在盘点的订单
+     *
+     * @param state
+     * @return
+     */
+    int queryStocktakingCount(int state);
 }

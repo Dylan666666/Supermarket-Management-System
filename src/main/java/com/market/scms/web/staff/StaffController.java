@@ -5,8 +5,6 @@ import com.market.scms.bean.StaffA;
 import com.market.scms.bean.StockingGoods;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.*;
-import com.market.scms.enums.StocktakingAllStatusStateEnum;
-import com.market.scms.enums.StocktakingStatusEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
@@ -76,9 +74,6 @@ public class StaffController {
     
     @Resource
     private StockService stockService;
-    
-    @Resource
-    private RetailRecordService retailRecordService;
 
     /**
      * 1.1 职工注册
@@ -209,6 +204,7 @@ public class StaffController {
     @PostMapping("/staff/update")
     @ResponseBody
     @Transactional
+    @RequiresPermissions("/staff/update")
     public Map<String,Object> staffUpdate(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         String staffAStr = HttpServletRequestUtil.getString(request, "staffA");
@@ -466,9 +462,7 @@ public class StaffController {
         try {
             int res = exportBillService.update(exportBill);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "提交失败");
-                return modelMap;
+                throw new SupermarketStaffException("提交失败");
             }
             modelMap.put("success", true);
         } catch (SupermarketStaffException e) {
@@ -626,9 +620,7 @@ public class StaffController {
         try {
             int res = stocktakingService.update(stocktaking);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "盘点提交失败");
-                return modelMap;
+                throw new SupermarketStaffException("提交失败");
             }
             modelMap.put("success", true);
         } catch (SupermarketStaffException e) {

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,6 +46,7 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
                 deliveryRecord.getDeliveryStatus() != null && deliveryRecord.getDeliveryLaunchedStaffId() != null &&
                 deliveryRecord.getDeliveryCheckOutStatus() != null) {
             deliveryRecord.setDeliveryRefundStatus(DeliveryRefundStatusStateEnum.NO_REFUND.getState());
+            deliveryRecord.setDeliveryCreateDate(new Date());
             try {
                 int res = deliveryRecordMapper.insert(deliveryRecord);
                 if (res == 0) {

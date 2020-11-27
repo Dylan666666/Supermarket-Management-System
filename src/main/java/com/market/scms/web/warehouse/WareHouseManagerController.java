@@ -159,9 +159,7 @@ public class WareHouseManagerController {
             stock.setStockGoodsPrice(DoubleUtil.get(stockGoodsPrice));
             int res = stockService.update(stock);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "更改失败");
-                return modelMap;
+                throw new WareHouseManagerException("更改失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -244,16 +242,12 @@ public class WareHouseManagerController {
             try {
                 int res = goodsService.insertGoods(goods, thumbnail);
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "补货失败");
-                    return modelMap;
+                    throw new WareHouseManagerException("提交失败");
                 }
                 coupon.setCouponStaffId(staffId);
                 res = couponService.insert(coupon);
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "补货失败");
-                    return modelMap;
+                    throw new WareHouseManagerException("提交失败");
                 }
                 modelMap.put("success", true);
             } catch (WareHouseManagerException e) {
@@ -627,9 +621,7 @@ public class WareHouseManagerController {
         try {
             int res = exportBillService.update(exportBill);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "修改失败");
-                return modelMap;
+                throw new WareHouseManagerException("修改失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -669,9 +661,7 @@ public class WareHouseManagerController {
             exportBill.setExportConfirmStaffId(staffId);
             int res = exportBillService.update(exportBill);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "提交失败");
-                return modelMap;
+                throw new WareHouseManagerException("提交失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -711,9 +701,7 @@ public class WareHouseManagerController {
             exportBill.setExportConfirmStaffId(staffId);
             int res = exportBillService.update(exportBill);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "提交失败");
-                return modelMap;
+                throw new WareHouseManagerException("提交失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -801,9 +789,7 @@ public class WareHouseManagerController {
             deliveryRecord.setDeliveryStatus(DeliveryStatusStateEnum.SUCCESS.getState());
             int res = deliveryRecordService.update(deliveryRecord);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "提交入库失败");
-                return modelMap;
+                throw new WareHouseManagerException("提交失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -1090,9 +1076,7 @@ public class WareHouseManagerController {
         try {
             int res = couponService.insert(coupon);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "提交失败");
-                return modelMap;
+                throw new WareHouseManagerException("提交失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -1134,9 +1118,7 @@ public class WareHouseManagerController {
         try {
             int res = couponService.insert(coupon);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "补货失败");
-                return modelMap;
+                throw new WareHouseManagerException("补货失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -1145,7 +1127,7 @@ public class WareHouseManagerController {
             return modelMap;
         } catch (Exception e) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "补货失败 ");
+            modelMap.put("errMsg", "补货失败");
             return modelMap;
         }
         return modelMap;
@@ -1276,9 +1258,7 @@ public class WareHouseManagerController {
         try {
             int res = exportBillService.update(exportBill);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "提交失败");
-                return modelMap;
+                throw new WareHouseManagerException("提交失败");
             }
             List<ExportBill> billList = exportBillService.queryAll(0, 10000);
             modelMap.put("billList", billList);
@@ -1326,9 +1306,7 @@ public class WareHouseManagerController {
             exportBill.setExportBillStatus(exportBill.getExportBillStatus());
             int res = exportBillService.update(cur);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "更改失败");
-                return modelMap;
+                throw new WareHouseManagerException("更改失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -1478,7 +1456,6 @@ public class WareHouseManagerController {
             Goods goods = goodsService.queryById(stocktakingStockGoodsId);
             GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
             Unit unit = unitService.queryById(stock.getStockUnitId());
-            
             modelMap.put("stocktaking", stocktaking);
             modelMap.put("staff", staff);
             modelMap.put("stock", stock);
@@ -1527,9 +1504,7 @@ public class WareHouseManagerController {
         try {
             int res = stocktakingService.update(stocktaking);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "修改失败");
-                return modelMap;
+                throw new WareHouseManagerException("修改失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -1605,9 +1580,7 @@ public class WareHouseManagerController {
             for (GoodsCategory category : goodsCategoryList) {
                 int res = goodsCategoryService.update(category);
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "修改失败");
-                    return modelMap;
+                    throw new WareHouseManagerException("修改失败");
                 }
             }
             modelMap.put("success", true);
@@ -1701,6 +1674,12 @@ public class WareHouseManagerController {
             return modelMap;
         }
         try {
+            int count = stocktakingRecordService.queryStocktakingCount(StocktakingAllStatusStateEnum.START.getState());
+            if (count > 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "发起盘点失败-有其他盘点操作正在进行中，请稍后。。。");
+                return modelMap;
+            }
             Long stocktakingId = StocktakingIdCreator
                     .get(stocktakingService.getCount(StocktakingIdCreator.getDateString()));
             StocktakingRecord stocktakingRecord = new StocktakingRecord();
@@ -1710,9 +1689,7 @@ public class WareHouseManagerController {
             stocktakingRecord.setStocktakingLaunchedDate(new Date());          
             int res = stocktakingRecordService.insert(stocktakingRecord);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "发起失败");
-                return modelMap;
+                throw new WareHouseManagerException("发起失败");
             }
             for (Long stockGoodsId : stockGoodsIdList) {
                 Stock stock = stockService.queryById(stockGoodsId);
@@ -1726,9 +1703,7 @@ public class WareHouseManagerController {
                 stocktaking.setStocktakingStatus(StocktakingStatusEnum.START.getState());
                 res = stocktakingService.insert(stocktaking);
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "发起失败");
-                    return modelMap; 
+                    throw new WareHouseManagerException("发起失败"); 
                 }
             }
             modelMap.put("success", true);
@@ -1774,18 +1749,14 @@ public class WareHouseManagerController {
                 stocktaking.setStocktakingStatus(StocktakingStatusEnum.FINISH.getState());
                 int res = stocktakingService.update(stocktaking);
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "盘点提交失败");
-                    return modelMap;
+                    throw new WareHouseManagerException("提交失败");
                 }
             }
             stocktakingRecord.setStocktakingCommitDate(new Date());
             stocktakingRecord.setStocktakingAllStatus(StocktakingAllStatusStateEnum.FINISH.getState());
             int res = stocktakingRecordService.update(stocktakingRecord);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "盘点提交失败");
-                return modelMap;
+                throw new WareHouseManagerException("提交失败");
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {

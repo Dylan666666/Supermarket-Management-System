@@ -238,9 +238,7 @@ public class StaffRoleController {
             staff.setStaffStatus(staffA.getStaffStatus());
             int res = staffService.updateStaff(staff);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "修改失败");
-                return modelMap;
+                throw new SupermarketStaffException("修改失败");
             }
             modelMap.put("success", true);
         } catch (SupermarketStaffException e) {
@@ -271,17 +269,13 @@ public class StaffRoleController {
         try {
             int res = staffService.deleteStaff(staffId);
             if (res == 0) {
-                modelMap.put("success",false);
-                modelMap.put("errMsg", "删除失败");
-                return modelMap;
+                throw new SupermarketStaffException("删除失败");
             }
             List<StaffPositionRelation> staffPositionRelationList = staffPositionRelationService.queryById(staffId);
             if (staffPositionRelationList.size() != 0) {
                 res = staffPositionRelationService.delete(staffPositionRelationList.get(0));
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "删除失败");
-                    return modelMap;
+                    throw new SupermarketStaffException("删除失败");
                 }
             }
             modelMap.put("success", true);
@@ -367,17 +361,13 @@ public class StaffRoleController {
             if (cur.size() == 0) {
                 int res = staffPositionRelationService.insert(staffPositionRelation);
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "修改失败");
-                    return modelMap;
+                    throw new SupermarketStaffException("修改失败");
                 }
                 SupermarketStaff staff = staffService.queryById(staffPositionRelation.getStaffId());
                 staff.setStaffStatus(StaffStatusStateEnum.NORMAL.getState());
                 res = staffService.updateStaff(staff);
                 if (res == 0) {
-                    modelMap.put("success",false);
-                    modelMap.put("errMsg", "修改失败");
-                    return modelMap;
+                    throw new SupermarketStaffException("修改失败");
                 }
             } else {
                 if (cur.get(0).getStaffPositionStatus().equals(staffPositionRelation.getStaffPositionStatus()) &&

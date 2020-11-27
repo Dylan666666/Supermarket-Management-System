@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.cache.JedisUtil;
-import com.market.scms.entity.Stocktaking;
 import com.market.scms.entity.StocktakingRecord;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.StocktakingRecordMapper;
@@ -43,6 +42,7 @@ public class StocktakingRecordServiceImpl implements StocktakingRecordService {
                 if (res == 0) {
                     throw new WareHouseManagerException("添加失败");
                 }
+                cacheService.removeFromCache(STOCKTAKING_RECORD_LIST_KEY);
                 return res;
             } catch (WareHouseManagerException e ) {
                 throw new WareHouseManagerException("添加失败");
@@ -60,6 +60,7 @@ public class StocktakingRecordServiceImpl implements StocktakingRecordService {
                 if (res == 0) {
                     throw new WareHouseManagerException("更改失败");
                 }
+                cacheService.removeFromCache(STOCKTAKING_RECORD_LIST_KEY);
                 return res;
             } catch (WareHouseManagerException e ) {
                 throw new WareHouseManagerException("更改失败");
@@ -134,6 +135,16 @@ public class StocktakingRecordServiceImpl implements StocktakingRecordService {
             return stocktakingRecordList;
         } else {
             throw new WareHouseManagerException("信息不足，查询失败");
+        }
+    }
+
+    @Override
+    public int queryStocktakingCount(int state) throws WareHouseManagerException {
+        try {
+            int res = stocktakingRecordMapper.queryStocktakingCount(state);
+            return res;
+        } catch (WareHouseManagerException e) {
+            throw new WareHouseManagerException("查询失败");
         }
     }
 }
