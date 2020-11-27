@@ -8,7 +8,8 @@ package com.market.scms.bean;
  */
 public class StockingGoods {
     private String goodsName;
-    private Long goodsCategoryId;
+    private Integer goodsCategoryId;
+    private String categoryName;
     private String goodsBrand;
     private String goodsSpecifications;
     private String goodsPicture;
@@ -27,11 +28,11 @@ public class StockingGoods {
         this.goodsName = goodsName;
     }
 
-    public Long getGoodsCategoryId() {
+    public Integer getGoodsCategoryId() {
         return goodsCategoryId;
     }
 
-    public void setGoodsCategoryId(Long goodsCategoryId) {
+    public void setGoodsCategoryId(Integer goodsCategoryId) {
         this.goodsCategoryId = goodsCategoryId;
     }
 
@@ -105,5 +106,13 @@ public class StockingGoods {
 
     public void setStocktakingStatus(Integer stocktakingStatus) {
         this.stocktakingStatus = stocktakingStatus;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

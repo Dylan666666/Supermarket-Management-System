@@ -1,9 +1,11 @@
 package com.market.scms.web.warehouse;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.bean.DeliveryGoods;
 import com.market.scms.bean.GoodsStockA;
 import com.market.scms.bean.GoodsStockB;
+import com.market.scms.bean.StockingGoods;
 import com.market.scms.dto.ImageHolder;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.Function;
@@ -16,6 +18,7 @@ import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
 import com.market.scms.util.DoubleUtil;
 import com.market.scms.util.HttpServletRequestUtil;
+import com.market.scms.util.StocktakingIdCreator;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -1404,7 +1407,6 @@ public class WareHouseManagerController {
      */
     @PostMapping("/stocktaking")
     @ResponseBody
-    @Transactional
     @RequiresPermissions("/stocktaking")
     public Map<String,Object> stocktaking(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
@@ -1423,11 +1425,377 @@ public class WareHouseManagerController {
             pageSize = 10000;
         }
         try {
-            
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<SupermarketStaff> staffList = staffService
+                    .queryStaffByCondition(new SupermarketStaff(), pageIndex, pageSize);
+            List<StocktakingRecord> stocktakingRecordList2 = stocktakingRecordService.queryAll(0, 10000);
+            List<StocktakingRecord> stocktakingRecordList = stocktakingRecordService.queryAll(pageIndex, pageSize);
+            modelMap.put("recordSum", stocktakingRecordList2.size());
+            modelMap.put("stocktakingRecordList", stocktakingRecordList);
+            modelMap.put("functionList", functionList);
+            modelMap.put("staffList", staffList);
+            modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
-            
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
         } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.2库房管理员 盘点管理 查看
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/stocktakinggoodslist")
+    @ResponseBody
+    @RequiresPermissions("/stocktaking/stocktakinggoodslist")
+    public Map<String,Object> stocktakingGoodsList(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        Long stocktakingId = HttpServletRequestUtil.getLong(request, "stocktakingId");
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        if (stocktakingId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败-01");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            Stocktaking cur = new Stocktaking();
+            cur.setStocktakingId(stocktakingId);
+            List<Stocktaking> stocktakingList = stocktakingService.queryByCondition(cur, pageIndex, pageSize);
+            List<Stocktaking> stocktakingList2 = stocktakingService.queryByCondition(cur, 0, 10000);
+            List<StockingGoods> stockingGoodsList = new ArrayList<>(stocktakingList.size());
+            for (Stocktaking stocktaking : stocktakingList) {
+                StockingGoods stockingGoods = new StockingGoods();
+                Goods goods = goodsService.queryById(stocktaking.getStocktakingStockGoodsId());
+                Stock stock = stockService.queryByGoodsId(stocktaking.getStocktakingStockGoodsId());
+                GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+                BeanUtils.copyProperties(stocktaking, stockingGoods);
+                BeanUtils.copyProperties(goods, stockingGoods);
+                BeanUtils.copyProperties(stock, stockingGoods);
+                BeanUtils.copyProperties(category, stockingGoods);
+                stockingGoodsList.add(stockingGoods);
+            }
+            modelMap.put("stockingGoodsList", stockingGoodsList);
+            modelMap.put("recordSum", stocktakingList2.size());
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.3库房管理员 盘点管理 查看 查看详情
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/stocktakinggoodsdetails")
+    @ResponseBody
+    @RequiresPermissions("/stocktaking/stocktakinggoodsdetails")
+    public Map<String,Object> stocktakingGoodsDetails(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        Long stocktakingId = HttpServletRequestUtil.getLong(request, "stocktakingId");
+        Long stocktakingStockGoodsId = HttpServletRequestUtil.getLong(request, "stocktakingStockGoodsId");
+        if (stocktakingId < 0 || stocktakingStockGoodsId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败-01");
+            return modelMap;
+        }
+        try {
+            Stocktaking stocktaking = stocktakingService.queryById(stocktakingId, stocktakingStockGoodsId);
+            if (stocktaking == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该盘点单不存在");
+                return modelMap;
+            }
+            SupermarketStaff staff = staffService.queryById(stocktaking.getStocktakingStaffId());
+            Stock stock = stockService.queryByGoodsId(stocktakingStockGoodsId);
+            Goods goods = goodsService.queryById(stocktakingStockGoodsId);
+            GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+            Unit unit = unitService.queryById(stock.getStockUnitId());
             
+            modelMap.put("stocktaking", stocktaking);
+            modelMap.put("staff", staff);
+            modelMap.put("stock", stock);
+            modelMap.put("goods", goods);
+            modelMap.put("category", category);
+            modelMap.put("unit", unit);
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.4库房管理员 盘点管理 查看 修改
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/stocktakinggoodsremind")
+    @ResponseBody
+    @RequiresPermissions("/stocktaking/stocktakinggoodsremind")
+    public Map<String,Object> stocktakingGoodsRemind(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String stocktakingStr = HttpServletRequestUtil.getString(request, "stocktaking");
+        Stocktaking stocktaking = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            stocktaking = mapper.readValue(stocktakingStr, Stocktaking.class);
+            if (stocktaking == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "修改失败-01");
+                return modelMap;
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "修改失败-01");
+            return modelMap;
+        }
+        try {
+            int res = stocktakingService.update(stocktaking);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "修改失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "修改失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.5库房管理员 盘点设置（ 职工信息查询和职工盘点类别）
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/viewStocktakingRules")
+    @ResponseBody
+    @RequiresPermissions("/stocktaking/viewStocktakingRules")
+    public Map<String,Object> viewStocktakingRules(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        try {
+            List<SupermarketStaff> staffList = staffService.queryStaffByCondition(new SupermarketStaff(), 0, 10000);
+            List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
+            modelMap.put("staffList", staffList);
+            modelMap.put("categoryList", categoryList);
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.6库房管理员 盘点设置 确认修改（修改职工盘点类别规则）
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/modifyStocktakingRules")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stocktaking/modifyStocktakingRules")
+    public Map<String,Object> modifyStocktakingRules(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String categoryListStr = HttpServletRequestUtil.getString(request, "categoryList");
+        ObjectMapper mapper = new ObjectMapper();
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsCategory.class);
+        List<GoodsCategory> goodsCategoryList = null;
+        try {
+            goodsCategoryList = mapper.readValue(categoryListStr, javaType);
+            if (goodsCategoryList == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "修改失败-01");
+                return modelMap;
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "修改失败-01");
+            return modelMap;
+        }
+        try {
+            for (GoodsCategory category : goodsCategoryList) {
+                int res = goodsCategoryService.update(category);
+                if (res == 0) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "修改失败");
+                    return modelMap;
+                }
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "修改失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.7库房管理员 盘点管理 选取需盘点商品列表
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/selectStocktakingGoods")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stocktaking/selectStocktakingGoods")
+    public Map<String,Object> selectStocktakingGoods(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
+            List<Stock> stockList = stockService.queryAll(pageIndex, pageSize);
+            List<Stock> stockList2 = stockService.queryAll(0, 10000);
+            List<GoodsStockA> goodsStockAList = new ArrayList<>(stockList.size());
+            for (Stock stock : stockList) {
+                GoodsStockA goodsStockA = new GoodsStockA();
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
+                BeanUtils.copyProperties(stock, goodsStockA);
+                BeanUtils.copyProperties(goods, goodsStockA);
+                goodsStockAList.add(goodsStockA);
+            }
+            modelMap.put("goodsStockAList", goodsStockAList);
+            modelMap.put("recordSum", stockList2.size());
+            modelMap.put("categoryList", categoryList);
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.8库房管理员 盘点管理 发起盘点
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/initiateStocktaking")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stocktaking/initiateStocktaking")
+    public Map<String,Object> initiateStocktaking(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        String stockGoodsIdListStr = HttpServletRequestUtil.getString(request, "stockGoodsIdListStr");
+        if (staffId <= 0 || stockGoodsIdListStr == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "发起失败-01");
+            return modelMap;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
+        List<Long> stockGoodsIdList = null;
+        try {
+            stockGoodsIdList = mapper.readValue(stockGoodsIdListStr, javaType);
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "发起失败-01");
+            return modelMap;
+        }
+        try {
+            Long stocktakingId = StocktakingIdCreator
+                    .get(stocktakingService.getCount(StocktakingIdCreator.getDateString()));
+            StocktakingRecord stocktakingRecord = new StocktakingRecord();
+            stocktakingRecord.setStocktakingId(stocktakingId);
+            stocktakingRecord.setStocktakingLaunchedStaffId(Long.valueOf(staffId));
+            stocktakingRecord.setStocktakingAllStatus(StocktakingAllStatusStateEnum.START.getState());
+            stocktakingRecord.setStocktakingLaunchedDate(new Date());          
+            int res = stocktakingRecordService.insert(stocktakingRecord);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "发起失败");
+                return modelMap;
+            }
+            for (Long stockGoodsId : stockGoodsIdList) {
+                Stock stock = stockService.queryById(stockGoodsId);
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
+                GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+                Stocktaking stocktaking = new Stocktaking();
+                stocktaking.setStocktakingId(stocktakingId);
+                stocktaking.setStocktakingStockGoodsId(stockGoodsId);
+                stocktaking.setStockNum(stock.getStockGoodsBatchNumber());
+                stocktaking.setStocktakingStaffId(category.getStocktakingStaffId());
+                stocktaking.setStocktakingStatus(StocktakingStatusEnum.START.getState());
+                res = stocktakingService.insert(stocktaking);
+                if (res == 0) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "发起失败");
+                    return modelMap; 
+                }
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "发起失败");
+            return modelMap;
         }
         return modelMap;
     }

@@ -34,6 +34,15 @@
         goods_stock_id = #{goodsStockId}
     </select>
 
+    <select id="queryById" resultType="com.market.scms.entity.Stock">
+        SELECT 
+        *
+        FROM 
+        tb_stock
+        WHERE 
+        stock_goods_id = #{stockGoodsId}
+    </select>
+
     <select id="queryByExportBillId" resultType="com.market.scms.entity.Stock">
         SELECT 
         *
@@ -74,6 +83,7 @@
         *
         FROM 
         tb_stock
+        LIMIT #{rowIndex},#{pageSize}
     </select>
     
 </mapper>

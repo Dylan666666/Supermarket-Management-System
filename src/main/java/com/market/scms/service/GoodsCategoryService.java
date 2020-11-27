@@ -12,8 +12,6 @@ public interface GoodsCategoryService {
 
     public final static String GOODS_CATEGORY_KEY = "goodsCategoryList";
     
-    
-    
     /**
      * 查询销售单位列表
      *
@@ -36,4 +34,12 @@ public interface GoodsCategoryService {
      * @return
      */
     GoodsCategory queryById(int categoryId);
+
+    /**
+     * 更新类别信息
+     *
+     * @param goodsCategory
+     * @return
+     */
+    int update(GoodsCategory goodsCategory);
 }

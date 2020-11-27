@@ -37,7 +37,7 @@ public class StockMapperTest {
     
     @Test
     public void query() {
-        System.out.println(stockMapper.queryAll().get(0).getGoodsStockId());
+        System.out.println(stockMapper.queryAll(0, 10000).get(0).getGoodsStockId());
         Stock stock = new Stock();
         stock.setStockExportBillId("123");
         System.out.println(stockMapper.queryByCondition(stock).get(0).getGoodsStockId());

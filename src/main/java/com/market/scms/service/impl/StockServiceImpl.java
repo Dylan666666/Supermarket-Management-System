@@ -9,6 +9,7 @@ import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.StockMapper;
 import com.market.scms.service.CacheService;
 import com.market.scms.service.StockService;
+import com.market.scms.util.PageCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -98,6 +99,20 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    public Stock queryById(Long stockGoodsId) throws WareHouseManagerException {
+        if (stockGoodsId > 0) {
+            try {
+                Stock stock = stockMapper.queryById(stockGoodsId);
+                return stock;
+            } catch (WareHouseManagerException e) {
+                throw new WareHouseManagerException("传入信息有误，查询库存失败");
+            }
+        } else {
+            throw new WareHouseManagerException("传入信息有误，查询库存失败");
+        }
+    }
+
+    @Override
     public Stock queryByExportBillId(String stockExportBillId) throws WareHouseManagerException {
         if (stockExportBillId != null) {
             try {
@@ -126,12 +141,15 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public List<Stock> queryAll() throws WareHouseManagerException {
-        String key = STOCK_LIST_KEY;
+    public List<Stock> queryAll(int pageIndex, int pageSize) throws WareHouseManagerException {
+        String key = STOCK_LIST_KEY + pageIndex + pageSize;
+        pageIndex = pageIndex >= 0 ? pageIndex : 0;
+        pageSize = pageSize > 0 ? pageSize : 10000;
+        int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
         ObjectMapper mapper = new ObjectMapper();
         List<Stock> res = null;
         if (!jedisKeys.exists(key)) {
-            res = stockMapper.queryAll();
+            res = stockMapper.queryAll(rowIndex, pageSize);
             String jsonString = null;
             try {
                 jsonString = mapper.writeValueAsString(res);

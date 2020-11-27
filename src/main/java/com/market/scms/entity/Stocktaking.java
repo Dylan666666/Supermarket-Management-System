@@ -13,7 +13,7 @@ public class Stocktaking {
     private Long stocktakingStockGoodsId;
     private Integer stockNum;
     private Integer stocktakingNum;
-    private Long stocktakingStaffId;
+    private Integer stocktakingStaffId;
     private Integer stocktakingStatus;
     private String stocktakingRemarks;
     private Date stocktakingTime;
@@ -52,11 +52,11 @@ public class Stocktaking {
         this.stocktakingNum = stocktakingNum;
     }
 
-    public Long getStocktakingStaffId() {
+    public Integer getStocktakingStaffId() {
         return stocktakingStaffId;
     }
 
-    public void setStocktakingStaffId(Long stocktakingStaffId) {
+    public void setStocktakingStaffId(Integer stocktakingStaffId) {
         this.stocktakingStaffId = stocktakingStaffId;
     }
 

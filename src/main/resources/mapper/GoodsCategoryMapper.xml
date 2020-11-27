@@ -27,4 +27,15 @@
         category_id = #{categoryId}
     </select>
 
+    <update id="update" parameterType="com.market.scms.entity.GoodsCategory">
+        UPDATE
+        tb_goods_category
+        <set>
+            <if test="categoryName != null"> category_name = #{categoryName},</if>
+            <if test="stocktakingStaffId != null"> stocktaking_staff_id = #{stocktakingStaffId}</if>
+        </set>
+        WHERE
+        category_id = #{categoryId}
+    </update>
+
 </mapper>

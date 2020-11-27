@@ -34,7 +34,7 @@ public class StocktakingMapperTest {
         stocktaking.setStocktakingNum(100);
         stocktaking.setStocktakingStatus(StocktakingStatusEnum.SECOND.getState());
         stocktaking.setStocktakingProfitLossStatus(StocktakingProfitLossStatusEnum.NORMAL.getState());
-        stocktaking.setStocktakingStaffId(2L);
+        stocktaking.setStocktakingStaffId(2);
         System.out.println(stocktakingMapper.insert(stocktaking));
     }
 

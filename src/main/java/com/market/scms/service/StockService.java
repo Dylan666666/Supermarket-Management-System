@@ -37,6 +37,14 @@ public interface StockService {
     Stock queryByGoodsId(Long goodsStockId);
 
     /**
+     * 通过产品编号查库存表
+     *
+     * @param stockGoodsId
+     * @return
+     */
+    Stock queryById(Long stockGoodsId);
+
+    /**
      * 通过入库编号查询
      *
      * @param stockExportBillId
@@ -54,8 +62,10 @@ public interface StockService {
 
     /**
      * 一键查询
-     *
+     * 
+     * @param pageIndex
+     * @param pageSize
      * @return
      */
-    List<Stock> queryAll();
+    List<Stock> queryAll(int pageIndex, int pageSize);
 }

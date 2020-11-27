@@ -65,4 +65,12 @@ public interface StocktakingService {
      * @return
      */
     List<Stocktaking> queryByStocktakingId(Long stocktakingId);
+
+    /**
+     * 获取今日盘点次数
+     *
+     * @param dateFormat
+     * @return
+     */
+    int getCount(String dateFormat);
 }

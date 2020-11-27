@@ -159,4 +159,13 @@ public class StocktakingServiceImpl implements StocktakingService {
             throw new WareHouseManagerException("不具备查询条件，查询失败");
         }
     }
+
+    @Override
+    public int getCount(String dateFormat) throws WareHouseManagerException {
+        try {
+            return getCount(dateFormat);
+        } catch (WareHouseManagerException e) {
+            throw new WareHouseManagerException("不具备获取Id条件，注册失败");
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.market.scms.mapper;
 
 import com.market.scms.entity.Stock;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -35,6 +36,14 @@ public interface StockMapper {
     Stock queryByGoodsId(Long goodsStockId);
 
     /**
+     * 通过产品编号查库存表
+     *
+     * @param stockGoodsId
+     * @return
+     */
+    Stock queryById(Long stockGoodsId);
+
+    /**
      * 通过入库编号查询
      * 
      * @param stockExportBillId
@@ -53,7 +62,10 @@ public interface StockMapper {
     /**
      * 一键查询
      * 
+     * @param rowIndex
+     * @param pageSize
      * @return
      */
-    List<Stock> queryAll();
+    List<Stock> queryAll(@Param("rowIndex")int rowIndex,
+                         @Param("pageSize")int pageSize);
 }

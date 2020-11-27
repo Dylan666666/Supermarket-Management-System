@@ -31,4 +31,12 @@ public interface GoodsCategoryMapper {
      * @return
      */
     GoodsCategory queryById(int categoryId);
+
+    /**
+     * 更新类别信息
+     * 
+     * @param goodsCategory
+     * @return
+     */
+    int update(GoodsCategory goodsCategory);
 }
