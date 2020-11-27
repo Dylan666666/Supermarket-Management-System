@@ -5,6 +5,8 @@ import com.market.scms.bean.StaffA;
 import com.market.scms.bean.StockingGoods;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.*;
+import com.market.scms.enums.StocktakingAllStatusStateEnum;
+import com.market.scms.enums.StocktakingStatusEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
@@ -565,13 +567,14 @@ public class StaffController {
                 modelMap.put("errMsg", "该盘点单不存在，访问失败");
                 return modelMap;
             }
-            //TODO
+            StocktakingRecord stocktakingRecord = stocktakingRecordService.queryById(stocktakingId);
             Stock stock = stockService.queryByGoodsId(stocktaking.getStocktakingStockGoodsId());
             Goods goods = goodsService.queryById(stocktaking.getStocktakingStockGoodsId());
             GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
             Unit unit = unitService.queryById(stock.getStockUnitId());
             modelMap.put("stock", stock);
             modelMap.put("stocktaking", stocktaking);
+            modelMap.put("stocktakingRecord", stocktakingRecord);
             modelMap.put("goods", goods);
             modelMap.put("category", category);
             modelMap.put("unit", unit);
@@ -583,6 +586,114 @@ public class StaffController {
         } catch (Exception e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.11职工 货品盘点 盘点提交
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/submitStocktakingGood")
+    @ResponseBody
+    @RequiresPermissions("/stocktaking/submitStocktakingGood")
+    public Map<String,Object> submitStocktakingGood(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        String stocktakingStr = HttpServletRequestUtil.getString(request, "stocktaking");
+        if (staffId < 0 || stocktakingStr == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败-01");
+            return modelMap;
+        }
+        Stocktaking stocktaking = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            stocktaking = mapper.readValue(stocktakingStr, Stocktaking.class);
+            if (stocktaking == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "访问失败-01");
+                return modelMap;
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败-01");
+            return modelMap;
+        }
+        try {
+            int res = stocktakingService.update(stocktaking);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "盘点提交失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "盘点提交失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.12库房管理员 盘点管理 查看 库房管理员提交总盘点
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/submitStocktaking")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stocktaking/submitStocktaking")
+    public Map<String,Object> submitStocktaking(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        Long stocktakingId = HttpServletRequestUtil.getLong(request, "stocktakingId");
+        if (stocktakingId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "盘点提交失败-01");
+            return modelMap;
+        }
+        try {
+            StocktakingRecord stocktakingRecord = stocktakingRecordService.queryById(stocktakingId);
+            if (stocktakingRecord == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该单号不存在，盘点提交失败");
+                return modelMap;
+            }
+            List<Stocktaking> stocktakingList = stocktakingService.queryByStocktakingId(stocktakingId);
+            for (Stocktaking stocktaking : stocktakingList) {
+                stocktaking.setStocktakingStatus(StocktakingStatusEnum.FINISH.getState());
+                int res = stocktakingService.update(stocktaking);
+                if (res == 0) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "盘点提交失败");
+                    return modelMap;
+                }
+            }
+            stocktakingRecord.setStocktakingCommitDate(new Date());
+            stocktakingRecord.setStocktakingAllStatus(StocktakingAllStatusStateEnum.FINISH.getState());
+            int res = stocktakingRecordService.update(stocktakingRecord);
+            if (res == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "盘点提交失败");
+                return modelMap;
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "盘点提交失败");
             return modelMap;
         }
         return modelMap;

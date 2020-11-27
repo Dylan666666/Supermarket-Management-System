@@ -136,13 +136,27 @@ public class StocktakingServiceImpl implements StocktakingService {
 
     @Override
     public List<Stocktaking> queryByCondition(Stocktaking stocktakingCondition, int pageIndex, int pageSize)
-            throws WareHouseManagerException{
+            throws WareHouseManagerException {
         if (stocktakingCondition != null) {
             int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
             List<Stocktaking> stocktakingList = stocktakingMapper.queryByCondition(stocktakingCondition, rowIndex, pageSize);
             return stocktakingList;
         } else {
             throw new WareHouseManagerException("查询失败");
+        }
+    }
+
+    @Override
+    public List<Stocktaking> queryByStocktakingId(Long stocktakingId) throws WareHouseManagerException {
+        if (stocktakingId > 0) {
+            try {
+                List<Stocktaking> stocktakingList = stocktakingMapper.queryByStocktakingId(stocktakingId);
+                return stocktakingList;
+            } catch (WareHouseManagerException e) {
+                throw new WareHouseManagerException("查询失败");
+            }
+        } else {
+            throw new WareHouseManagerException("不具备查询条件，查询失败");
         }
     }
 }

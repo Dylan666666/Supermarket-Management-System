@@ -6,8 +6,8 @@
     <insert id="insert" parameterType="com.market.scms.entity.Stocktaking">
         INSERT INTO
         tb_stocktaking(stocktaking_id,stocktaking_stock_goods_id,stock_num,
-        stocktaking_num,stocking_staff_id,stocktaking_status,stocking_remarks,
-        stocking_time,stocktaking_profit_loss_status,stocking_price)
+        stocktaking_num,stocktaking_staff_id,stocktaking_status,stocktaking_remarks,
+        stocktaking_time,stocktaking_profit_loss_status,stocktaking_price)
         VALUES 
         (#{stocktakingId},#{stocktakingStockGoodsId},#{stockNum},#{stocktakingNum}
         ,#{stocktakingStaffId},#{stocktakingStatus},#{stocktakingRemarks},#{stocktakingTime},
@@ -20,11 +20,11 @@
         <set>
             <if test="stockNum != null"> stock_num = #{stockNum},</if>
             <if test="stocktakingNum != null"> stocktaking_num = #{stocktakingNum},</if>
-            <if test="stocktakingStaffId"> stocking_staff_id = #{stocktakingStaffId},</if>
+            <if test="stocktakingStaffId"> stocktaking_staff_id = #{stocktakingStaffId},</if>
             <if test="stocktakingStatus != null"> stocktaking_status = #{stocktakingStatus},</if>
-            <if test="stocktakingRemarks != null"> stocking_remarks = #{stocktakingRemarks},</if>
+            <if test="stocktakingRemarks != null"> stocktaking_remarks = #{stocktakingRemarks},</if>
             <if test="stocktakingProfitLossStatus != null"> stocktaking_profit_loss_status = #{stocktakingProfitLossStatus},</if>
-            <if test="stocktakingPrice != null"> stocking_price = #{stocktakingPrice}</if>
+            <if test="stocktakingPrice != null"> stocktaking_price = #{stocktakingPrice}</if>
         </set>
         WHERE
         stocktaking_id = #{stocktakingId}
@@ -48,7 +48,7 @@
         *
         FROM 
         tb_stocktaking
-        ORDER BY stocking_time DESC 
+        ORDER BY stocktaking_time DESC 
         LIMIT #{rowIndex},#{pageSize}
     </select>
 
@@ -75,8 +75,17 @@
                 s.stocktaking_profit_loss_status = #{stocktakingCondition.stocktakingProfitLossStatus}
             </if>
         </where>
-        ORDER BY stocking_time DESC
+        ORDER BY stocktaking_time DESC
         LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryByStocktakingId" resultType="com.market.scms.entity.Stocktaking">
+        SELECT 
+        *
+        FROM 
+        tb_stocktaking
+        WHERE 
+        stocktaking_id = #{stocktakingId}
     </select>
 
     <select id="getCount" resultType="int">
@@ -85,7 +94,7 @@
         FROM 
         tb_stocktaking
         WHERE 
-        DATE_FORMAT(stocking_time,'%Y-%m-%d') = #{dateFormat}
+        DATE_FORMAT(stocktaking_time,'%Y-%m-%d') = #{dateFormat}
     </select>
 
 </mapper>

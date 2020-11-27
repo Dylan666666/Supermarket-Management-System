@@ -29,12 +29,12 @@ public interface StocktakingMapper {
     /**
      * 通过ID查询盘点单
      * 
-     * @param stockTakingId
-     * @param stockTakingStockGoodsId
+     * @param stocktakingId
+     * @param stocktakingStockGoodsId
      * @return
      */
-    Stocktaking queryById(@Param("stocktakingId") Long stockTakingId,
-                          @Param("stocktakingStockGoodsId") Long stockTakingStockGoodsId);
+    Stocktaking queryById(@Param("stocktakingId") Long stocktakingId,
+                          @Param("stocktakingStockGoodsId") Long stocktakingStockGoodsId);
 
     /**
      * 一键查询盘点单 
@@ -56,6 +56,14 @@ public interface StocktakingMapper {
     List<Stocktaking> queryByCondition(@Param("stocktakingCondition")Stocktaking stocktakingCondition,
                                        @Param("rowIndex") int rowIndex, 
                                        @Param("pageSize") int pageSize);
+
+    /**
+     * ID查询
+     * 
+     * @param stocktakingId
+     * @return
+     */
+    List<Stocktaking> queryByStocktakingId(Long stocktakingId);
 
     /**
      * 获取今日盘点次数

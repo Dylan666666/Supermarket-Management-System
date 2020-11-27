@@ -57,5 +57,12 @@ public interface StocktakingService {
     List<Stocktaking> queryByCondition(Stocktaking stocktakingCondition,
                                        int pageIndex,
                                        int pageSize);
-    
+
+    /**
+     * ID查询
+     *
+     * @param stocktakingId
+     * @return
+     */
+    List<Stocktaking> queryByStocktakingId(Long stocktakingId);
 }
