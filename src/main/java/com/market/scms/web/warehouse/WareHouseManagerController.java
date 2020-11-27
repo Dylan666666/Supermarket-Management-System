@@ -1395,4 +1395,40 @@ public class WareHouseManagerController {
         }
         return modelMap;
     }
+
+    /**
+     * 6.1库房管理员 盘点管理
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stocktaking")
+    public Map<String,Object> stocktaking(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        if (secondaryMenuId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            
+        } catch (WareHouseManagerException e) {
+            
+        } catch (Exception e) {
+            
+        }
+        return modelMap;
+    }
 }

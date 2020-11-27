@@ -54,7 +54,7 @@ public class StaffRoleController {
     private StaffPositionService staffPositionService;
 
     /**
-     * 1.2超级管理员 用户列表
+     * 7.2超级管理员 用户列表
      *
      * @param request
      * @return
@@ -110,7 +110,70 @@ public class StaffRoleController {
     }
 
     /**
-     * 1.3超级管理员 用户列表 提交修改
+     * 7.3超级管理员 用户列表 模糊查询（根据staffName模糊查询）
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stafflistbystaffname")
+    @ResponseBody
+    @RequiresPermissions("/stafflistbystaffname")
+    public Map<String,Object> staffListByStaffName(HttpServletRequest request) {
+        Map<String,Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        String staffName = HttpServletRequestUtil.getString(request, "staffName");
+        if (staffName == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败-01");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            SupermarketStaff curStaff = new SupermarketStaff();
+            curStaff.setStaffName(staffName);
+            List<SupermarketStaff> list = staffService.queryStaffByCondition(curStaff, pageIndex, pageSize);
+            List<StaffA> staffAList = new ArrayList<>(list.size());
+            for (SupermarketStaff staff : list) {
+                StaffA staffA = new StaffA();
+                List<StaffPositionRelation> relationList = staffPositionRelationService.queryById(staff.getStaffId());
+                if (relationList.size() != 0) {
+                    Integer staffPositionId = relationList.get(0).getStaffPositionId();
+                    StaffPosition staffPosition = staffPositionService.queryById(staffPositionId);
+                    BeanUtils.copyProperties(staffPosition, staffA);
+                    BeanUtils.copyProperties(relationList.get(0), staffA);
+                }
+                BeanUtils.copyProperties(staff, staffA);
+                staffAList.add(staffA);
+            }
+            int recordSum = staffService.countStaffAll();
+            modelMap.put("staffAList", staffAList);
+            modelMap.put("recordSum", recordSum);
+            if (pageIndex == 0) {
+                SecondaryMenu secondaryMenu = secondaryMenuService.queryByUrl("/stafflist");
+                List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenu.getSecondaryMenuId());
+                modelMap.put("functionList", functionList);
+            }
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+    
+    /**
+     * 7.4超级管理员 用户列表 提交修改
      *
      * @param request
      * @return
@@ -193,7 +256,7 @@ public class StaffRoleController {
     }
 
     /**
-     * 1.4超级管理员 用户列表 删除
+     * 7.5超级管理员 用户列表 删除
      *
      * @param request
      * @return
@@ -231,7 +294,7 @@ public class StaffRoleController {
     }
 
     /**
-     * 1.5超级管理员 用户列表 角色分配
+     * 7.6超级管理员 用户列表 角色分配
      *
      * @param request
      * @return
@@ -267,7 +330,7 @@ public class StaffRoleController {
     }
 
     /**
-     * 1.6超级管理员 用户列表 角色分配提交
+     * 7.7超级管理员 用户列表 角色分配提交
      *
      * @param request
      * @return

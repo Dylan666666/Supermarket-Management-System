@@ -59,7 +59,7 @@ public class JurisdictionController {
     private StaffJurisdictionService staffJurisdictionService;
 
     /**
-     * 1.1 超级管理员 用户列表（权限管理）
+     * 7.8超级管理员 用户列表（权限管理）
      *
      * @param request
      * @return
@@ -121,7 +121,7 @@ public class JurisdictionController {
     }
 
     /**
-     * 1.2超级管理员 用户列表（权限管理） 提交修改
+     * 7.9超级管理员 用户列表（权限管理） 提交修改
      *
      * @param request
      * @return
@@ -203,7 +203,7 @@ public class JurisdictionController {
     }
 
     /**
-     * 1.3 超级管理员 用户列表（权限管理） 删除
+     * 7.10超级管理员 用户列表（权限管理） 删除
      *
      * @param request
      * @return
@@ -240,7 +240,7 @@ public class JurisdictionController {
     }
 
     /**
-     * 1.4超级管理员 用户列表（权限管理） 权限分配
+     * 7.11超级管理员 用户列表（权限管理） 权限分配
      *
      * @param request
      * @return
@@ -324,7 +324,7 @@ public class JurisdictionController {
     }
 
     /**
-     * 1.5超级管理员 用户列表（权限管理） 权限分配提交
+     * 7.12超级管理员 用户列表（权限管理） 权限分配提交
      *
      * @param request
      * @return
@@ -381,7 +381,7 @@ public class JurisdictionController {
     }
 
     /**
-     * 1.6超级管理员 用户列表（权限管理） 权限删除
+     * 7.13超级管理员 用户列表（权限管理） 权限删除
      *
      * @param request
      * @return
@@ -472,7 +472,7 @@ public class JurisdictionController {
     }
     
     /**
-     * 1.7超级管理员 用户列表（权限管理） 权限删除提交
+     * 7.14超级管理员 用户列表（权限管理） 权限删除提交
      *
      * @param request
      * @return
