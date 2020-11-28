@@ -404,7 +404,7 @@ public class SaleClerkController {
             List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
             for (Delivery delivery : deliveryList) {
                 Stock stock = stockService.queryByGoodsId(delivery.getDeliveryStockGoodsId());
-                stock.setStockGoodsBatchNumber(stock.getStockGoodsBatchNumber() + delivery.getDeliveryNum());
+                //TODO STOCKNUMBER
                 res = stockService.update(stock);
                 if (res == 0) {
                     throw new SaleException("退货失败");

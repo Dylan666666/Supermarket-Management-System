@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.RefundCustomerRecordMapper">
+
+    <insert id="insert" parameterType="com.market.scms.entity.RefundCustomerRecord">
+        INSERT INTO
+        tb_refund_customer_record(refund_customer_id,refund_customer_order_id,refund_customer_time,
+        refund_customer_reason,order_type,refund_customer_status,refund_staff_id)
+        VALUES 
+        (#{refundCustomerId},#{refundCustomerOrderId},#{refundCustomerTime},#{refundCustomerReason},
+        #{orderType},#{refundCustomerStatus},#{refundStaffId})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.RefundCustomerRecord">
+        UPDATE
+        tb_refund_customer_record
+        <set>
+            <if test="refundCustomerReason != null"> refund_customer_reason = #{refundCustomerReason},</if>
+            <if test="refundCustomerStatus != null"> refund_customer_status = #{refundCustomerStatus},</if>
+            <if test="refundStaffId != null"> refund_staff_id = #{refundStaffId}</if>
+        </set>
+        WHERE
+        refund_customer_id = #{refundCustomerId}
+    </update>
+
+    <select id="queryByRefundCustomerId" resultType="com.market.scms.entity.RefundCustomerRecord">
+        SELECT 
+        *
+        FROM 
+        tb_refund_customer_record
+        WHERE 
+        refund_customer_id = #{refundCustomerId}
+    </select>
+
+    <select id="queryAll" resultType="com.market.scms.entity.RefundCustomerRecord">
+        SELECT 
+        *
+        FROM 
+        tb_refund_customer_record
+        ORDER BY refund_customer_time DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.RefundCustomerRecord">
+        SELECT
+        *
+        FROM
+        tb_refund_customer_record
+        <where>
+            <if test="refundCustomerRecordCondition.refundCustomerId != null">
+                AND
+                refund_customer_id = #{refundCustomerRecordCondition.refundCustomerId}
+            </if>
+            <if test="refundCustomerRecordCondition.orderType != null">
+                AND
+                order_type = #{refundCustomerRecordCondition.orderType}
+            </if>
+            <if test="refundCustomerRecordCondition.refundCustomerStatus != null">
+                AND
+                refund_customer_status = #{refundCustomerRecordCondition.refundCustomerStatus}
+            </if>
+            <if test="refundCustomerRecordCondition.refundStaffId != null">
+                AND
+                refund_staff_id = #{refundCustomerRecordCondition.refundStaffId}
+            </if>
+        </where>
+        ORDER BY refund_customer_time DESC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.RefundRetailRecordMapper">
+
+    <insert id="insert" parameterType="com.market.scms.entity.RefundRetailRecord">
+        INSERT INTO
+        tb_refund_retail_record(refund_retail_id,retail_time,retail_collection_staff_id,
+        retail_total_price)
+        VALUES 
+        (#{refundRetailId},#{retailTime},#{retailCollectionStaffId},#{retailTotalPrice})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.RefundRetailRecord">
+        UPDATE
+        tb_refund_retail_record
+        <set>
+            <if test="retailTime != null"> retail_time = #{retailTime},</if>
+            <if test="retailCollectionStaffId != null"> retail_collection_staff_id = #{retailCollectionStaffId},</if>
+            <if test="retailTotalPrice != null"> retail_total_price = #{retailTotalPrice}</if>
+        </set>
+        WHERE
+        refund_retail_id = #{refundRetailId}
+    </update>
+
+    <select id="queryByRefundRetailId" resultType="com.market.scms.entity.RefundRetailRecord">
+        SELECT 
+        *
+        FROM 
+        tb_refund_retail_record
+        WHERE 
+        refund_retail_id = #{refundRetailId}
+    </select>
+
+    <select id="queryAll" resultType="com.market.scms.entity.RefundRetailRecord">
+        SELECT 
+        *
+        FROM 
+        tb_refund_retail_record
+        ORDER BY refund_retail_id DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.RefundCustomerRecord">
+        SELECT
+        *
+        FROM
+        tb_refund_retail_record
+        <where>
+            <if test="refundRetailRecordCondition.refundRetailId != null">
+                AND
+                refund_retail_id = #{refundRetailRecordCondition.refundRetailId}
+            </if>
+            <if test="refundRetailRecordCondition.retailCollectionStaffId != null">
+                AND
+                retail_collection_staff_id = #{refundRetailRecordCondition.retailCollectionStaffId}
+            </if>
+        </where>
+        ORDER BY refund_retail_id DESC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+</mapper>

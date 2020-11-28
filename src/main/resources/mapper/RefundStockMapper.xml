@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.RefundStockMapper">
+
+    <insert id="insert" parameterType="com.market.scms.entity.RefundStock">
+        INSERT INTO
+        tb_refund_stock(refund_customer_id,refund_customer_stock_goods_id,refund_customer_num,
+        refund_customer_price)
+        VALUES 
+        (#{refundCustomerId},#{refundCustomerStockGoodsId},#{refundCustomerNum},#{refundCustomerPrice})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.RefundStock">
+        UPDATE
+        tb_refund_stock
+        SET
+        <if test="refundCustomerNum != null"> refund_customer_num = #{refundCustomerNum},</if>
+        <if test="refundCustomerPrice != null"> refund_customer_price = #{refundCustomerPrice}</if>
+        WHERE
+        refund_customer_id = #{refundCustomerId}
+        AND
+        refund_customer_stock_goods_id = #{refundCustomerStockGoodsId}
+    </update>
+
+    <select id="queryByDoubleId" resultType="com.market.scms.entity.RefundStock">
+        SELECT 
+        *
+        FROM 
+        tb_refund_stock
+        WHERE 
+        refund_customer_id = #{refundCustomerId}
+        AND
+        refund_customer_stock_goods_id = #{refundCustomerStockGoodsId}
+    </select>
+
+    <select id="queryById" resultType="com.market.scms.entity.RefundStock">
+        SELECT 
+        *
+        FROM 
+        tb_refund_stock
+        WHERE 
+        stock_goods_id = #{stockGoodsId}
+    </select>
+
+    <select id="queryByRefundCustomerId" resultType="com.market.scms.entity.RefundStock">
+        SELECT 
+        *
+        FROM 
+        tb_refund_stock
+        WHERE 
+        refund_customer_id = #{refundCustomerId}
+    </select>
+
+    <select id="queryByRefundCustomerStockGoodsId" resultType="com.market.scms.entity.RefundStock">
+        SELECT 
+        *
+        FROM 
+        tb_refund_stock
+        WHERE 
+        refund_customer_stock_goods_id = #{refundCustomerStockGoodsId}
+    </select>
+
+    <select id="queryByCondition" resultType="com.market.scms.entity.RefundStock">
+        SELECT
+        *
+        FROM
+        tb_refund_stock s
+        <where>
+            <if test="refundStockCondition.refundCustomerId != null">
+                AND
+                s.refund_customer_id = #{refundStockCondition.refundCustomerId}
+            </if>
+            <if test="refundStockCondition.refundCustomerStockGoodsId != null">
+                AND
+                s.refund_customer_stock_goods_id = #{refundStockCondition.refundCustomerStockGoodsId}
+            </if>
+        </where>
+        ORDER BY s.refund_customer_id DESC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+    <select id="queryAll" resultType="com.market.scms.entity.RefundStock">
+        SELECT 
+        *
+        FROM 
+        tb_refund_stock
+        ORDER BY refund_customer_id DESC
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+</mapper>

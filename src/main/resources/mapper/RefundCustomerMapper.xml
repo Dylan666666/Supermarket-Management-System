@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.scms.mapper.RefundCustomerMapper">
+
+    <insert id="insert" parameterType="com.market.scms.entity.RefundCustomer">
+        INSERT INTO
+        tb_refund_customer(refund_customer_id,refund_customer_stock_goods_id,
+        refund_customer_num,refund_customer_price)
+        VALUES 
+        (#{refundCustomerId},#{refundCustomerStockGoodsId},
+        #{refundCustomerNum},#{refundCustomerPrice})
+    </insert>
+
+    <update id="update" parameterType="com.market.scms.entity.RefundCustomer">
+        UPDATE
+        tb_refund_customer
+        <set>
+            <if test="refundCustomerPrice != null"> refund_customer_price = #{refundCustomerPrice},</if>
+            <if test="refundCustomerNum != null"> refund_customer_num = #{refundCustomerNum}</if>
+        </set>
+        WHERE
+        refund_customer_id = #{refundCustomerId}
+        AND
+        refund_customer_stock_goods_id = #{refundCustomerStockGoodsId}
+    </update>
+
+    <select id="queryByRefundId" resultType="com.market.scms.entity.RefundCustomer">
+        SELECT 
+        *
+        FROM 
+        tb_refund_customer
+        WHERE 
+        refund_customer_id = #{refundCustomerId}
+    </select>
+
+    <select id="queryByDoubleId" resultType="com.market.scms.entity.RefundCustomer">
+        SELECT 
+        *
+        FROM 
+        tb_refund_customer
+        WHERE 
+        refund_customer_id = #{refundCustomerId}
+        AND
+        refund_customer_stock_goods_id = #{refundCustomerStockGoodsId}
+    </select>
+
+    <select id="queryAll" resultType="com.market.scms.entity.RefundCustomer">
+        SELECT 
+        *
+        FROM 
+        tb_refund_customer
+        ORDER BY refund_customer_id DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+
+</mapper>
