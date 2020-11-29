@@ -403,7 +403,7 @@ public class SaleClerkController {
             }
             List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
             for (Delivery delivery : deliveryList) {
-                Stock stock = stockService.queryByGoodsId(delivery.getDeliveryStockGoodsId());
+                Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
                 //TODO STOCKNUMBER
                 res = stockService.update(stock);
                 if (res == 0) {
@@ -414,8 +414,8 @@ public class SaleClerkController {
             List<DeliveryGoodsReturn> deliveryGoodsReturnList = new ArrayList<>(deliveryList.size());
             for (Delivery delivery : deliveryList) {
                 DeliveryGoodsReturn deliveryGoods = new DeliveryGoodsReturn();
-                Stock stock = stockService.queryByGoodsId(delivery.getDeliveryStockGoodsId());
-                Goods goods = goodsService.queryById(delivery.getDeliveryStockGoodsId());
+                Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
                 GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
                 Unit unit = unitService.queryById(stock.getStockUnitId());
                 //TODO Refund
@@ -433,8 +433,8 @@ public class SaleClerkController {
             List<DeliveryGoods> deliveryGoodsList = new ArrayList<>(deliveryList.size());
             for (Delivery delivery : deliveryList) {
                 DeliveryGoods deliveryGoods = new DeliveryGoods();
-                Stock stock = stockService.queryByGoodsId(delivery.getDeliveryStockGoodsId());
-                Goods goods = goodsService.queryById(delivery.getDeliveryStockGoodsId());
+                Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
                 GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
                 Unit unit = unitService.queryById(stock.getStockUnitId());
                 BeanUtils.copyProperties(stock, deliveryGoods);

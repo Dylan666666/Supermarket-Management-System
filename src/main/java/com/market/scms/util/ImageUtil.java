@@ -3,8 +3,6 @@ package com.market.scms.util;
 import com.market.scms.dto.ImageHolder;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -34,7 +32,6 @@ public class ImageUtil {
      * 随机数生成对象
      */
     private static final Random random = new Random();
-    private static Logger logger = LoggerFactory.getLogger(ImageUtil.class);
     static {
         try {
             /**
@@ -62,16 +59,13 @@ public class ImageUtil {
         String extension = getFileExtension(thumbnail.getImageName());
         makeDirPath(targetAddr);
         String relativeAddr = targetAddr + realFileName + extension;
-        logger.debug("current relativeAddr is: " + relativeAddr);
         File dest = new File(PathUtil.getImgBasePath() + relativeAddr);
-        logger.debug("current completeAddr is: " + PathUtil.getImgBasePath() + relativeAddr);
         try {
             //对接收的图片做大小限制处理，并添加水印，存储到指定位置
             Thumbnails.of(thumbnail.getImage()).size(200,200)
                     .watermark(Positions.BOTTOM_RIGHT, ImageIO.read(waterMark),0.25f)
                     .outputQuality(1f).toFile(dest);
         } catch (IOException e) {
-            logger.error(e.toString());
             e.printStackTrace();
         }
         return relativeAddr;

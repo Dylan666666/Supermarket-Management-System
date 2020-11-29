@@ -511,8 +511,8 @@ public class StaffController {
             List<StockingGoods> stockingGoodsList = new ArrayList<>(stocktakingList.size());
             for (Stocktaking stocktaking : stocktakingList) {
                 StockingGoods stockingGoods = new StockingGoods();
-                Goods goods = goodsService.queryById(stocktaking.getStocktakingStockGoodsId());
-                Stock stock = stockService.queryByGoodsId(stocktaking.getStocktakingStockGoodsId());
+                Stock stock = stockService.queryById(stocktaking.getStocktakingStockGoodsId());
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
                 BeanUtils.copyProperties(stocktaking, stockingGoods);
                 BeanUtils.copyProperties(goods, stockingGoods);
                 BeanUtils.copyProperties(stock, stockingGoods);
@@ -562,8 +562,8 @@ public class StaffController {
                 return modelMap;
             }
             StocktakingRecord stocktakingRecord = stocktakingRecordService.queryById(stocktakingId);
-            Stock stock = stockService.queryByGoodsId(stocktaking.getStocktakingStockGoodsId());
-            Goods goods = goodsService.queryById(stocktaking.getStocktakingStockGoodsId());
+            Stock stock = stockService.queryById(stocktaking.getStocktakingStockGoodsId());
+            Goods goods = goodsService.queryById(stock.getGoodsStockId());
             GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
             Unit unit = unitService.queryById(stock.getStockUnitId());
             modelMap.put("stock", stock);

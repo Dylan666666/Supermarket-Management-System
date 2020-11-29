@@ -13,8 +13,6 @@ import com.market.scms.service.GoodsService;
 import com.market.scms.util.ImageUtil;
 import com.market.scms.util.PageCalculator;
 import com.market.scms.util.PathUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,8 +35,6 @@ public class GoodsServiceImpl implements GoodsService {
     private JedisUtil.Strings jedisStrings;
     @Resource
     private CacheService cacheService;
-
-    private static Logger logger = LoggerFactory.getLogger(GoodsServiceImpl.class);
     
     @Override
     public int insertGoods(Goods goods, ImageHolder thumbnail) throws WareHouseManagerException {
@@ -104,7 +100,6 @@ public class GoodsServiceImpl implements GoodsService {
                 jsonString = mapper.writeValueAsString(res);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
-                logger.error(e.getMessage());
                 throw new WareHouseManagerException("查询商品失败");
             }
             jedisStrings.set(key, jsonString);
@@ -115,7 +110,6 @@ public class GoodsServiceImpl implements GoodsService {
                 res = mapper.readValue(jsonString, javaType);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
-                logger.error(e.getMessage());
                 throw new WareHouseManagerException("查询商品失败");
             }
         }

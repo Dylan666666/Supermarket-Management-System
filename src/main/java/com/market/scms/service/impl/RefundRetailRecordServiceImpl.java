@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.cache.JedisUtil;
-import com.market.scms.entity.RefundCustomer;
 import com.market.scms.entity.RefundRetailRecord;
 import com.market.scms.exceptions.SaleException;
 import com.market.scms.exceptions.WareHouseManagerException;
@@ -43,6 +42,7 @@ public class RefundRetailRecordServiceImpl implements RefundRetailRecordService 
                 if (res == 0) {
                     throw new SaleException("添加失败");
                 }
+                cacheService.removeFromCache(REFUND_RETAIL_RECORD_LIST_KEY);
                 return res;
             } catch (SaleException e) {
                 throw new SaleException("添加失败");
@@ -60,6 +60,7 @@ public class RefundRetailRecordServiceImpl implements RefundRetailRecordService 
                 if (res == 0) {
                     throw new SaleException("更改失败");
                 }
+                cacheService.removeFromCache(REFUND_RETAIL_RECORD_LIST_KEY);
                 return res;
             } catch (SaleException e) {
                 throw new SaleException("更改失败");

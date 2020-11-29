@@ -4,15 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.cache.JedisUtil;
-import com.market.scms.entity.Delivery;
 import com.market.scms.entity.Retail;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.RetailMapper;
 import com.market.scms.service.CacheService;
 import com.market.scms.service.RetailService;
 import com.market.scms.util.PageCalculator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,8 +32,6 @@ public class RetailServiceImpl implements RetailService {
     private JedisUtil.Strings jedisStrings;
     @Resource
     private CacheService cacheService;
-
-    private static Logger logger = LoggerFactory.getLogger(RetailServiceImpl.class);
     
     @Override
     public int insert(Retail retail) throws WareHouseManagerException {
@@ -88,7 +83,6 @@ public class RetailServiceImpl implements RetailService {
                     jsonString = mapper.writeValueAsString(res);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询失败");
                 }
                 jedisStrings.set(key, jsonString);
@@ -99,7 +93,6 @@ public class RetailServiceImpl implements RetailService {
                     res = mapper.readValue(jsonString, javaType);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询失败");
                 }
             }
@@ -139,7 +132,6 @@ public class RetailServiceImpl implements RetailService {
                     jsonString = mapper.writeValueAsString(res);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询失败");
                 }
                 jedisStrings.set(key, jsonString);
@@ -150,7 +142,6 @@ public class RetailServiceImpl implements RetailService {
                     res = mapper.readValue(jsonString, javaType);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询失败");
                 }
             }

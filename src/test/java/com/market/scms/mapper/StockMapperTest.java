@@ -42,7 +42,7 @@ public class StockMapperTest {
         stock.setStockExportBillId("123");
         System.out.println(stockMapper.queryByCondition(stock).get(0).getGoodsStockId());
         System.out.println(stockMapper.queryByExportBillId("123").getGoodsStockId());
-        System.out.println(stockMapper.queryByGoodsId(1234567894321L).getGoodsStockId());
+        System.out.println(stockMapper.queryByGoodsId(1234567894321L).get(0).getGoodsStockId());
     }
     
     @Test

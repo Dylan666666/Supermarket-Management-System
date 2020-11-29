@@ -34,7 +34,7 @@ public interface StockService {
      * @param goodsStockId
      * @return
      */
-    Stock queryByGoodsId(Long goodsStockId);
+    List<Stock> queryByGoodsId(Long goodsStockId);
 
     /**
      * 通过产品编号查库存表

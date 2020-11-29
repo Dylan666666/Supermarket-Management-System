@@ -10,8 +10,6 @@ import com.market.scms.mapper.RetailRecordMapper;
 import com.market.scms.service.CacheService;
 import com.market.scms.service.RetailRecordService;
 import com.market.scms.util.PageCalculator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,8 +33,6 @@ public class RetailRecordServiceImpl implements RetailRecordService {
     private JedisUtil.Strings jedisStrings;
     @Resource
     private CacheService cacheService;
-
-    private static Logger logger = LoggerFactory.getLogger(RetailRecordServiceImpl.class);
 
 
     @Override
@@ -108,7 +104,6 @@ public class RetailRecordServiceImpl implements RetailRecordService {
                     jsonString = mapper.writeValueAsString(res);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询失败");
                 }
                 jedisStrings.set(key, jsonString);
@@ -120,7 +115,6 @@ public class RetailRecordServiceImpl implements RetailRecordService {
                     res = mapper.readValue(jsonString, javaType);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询订货详情单失败");
                 }
             }

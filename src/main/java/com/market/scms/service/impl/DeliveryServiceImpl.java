@@ -10,8 +10,6 @@ import com.market.scms.mapper.DeliveryMapper;
 import com.market.scms.service.CacheService;
 import com.market.scms.service.DeliveryService;
 import com.market.scms.util.PageCalculator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,8 +32,6 @@ public class DeliveryServiceImpl implements DeliveryService {
     private JedisUtil.Strings jedisStrings;
     @Resource
     private CacheService cacheService;
-
-    private static Logger logger = LoggerFactory.getLogger(DeliveryServiceImpl.class);
     
     @Override
     public int insert(Delivery delivery) throws WareHouseManagerException {
@@ -89,7 +85,6 @@ public class DeliveryServiceImpl implements DeliveryService {
                 jsonString = mapper.writeValueAsString(res);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
-                logger.error(e.getMessage());
                 throw new WareHouseManagerException("查询失败");
             }
             jedisStrings.set(key, jsonString);
@@ -100,7 +95,6 @@ public class DeliveryServiceImpl implements DeliveryService {
                 res = mapper.readValue(jsonString, javaType);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
-                logger.error(e.getMessage());
                 throw new WareHouseManagerException("查询失败");
             }
         }
@@ -137,7 +131,6 @@ public class DeliveryServiceImpl implements DeliveryService {
                     jsonString = mapper.writeValueAsString(res);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询失败");
                 }
                 jedisStrings.set(key, jsonString);
@@ -148,7 +141,6 @@ public class DeliveryServiceImpl implements DeliveryService {
                     res = mapper.readValue(jsonString, javaType);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询失败");
                 }
             }

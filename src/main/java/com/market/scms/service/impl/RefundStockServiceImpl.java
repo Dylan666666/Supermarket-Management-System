@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.cache.JedisUtil;
-import com.market.scms.entity.RefundRetail;
 import com.market.scms.entity.RefundStock;
 import com.market.scms.exceptions.SaleException;
 import com.market.scms.exceptions.WareHouseManagerException;

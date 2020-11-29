@@ -9,8 +9,6 @@ import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.UnitMapper;
 import com.market.scms.service.CacheService;
 import com.market.scms.service.UnitService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,8 +31,6 @@ public class UnitServiceImpl implements UnitService {
     private JedisUtil.Strings jedisStrings;
     @Resource
     private CacheService cacheService;
-
-    private static Logger logger = LoggerFactory.getLogger(UnitServiceImpl.class);
     
     @Override
     public List<Unit> queryAll() throws WareHouseManagerException {
@@ -48,7 +44,6 @@ public class UnitServiceImpl implements UnitService {
                 jsonString = mapper.writeValueAsString(res);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
-                logger.error(e.getMessage());
                 throw new WareHouseManagerException("查询商品单位失败");
             }
             jedisStrings.set(key, jsonString);
@@ -59,7 +54,6 @@ public class UnitServiceImpl implements UnitService {
                 res = mapper.readValue(jsonString, javaType);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
-                logger.error(e.getMessage());
                 throw new WareHouseManagerException("查询商品单位失败");
             }
         }

@@ -2,10 +2,7 @@ package com.market.scms.web.warehouse;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.market.scms.bean.DeliveryGoods;
-import com.market.scms.bean.GoodsStockA;
-import com.market.scms.bean.GoodsStockB;
-import com.market.scms.bean.StockingGoods;
+import com.market.scms.bean.*;
 import com.market.scms.dto.ImageHolder;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.Function;
@@ -111,20 +108,24 @@ public class WareHouseManagerController {
         }
         try {
             List<GoodsCategory> categoryList = goodsCategoryService.queryAll(); 
+            List<Goods> goodsList2 = goodsService.queryAll();
             List<Goods> goodsList = goodsService.queryByCondition(new Goods(), pageIndex, pageSize);
-            List<Goods> goodsList2 = goodsService.queryByCondition(new Goods(), 0, 10000);
-            List<GoodsStockA> goodsStockAList = new ArrayList<>(goodsList.size());
+            List<GoodsStockNum> goodsStockNumList = new ArrayList<>(goodsList.size());
             for (Goods goods : goodsList) {
-                GoodsStockA goodsStockA = new GoodsStockA();
-                Stock stock = stockService.queryByGoodsId(goods.getGoodsId());
-                BeanUtils.copyProperties(goods, goodsStockA);
-                BeanUtils.copyProperties(stock, goodsStockA);
-                goodsStockAList.add(goodsStockA);
+                GoodsStockNum goodsStockNum = new GoodsStockNum();
+                BeanUtils.copyProperties(goods, goodsStockNum);
+                int inventory = 0;
+                List<Stock> stockList = stockService.queryByGoodsId(goods.getGoodsId());
+                for (Stock stock : stockList) {
+                    inventory += stock.getStockInventory();
+                }
+                goodsStockNum.setStockInventoryNum(inventory);
+                goodsStockNumList.add(goodsStockNum);
             }
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
             modelMap.put("success", true);
             modelMap.put("categoryList", categoryList);
-            modelMap.put("goodsStockAList", goodsStockAList);
+            modelMap.put("goodsStockNumList", goodsStockNumList);
             modelMap.put("recordSum", goodsList2.size());
             modelMap.put("functionList", functionList);
         } catch (WareHouseManagerException e) {
@@ -134,7 +135,42 @@ public class WareHouseManagerController {
         }
         return modelMap;
     }
-
+    
+    /**
+     * 3.2库房管理员 查库存 查看
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/showinventory/examine")
+    @ResponseBody
+    @RequiresPermissions("/showinventory/examine")
+    public Map<String,Object> examine(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        Long goodsId = HttpServletRequestUtil.getLong(request, "goodsId");
+        if (goodsId == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败-01");
+            return modelMap;
+        }
+        try {
+            List<Unit> unitList = unitService.queryAll();
+            List<Stock> stockList = stockService.queryByGoodsId(goodsId);
+            modelMap.put("unitList", unitList);
+            modelMap.put("stockList", stockList);
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+    
     /**
      * 3.2 修改库存
      * 
@@ -146,16 +182,21 @@ public class WareHouseManagerController {
     @RequiresPermissions("/showinventory/modifygoods")
     public Map<String,Object> modifyGoods(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
-        Long stockGoodsId = HttpServletRequestUtil.getLong(request, "stockGoodsId");
+        String stockStr = HttpServletRequestUtil.getString(request, "stock");
         Double stockGoodsPrice = HttpServletRequestUtil.getDouble(request, "stockGoodsPrice");
-        if (stockGoodsId == -1000L || stockGoodsPrice == -1000d) {
+        if (stockStr == null || stockGoodsPrice == -1000d) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "传入信息有误");
             return modelMap;
         }
+        Stock stock = null;
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            Stock stock = new Stock();
-            stock.setStockGoodsId(stockGoodsId);
+            stock = mapper.readValue(stockStr, Stock.class);
+        } catch (Exception e) {
+            
+        }
+        try {
             stock.setStockGoodsPrice(DoubleUtil.get(stockGoodsPrice));
             int res = stockService.update(stock);
             if (res == 0) {
@@ -292,8 +333,9 @@ public class WareHouseManagerController {
             return modelMap;
         }
         try {
+            Stock stock = stockService.queryById(stockGoodsId);
             Goods cur = new Goods();
-            cur.setGoodsId(stockGoodsId);
+            cur.setGoodsId(stock.getGoodsStockId());
             List<Goods> goodsList = goodsService.queryByCondition(cur, 0, 10);
             if (goodsList.size() == 0) {
                 modelMap.put("success",false);
@@ -301,7 +343,6 @@ public class WareHouseManagerController {
                 return modelMap;
             }
             Goods goods = goodsList.get(0);
-            Stock stock = stockService.queryByGoodsId(stockGoodsId);
             if (stock == null) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", "查询失败");
@@ -348,10 +389,14 @@ public class WareHouseManagerController {
             for (Goods goods : goodsList) {
                 GoodsStockB goodsStockB = new GoodsStockB();
                 BeanUtils.copyProperties(goods, goodsStockB);
-                Stock stock = stockService.queryByGoodsId(goods.getGoodsId());
-                BeanUtils.copyProperties(stock, goodsStockB);
+                List<Stock> stockList = stockService.queryByGoodsId(goods.getGoodsId());
+                int inventory = 0;
+                for (Stock stock : stockList) {
+                    inventory += stock.getStockGoodsBatchNumber();
+                }
+                goodsStockB.setStockInventory(inventory);
                 goodsStockB.setGoodsCategoryName(categoryMap.get(goods.getGoodsCategoryId()));
-                goodsStockB.setUnitName(unitMap.get(stock.getStockUnitId()));
+                goodsStockB.setUnitName(unitMap.get(stockList.get(0).getStockUnitId()));
                 goodsStockBList.add(goodsStockB);
             }
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
@@ -831,8 +876,8 @@ public class WareHouseManagerController {
                     modelMap.put("errMsg", "传入信息有误，查看失败");
                     return modelMap;
                 }
-                Stock stock = stockService.queryByGoodsId(delivery.getDeliveryStockGoodsId());
-                Goods goods = goodsService.queryById(delivery.getDeliveryStockGoodsId());
+                Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
                 if (stock == null || goods == null) {
                     modelMap.put("success",false);
                     modelMap.put("errMsg", "数据有误，查看失败");
@@ -889,8 +934,8 @@ public class WareHouseManagerController {
                 return modelMap;
             }
             SupermarketStaff staff = staffService.queryById(deliveryRecord.getDeliveryLaunchedStaffId());
-            Stock stock = stockService.queryByGoodsId(deliveryStockGoodsId);
-            Goods goods = goodsService.queryById(deliveryStockGoodsId);
+            Stock stock = stockService.queryById(deliveryStockGoodsId);
+            Goods goods = goodsService.queryById(stock.getGoodsStockId());
             GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
             Unit unit = unitService.queryById(stock.getStockUnitId());
             System.out.println("no 3------------");
@@ -1022,10 +1067,9 @@ public class WareHouseManagerController {
                 modelMap.put("errMsg", "该批发单不存在，查看失败");
                 return modelMap;
             }
-            System.out.println("-----------批发单是在的");
-            Stock stock = stockService.queryByGoodsId(retailStockGoodsId);
+            Stock stock = stockService.queryById(retailStockGoodsId);
             SupermarketStaff staff = staffService.queryById(retailRecord.getRetailCollectionStaffId());
-            Goods goods = goodsService.queryById(retailStockGoodsId);
+            Goods goods = goodsService.queryById(stock.getGoodsStockId());
             GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
             Unit unit = unitService.queryById(stock.getStockUnitId());
             System.out.println("都过了");
@@ -1402,8 +1446,8 @@ public class WareHouseManagerController {
             List<StockingGoods> stockingGoodsList = new ArrayList<>(stocktakingList.size());
             for (Stocktaking stocktaking : stocktakingList) {
                 StockingGoods stockingGoods = new StockingGoods();
-                Goods goods = goodsService.queryById(stocktaking.getStocktakingStockGoodsId());
-                Stock stock = stockService.queryByGoodsId(stocktaking.getStocktakingStockGoodsId());
+                Stock stock = stockService.queryById(stocktaking.getStocktakingStockGoodsId());
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
                 GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
                 BeanUtils.copyProperties(stocktaking, stockingGoods);
                 BeanUtils.copyProperties(goods, stockingGoods);
@@ -1452,8 +1496,8 @@ public class WareHouseManagerController {
                 return modelMap;
             }
             SupermarketStaff staff = staffService.queryById(stocktaking.getStocktakingStaffId());
-            Stock stock = stockService.queryByGoodsId(stocktakingStockGoodsId);
-            Goods goods = goodsService.queryById(stocktakingStockGoodsId);
+            Stock stock = stockService.queryById(stocktakingStockGoodsId);
+            Goods goods = goodsService.queryById(stock.getGoodsStockId());
             GoodsCategory category = goodsCategoryService.queryById(goods.getGoodsCategoryId());
             Unit unit = unitService.queryById(stock.getStockUnitId());
             modelMap.put("stocktaking", stocktaking);

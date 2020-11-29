@@ -21,8 +21,6 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -49,8 +47,6 @@ public class StaffServiceImpl implements StaffService {
     private JedisUtil.Strings jedisStrings;
     @Resource
     private CacheService cacheService;
-
-    private static Logger logger = LoggerFactory.getLogger(CouponServiceImpl.class);
     
     @Override
     public SupermarketStaff queryStaffByPhone(String staffPhone) throws SupermarketStaffException {
@@ -201,7 +197,6 @@ public class StaffServiceImpl implements StaffService {
                     jsonString = mapper.writeValueAsString(res);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询失败");
                 }
                 jedisStrings.set(key, jsonString);
@@ -213,7 +208,6 @@ public class StaffServiceImpl implements StaffService {
                     res = mapper.readValue(jsonString, javaType);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage());
                     throw new WareHouseManagerException("查询失败");
                 }
             }

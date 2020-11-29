@@ -2,7 +2,6 @@ package com.market.scms.service.impl;
 
 import com.market.scms.entity.staff.Function;
 import com.market.scms.exceptions.SupermarketStaffException;
-import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.FunctionMapper;
 import com.market.scms.service.FunctionService;
 import org.springframework.stereotype.Service;

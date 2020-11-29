@@ -22,6 +22,7 @@ public class RefundCustomerMapperTest {
     @Test
     public void insert() {
         RefundCustomer refundCustomer = new RefundCustomer();
+        
     }
 
     @Test

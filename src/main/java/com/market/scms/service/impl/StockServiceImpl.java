@@ -10,8 +10,6 @@ import com.market.scms.mapper.StockMapper;
 import com.market.scms.service.CacheService;
 import com.market.scms.service.StockService;
 import com.market.scms.util.PageCalculator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,8 +32,6 @@ public class StockServiceImpl implements StockService {
     private JedisUtil.Strings jedisStrings;
     @Resource
     private CacheService cacheService;
-
-    private static Logger logger = LoggerFactory.getLogger(StockServiceImpl.class);
     
     @Override
     public int insert(Stock stock) throws WareHouseManagerException {
@@ -85,10 +81,10 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public Stock queryByGoodsId(Long goodsStockId) throws WareHouseManagerException {
+    public List<Stock> queryByGoodsId(Long goodsStockId) throws WareHouseManagerException {
         if (goodsStockId > 0) {
             try {
-                Stock stock = stockMapper.queryByGoodsId(goodsStockId);
+                List<Stock> stock = stockMapper.queryByGoodsId(goodsStockId);
                 return stock;
             } catch (WareHouseManagerException e) {
                 throw new WareHouseManagerException("传入信息有误，查询库存失败");
@@ -155,7 +151,6 @@ public class StockServiceImpl implements StockService {
                 jsonString = mapper.writeValueAsString(res);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
-                logger.error(e.getMessage());
                 throw new WareHouseManagerException("查询库存失败");
             }
             jedisStrings.set(key, jsonString);
@@ -166,7 +161,6 @@ public class StockServiceImpl implements StockService {
                 res = mapper.readValue(jsonString, javaType);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
-                logger.error(e.getMessage());
                 throw new WareHouseManagerException("查询库存失败");
             }
         }
