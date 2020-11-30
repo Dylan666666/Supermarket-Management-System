@@ -27,6 +27,15 @@
         category_id = #{categoryId}
     </select>
 
+    <select id="queryByStaffId" resultType="com.market.scms.entity.GoodsCategory">
+        SELECT 
+        *
+        FROM 
+        tb_goods_category
+        WHERE 
+        stocktaking_staff_id = #{stocktakingStaffId}
+    </select>
+
     <update id="update" parameterType="com.market.scms.entity.GoodsCategory">
         UPDATE
         tb_goods_category

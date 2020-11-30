@@ -94,6 +94,20 @@ public class GoodsCategoryServiceImpl implements GoodsCategoryService {
     }
 
     @Override
+    public List<GoodsCategory> queryByStaffId(int staffId)  throws WareHouseManagerException {
+        if (staffId > 0) {
+            try {
+                List<GoodsCategory> goodsCategory = goodsCategoryMapper.queryByStaffId(staffId);
+                return goodsCategory;
+            } catch (WareHouseManagerException e) {
+                throw new WareHouseManagerException("查询产品类别失败");
+            }
+        } else {
+            throw new WareHouseManagerException("查询产品类别失败");
+        }
+    }
+
+    @Override
     public int update(GoodsCategory goodsCategory) throws WareHouseManagerException {
         if (goodsCategory != null) {
             try {

@@ -39,4 +39,12 @@ public interface GoodsCategoryMapper {
      * @return
      */
     int update(GoodsCategory goodsCategory);
+
+    /**
+     * 通过id查询
+     *
+     * @param staffId
+     * @return
+     */
+    List<GoodsCategory> queryByStaffId(int staffId);
 }

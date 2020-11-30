@@ -1,7 +1,7 @@
 package com.market.scms.bean;
 
 /**
- * Goods+stock+stocking
+ * Goods+stock+stocktaking
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/26 22:09

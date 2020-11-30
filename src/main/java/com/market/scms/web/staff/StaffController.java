@@ -5,10 +5,12 @@ import com.market.scms.bean.StaffA;
 import com.market.scms.bean.StockingGoods;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.*;
+import com.market.scms.enums.StocktakingAllStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
 import com.market.scms.util.HttpServletRequestUtil;
+import com.market.scms.util.PageCalculator;
 import com.market.scms.util.PasswordHelper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -343,7 +345,8 @@ public class StaffController {
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
-        if (secondaryMenuId < 0) {
+        int staffId = HttpServletRequestUtil.getInt(request, "userId");
+        if (secondaryMenuId < 0 || staffId < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "不具备访问条件，访问失败");
             return modelMap;
@@ -356,22 +359,36 @@ public class StaffController {
         }
         try {
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
-            List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
-            
+            int count = stocktakingRecordService.queryStocktakingCount(StocktakingAllStatusStateEnum.START.getState());
+            if (count == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "无待盘点单");
+                return modelMap;
+            }
+            List<GoodsCategory> categoryList = goodsCategoryService.queryByStaffId(staffId);
+            Map<Integer, Integer> categoryMap = new HashMap<>();
+            for (GoodsCategory category : categoryList) {
+                categoryMap.put(category.getCategoryId(), 1);
+            }
             List<Stocktaking> stocktakingList = stocktakingService.queryAll(pageIndex, pageSize);
             List<StockingGoods> stockingGoodsList = new ArrayList<>(stocktakingList.size());
             for (Stocktaking stocktaking : stocktakingList) {
                 StockingGoods stockingGoods = new StockingGoods();
                 Stock stock = stockService.queryById(stocktaking.getStocktakingStockGoodsId());
                 Goods goods = goodsService.queryById(stock.getGoodsStockId());
+                if (categoryMap.getOrDefault(goods.getGoodsCategoryId(), -1) == -1) {
+                    continue;
+                }
                 BeanUtils.copyProperties(stocktaking, stockingGoods);
                 BeanUtils.copyProperties(goods, stockingGoods);
                 BeanUtils.copyProperties(stock, stockingGoods);
                 stockingGoodsList.add(stockingGoods);
             }
-            List<Stocktaking> stocktakingList2 = stocktakingService.queryAll(0, 10000);
-            modelMap.put("stockingGoodsList", stockingGoodsList);
-            modelMap.put("recordSum", stocktakingList2.size());
+            int recordSum = stockingGoodsList.size();
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            List<StockingGoods> res = stockingGoodsList.subList(rowIndex, rowIndex + pageSize);
+            modelMap.put("stockingGoodsList", res);
+            modelMap.put("recordSum", recordSum);
             modelMap.put("categoryList", categoryList);
             modelMap.put("functionList", functionList);
             modelMap.put("success", true);

@@ -36,6 +36,14 @@ public interface GoodsCategoryService {
     GoodsCategory queryById(int categoryId);
 
     /**
+     * 通过id查询
+     *
+     * @param staffId
+     * @return
+     */
+    List<GoodsCategory> queryByStaffId(int staffId);
+
+    /**
      * 更新类别信息
      *
      * @param goodsCategory
