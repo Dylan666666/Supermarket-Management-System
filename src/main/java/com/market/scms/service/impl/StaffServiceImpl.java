@@ -14,6 +14,7 @@ import com.market.scms.service.CacheService;
 import com.market.scms.service.StaffService;
 import com.market.scms.util.PageCalculator;
 import com.market.scms.util.PasswordHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -33,6 +34,7 @@ import java.util.List;
  * @Date: 2020/11/2 14:18
  */
 @Service
+@Slf4j
 public class StaffServiceImpl implements StaffService {
     
     @Resource
@@ -79,6 +81,7 @@ public class StaffServiceImpl implements StaffService {
                 if (res == 0) {
                     throw new SupermarketStaffException("注册失败");
                 }
+                log.info("------手机号:" + staff.getStaffPhone() + " 用户已注册 ------");
                 cacheService.removeFromCache(STAFF_LIST_KEY);
                 return res;
             } catch (SupermarketStaffException e) {
@@ -151,7 +154,6 @@ public class StaffServiceImpl implements StaffService {
     public SupermarketStaff staffLogin(String staffPhone, String staffPassword) throws SupermarketStaffException {
         // 获取Subject实例对象，用户实例
         Subject currentUser = SecurityUtils.getSubject();
-
         // 将用户名和密码封装到UsernamePasswordToken
         UsernamePasswordToken token = new UsernamePasswordToken(staffPhone, staffPassword);
         
@@ -161,7 +163,6 @@ public class StaffServiceImpl implements StaffService {
         try {
             // 传到 MyShiroRealm 类中的方法进行认证
             currentUser.login(token);
-            
             // 构建缓存用户信息返回给前端
             staff = (SupermarketStaff) currentUser.getPrincipals().getPrimaryPrincipal();
             //设置TOKEN返回给前端

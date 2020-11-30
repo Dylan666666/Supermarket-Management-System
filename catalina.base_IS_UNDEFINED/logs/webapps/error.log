@@ -1,3 +1,0 @@
-2020-11-29 12:21:08.948 [main] INFO  com.market.scms.ScmsApplication -     Starting ScmsApplication on LAPTOP-E5ODUTLC with PID 7648 (O:\market_management\scms\target\classes started by 14396 in O:\market_management\scms)
-2020-11-29 12:21:08.951 [main] INFO  com.market.scms.ScmsApplication -     No active profile set, falling back to default profiles: default
-2020-11-29 12:21:12.149 [main] INFO  com.market.scms.ScmsApplication -     Started ScmsApplication in 3.725 seconds (JVM running for 4.646)

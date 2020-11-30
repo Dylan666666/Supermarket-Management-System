@@ -91,7 +91,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         if (Objects.isNull(staff)) {
             return null;
         }
-    
+        
         return new SimpleAuthenticationInfo(
                 //传入对象（一定要是对象！！！getPrimaryPrincipal()要取得）
                 staff, 

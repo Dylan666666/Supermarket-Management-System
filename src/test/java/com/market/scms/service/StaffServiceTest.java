@@ -28,15 +28,9 @@ public class StaffServiceTest {
     @Test
     public void InsertTest() {
         SupermarketStaff staff = new SupermarketStaff();
-        staff.setToken("asdasd");
-        staff.setStaffPhone("777");
-        staff.setStaffPassword("777");
-        staff.setStaffName("777");
-        staff.setExpireTime(now);
-        staff.setLoginTime(now);
-        staff.setStaffStatus(1001);
-        staff.setCreateTime(new Date());
-        staff.setLastEditTime(new Date());
+        staff.setStaffPhone("8");
+        staff.setStaffPassword("88");
+        staff.setStaffName("8");
         System.out.println(staffService.insertStaff(staff));
     }
 

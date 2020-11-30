@@ -128,7 +128,7 @@ public class ShiroConfig {
         return mySessionManager;
     }
     
-    private String host = "47.100.123.112:6379";
+    private String host = "47.100.123.112:6378";
     @Value("${redis.port}")
     private int port;
     @Value("${redis.timeout}")
