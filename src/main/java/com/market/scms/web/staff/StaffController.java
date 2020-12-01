@@ -6,6 +6,7 @@ import com.market.scms.bean.StockingGoods;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.*;
 import com.market.scms.enums.StocktakingAllStatusStateEnum;
+import com.market.scms.enums.StocktakingProfitLossStatusEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
@@ -406,19 +407,6 @@ public class StaffController {
             return modelMap;
         }
         return modelMap;
-    }
-
-    public static void main(String[] args) {
-        List<Integer> integers = new ArrayList<>();
-        integers.add(1);
-        integers.add(2);
-        integers.add(3);
-        integers.add(4);
-        integers.add(5);
-        integers = integers.subList(0, 3);
-        for (Integer integer : integers) {
-            System.out.println(integer);
-        }
     }
     
     /**

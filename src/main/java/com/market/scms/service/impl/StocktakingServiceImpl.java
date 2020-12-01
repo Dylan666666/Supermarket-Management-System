@@ -41,9 +41,6 @@ public class StocktakingServiceImpl implements StocktakingService {
         if (stocktaking != null && stocktaking.getStocktakingStockGoodsId() != null &&
         stocktaking.getStockNum() != null) {
             try {
-                Long id = StocktakingIdCreator.get(stocktakingMapper.getCount(StocktakingIdCreator.getDateString()));
-                stocktaking.setStocktakingId(id);
-                stocktaking.setStocktakingStatus(StocktakingStatusEnum.START.getState());
                 int res = stocktakingMapper.insert(stocktaking);
                 if (res == 0) {
                     throw new WareHouseManagerException("添加盘点单失败");

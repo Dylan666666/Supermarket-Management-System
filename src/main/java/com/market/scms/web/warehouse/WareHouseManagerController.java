@@ -1745,6 +1745,7 @@ public class WareHouseManagerController {
                 stocktaking.setStockNum(stock.getStockGoodsBatchNumber());
                 stocktaking.setStocktakingStaffId(category.getStocktakingStaffId());
                 stocktaking.setStocktakingStatus(StocktakingStatusEnum.START.getState());
+                stocktaking.setStocktakingPrice(stock.getStockGoodsPrice());
                 res = stocktakingService.insert(stocktaking);
                 if (res == 0) {
                     throw new WareHouseManagerException("发起失败"); 
@@ -1789,13 +1790,22 @@ public class WareHouseManagerController {
                 return modelMap;
             }
             List<Stocktaking> stocktakingList = stocktakingService.queryByStocktakingId(stocktakingId);
+            Double money = 0.0;
             for (Stocktaking stocktaking : stocktakingList) {
+                if (stocktaking.getStocktakingProfitLossStatus() == null) {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg", "盘盈亏状态未填完，盘点提交失败");
+                    return modelMap;
+                }
+                money += (stocktaking.getStockNum() - stocktaking.getStocktakingNum())
+                        * stocktaking.getStocktakingPrice();
                 stocktaking.setStocktakingStatus(StocktakingStatusEnum.FINISH.getState());
                 int res = stocktakingService.update(stocktaking);
                 if (res == 0) {
                     throw new WareHouseManagerException("提交失败");
                 }
             }
+            stocktakingRecord.setStocktakingProfitLossPrice(money);
             stocktakingRecord.setStocktakingCommitDate(new Date());
             stocktakingRecord.setStocktakingAllStatus(StocktakingAllStatusStateEnum.FINISH.getState());
             int res = stocktakingRecordService.update(stocktakingRecord);
