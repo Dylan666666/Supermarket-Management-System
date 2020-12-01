@@ -49,7 +49,7 @@ public class ImageUtil {
     private static File waterMark = new File(basePath + "/watermark.png");
 
     /**
-     * 处理缩略图，并返回新生成图片的相对值路径
+     * 处理缩略图，并返回新生成图片的绝对路径
      * @param thumbnail
      * @param targetAddr
      * @return
@@ -68,7 +68,7 @@ public class ImageUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return relativeAddr;
+        return PathUtil.getImgBasePath() + relativeAddr;
     }
 
     /**
