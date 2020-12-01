@@ -386,7 +386,11 @@ public class StaffController {
             }
             int recordSum = stockingGoodsList.size();
             int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
-            List<StockingGoods> res = stockingGoodsList.subList(rowIndex, rowIndex + pageSize);
+            int rightIndex = rowIndex + pageSize;
+            if (recordSum < rightIndex) {
+                rightIndex = recordSum;
+            }
+            List<StockingGoods> res = stockingGoodsList.subList(rowIndex, rightIndex);
             modelMap.put("stockingGoodsList", res);
             modelMap.put("recordSum", recordSum);
             modelMap.put("categoryList", categoryList);
@@ -404,6 +408,19 @@ public class StaffController {
         return modelMap;
     }
 
+    public static void main(String[] args) {
+        List<Integer> integers = new ArrayList<>();
+        integers.add(1);
+        integers.add(2);
+        integers.add(3);
+        integers.add(4);
+        integers.add(5);
+        integers = integers.subList(0, 3);
+        for (Integer integer : integers) {
+            System.out.println(integer);
+        }
+    }
+    
     /**
      * 6.10职工 货品盘点 盘点(详情查看填写页面)
      *
