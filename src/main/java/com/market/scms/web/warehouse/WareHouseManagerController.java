@@ -659,12 +659,12 @@ public class WareHouseManagerController {
             exportBill = mapper.readValue(exportBillStr, ExportBill.class);
             if (exportBill == null) {
                 modelMap.put("success",false);
-                modelMap.put("errMsg", "传入信息有误，修改失败");
+                modelMap.put("errMsg", "传入信息有误-01，修改失败");
                 return modelMap;
             }
         } catch (Exception e) {
             modelMap.put("success",false);
-            modelMap.put("errMsg", "传入信息有误，修改失败");
+            modelMap.put("errMsg", "传入信息有误-01，修改失败");
             return modelMap;
         }
         try {
@@ -676,6 +676,10 @@ public class WareHouseManagerController {
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e ){
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "修改失败");
             return modelMap;
         }
         return modelMap;
