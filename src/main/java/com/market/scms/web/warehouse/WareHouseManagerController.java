@@ -455,6 +455,10 @@ public class WareHouseManagerController {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
             return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
         }
         return modelMap;
     }

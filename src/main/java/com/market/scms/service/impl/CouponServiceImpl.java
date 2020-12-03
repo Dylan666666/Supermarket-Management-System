@@ -6,12 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.cache.JedisUtil;
 import com.market.scms.entity.Coupon;
 import com.market.scms.entity.ExportBill;
+import com.market.scms.entity.Stock;
 import com.market.scms.enums.CouponStatusStateEnum;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.mapper.CouponMapper;
 import com.market.scms.service.CacheService;
 import com.market.scms.service.CouponService;
 import com.market.scms.service.ExportBillService;
+import com.market.scms.service.StockService;
 import com.market.scms.util.PageCalculator;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +42,19 @@ public class CouponServiceImpl implements CouponService {
     @Resource
     private CacheService cacheService;
     
+    @Resource
+    private StockService stockService;
+    
     @Override
     public int insert(Coupon coupon) throws WareHouseManagerException {
         if (coupon != null && coupon.getCouponGoodsId() != null && coupon.getCouponNum() != null &&
-        coupon.getCouponStaffId() != null && coupon.getCouponUnitId() != null) {
+        coupon.getCouponStaffId() != null) {
             try {
+                List<Stock> stockList = stockService.queryByGoodsId(coupon.getCouponGoodsId());
+                if (stockList.size() == 0) {
+                    throw new WareHouseManagerException("超市不存在该商品存档，请先添加商品信息");
+                }
+                coupon.setCouponUnitId(stockList.get(0).getStockUnitId());
                 Date time = new Date();
                 coupon.setCouponTime(time);
                 coupon.setCouponStatus(CouponStatusStateEnum.ORDERING.getState());
@@ -52,7 +62,6 @@ public class CouponServiceImpl implements CouponService {
                 if (res == 0) {
                     throw new WareHouseManagerException("添加订单失败");
                 }
-                
                 cacheService.removeFromCache(COUPON_LIST_KEY);
                 Coupon couponNow = couponMapper.queryByTime(time);
                 ExportBill exportBill = new ExportBill();
