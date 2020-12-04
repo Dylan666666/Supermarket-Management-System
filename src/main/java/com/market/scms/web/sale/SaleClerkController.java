@@ -2,21 +2,19 @@ package com.market.scms.web.sale;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.market.scms.bean.DeliveryGoods;
-import com.market.scms.bean.DeliveryGoodsReturn;
-import com.market.scms.bean.GoodsStockA;
+import com.market.scms.bean.*;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.Function;
-import com.market.scms.enums.DeliveryRefundStatusStateEnum;
-import com.market.scms.enums.DeliveryStatusStateEnum;
-import com.market.scms.enums.RetailRefundStatusStateEnum;
+import com.market.scms.enums.*;
 import com.market.scms.exceptions.SaleException;
 import com.market.scms.service.*;
 import com.market.scms.util.DeliveryIdCreator;
 import com.market.scms.util.HttpServletRequestUtil;
+import com.market.scms.util.RefundCustomerIdCreator;
 import com.market.scms.util.RetailRecordIdCreator;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,10 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author: Mr_OO
@@ -39,31 +34,7 @@ import java.util.Map;
 public class SaleClerkController {
 
     @Resource
-    private StaffService staffService;
-
-    @Resource
-    private PrimaryMenuService primaryMenuService;
-
-    @Resource
-    private SecondaryMenuService secondaryMenuService;
-
-    @Resource
     private FunctionService functionService;
-
-    @Resource
-    private StaffJurisdictionService staffJurisdictionService;
-
-    @Resource
-    private StaffPositionRelationService staffPositionRelationService;
-
-    @Resource
-    private StaffPositionService staffPositionService;
-
-    @Resource
-    private ExportBillService exportBillService;
-
-    @Resource
-    private CouponService couponService;
 
     @Resource
     private GoodsCategoryService goodsCategoryService;
@@ -89,7 +60,11 @@ public class SaleClerkController {
     @Resource
     private RetailRecordService retailRecordService;
     
+    @Resource
+    private RefundCustomerService refundCustomerService;
     
+    @Resource
+    private RefundCustomerRecordService refundCustomerRecordService;
     
     /**
      * 4.1营业员 批发收银
@@ -390,62 +365,329 @@ public class SaleClerkController {
         String deliveryId = HttpServletRequestUtil.getString(request, "deliveryId");
         if (deliveryId == null) {
             modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败-01");
+            return modelMap;
+        }
+        try {
+            DeliveryRecord deliveryRecord = deliveryRecordService.queryByDeliveryId(deliveryId);
+            if (deliveryRecord.getDeliveryRefundStatus().equals(DeliveryRefundStatusStateEnum.NO_REFUND)) {
+                List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
+                List<DeliveryGoods> deliveryGoodsList = new ArrayList<>(deliveryList.size());
+                for (Delivery delivery : deliveryList) {
+                    DeliveryGoods deliveryGoods = new DeliveryGoods();
+                    Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
+                    Goods goods = goodsService.queryById(stock.getGoodsStockId());
+                    GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+                    Unit unit = unitService.queryById(stock.getStockUnitId());
+                    BeanUtils.copyProperties(stock, deliveryGoods);
+                    BeanUtils.copyProperties(delivery, deliveryGoods);
+                    BeanUtils.copyProperties(goods, deliveryGoods);
+                    BeanUtils.copyProperties(goodsCategory, deliveryGoods);
+                    BeanUtils.copyProperties(unit, deliveryGoods);
+                    deliveryGoodsList.add(deliveryGoods);
+                }
+                modelMap.put("deliveryGoodsList", deliveryGoodsList);
+                modelMap.put("success",true);
+                return modelMap;
+            }
+            List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
+            List<DeliveryGoodsReturn> deliveryGoodsReturnList = new ArrayList<>(deliveryList.size());
+            RefundCustomerRecord refundCustomerRecord = refundCustomerRecordService.queryByOrderId(deliveryId);
+            for (Delivery delivery : deliveryList) {
+                DeliveryGoodsReturn deliveryGoodsReturn = new DeliveryGoodsReturn();
+                Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
+                GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+                Unit unit = unitService.queryById(stock.getStockUnitId());
+                RefundCustomer refundCustomer = refundCustomerService
+                        .queryByDoubleId(refundCustomerRecord.getRefundCustomerId(), stock.getStockGoodsId());
+                BeanUtils.copyProperties(stock, deliveryGoodsReturn);
+                BeanUtils.copyProperties(goods, deliveryGoodsReturn);
+                BeanUtils.copyProperties(goodsCategory, deliveryGoodsReturn);
+                BeanUtils.copyProperties(unit, deliveryGoodsReturn);
+                BeanUtils.copyProperties(refundCustomer, deliveryGoodsReturn);
+                BeanUtils.copyProperties(delivery, deliveryGoodsReturn);
+                deliveryGoodsReturnList.add(deliveryGoodsReturn);
+            }
+            modelMap.put("deliveryGoodsReturnList", deliveryGoodsReturnList);
+            modelMap.put("success",true);
+        } catch (SaleException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 4.7营业员 批发退货 提交
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/deliveryreturn/commit")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/deliveryreturn/commit")
+    public Map<String,Object> deliveryReturnCommit(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        String refundCustomerRecordStr = HttpServletRequestUtil.getString(request, "refundCustomerRecordStr");
+        String refundCustomerListStr = HttpServletRequestUtil.getString(request, "refundCustomerList");
+        ObjectMapper mapper = new ObjectMapper();
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, RefundCustomer.class);
+        RefundCustomerRecord refundCustomerRecord = null;
+        List<RefundCustomer> refundCustomerList = null;
+        if (staffId < 0 || refundCustomerRecordStr == null || refundCustomerListStr == null) {
+            modelMap.put("success",false);
             modelMap.put("errMsg", "退货失败-01");
             return modelMap;
         }
         try {
-            
-            DeliveryRecord deliveryRecord = deliveryRecordService.queryByDeliveryId(deliveryId);
+            refundCustomerList = mapper.readValue(refundCustomerListStr, javaType);
+            refundCustomerRecord = mapper.readValue(refundCustomerRecordStr, RefundCustomerRecord.class);
+            if (refundCustomerList == null || refundCustomerRecord == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "退货失败-01");
+                return modelMap;
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "退货失败-01");
+            return modelMap;
+        }
+        try {
+            DeliveryRecord deliveryRecord = deliveryRecordService
+                    .queryByDeliveryId(refundCustomerRecord.getRefundCustomerOrderId());
             deliveryRecord.setDeliveryRefundStatus(DeliveryRefundStatusStateEnum.REFUND.getState());
             int res = deliveryRecordService.update(deliveryRecord);
             if (res == 0) {
                 throw new SaleException("退货失败");
             }
-            List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
-            for (Delivery delivery : deliveryList) {
-                Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
-                //TODO STOCKNUMBER
+            String refundCustomerId = RefundCustomerIdCreator.get(staffId);
+            refundCustomerRecord.setRefundCustomerId(refundCustomerId);
+            refundCustomerRecord.setRefundCustomerTime(new Date());
+            refundCustomerRecord.setRefundCustomerStatus(RefundCustomerStatusStateEnum.SALE_CLERK.getState());
+            res = refundCustomerRecordService.insert(refundCustomerRecord);
+            if (res == 0) {
+                throw new SaleException("退货失败");
+            }
+            for (RefundCustomer refundCustomer : refundCustomerList) {
+                refundCustomer.setRefundCustomerId(refundCustomerId);
+                res = refundCustomerService.insert(refundCustomer);
+                if (res == 0) {
+                    throw new SaleException("退货失败");
+                }
+                Stock stock = stockService.queryById(refundCustomer.getRefundCustomerStockGoodsId());
+                stock.setStockInventory(stock.getStockInventory() + refundCustomer.getRefundCustomerNum());
                 res = stockService.update(stock);
                 if (res == 0) {
                     throw new SaleException("退货失败");
                 }
             }
-            List<Delivery> deliveryListSuc = deliveryService.queryByDeliveryId(deliveryId);
-            List<DeliveryGoodsReturn> deliveryGoodsReturnList = new ArrayList<>(deliveryList.size());
-            for (Delivery delivery : deliveryList) {
-                DeliveryGoodsReturn deliveryGoods = new DeliveryGoodsReturn();
-                Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
+            modelMap.put("success", true);
+        } catch (SaleException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "退货失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 4.8营业员 零售退货 
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/retailreturn")
+    @ResponseBody
+    @RequiresPermissions("/retailreturn")
+    public Map<String,Object> retailReturn(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        if (secondaryMenuId < 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "传入信息有误，访问失败");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            List<RetailRecord> retailRecordList = retailRecordService.queryAll(pageIndex, pageSize);
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<RetailRecord> retailRecordList2 = retailRecordService.queryAll(0, 10000);
+            modelMap.put("retailRecordList", retailRecordList);
+            modelMap.put("functionList", functionList);
+            modelMap.put("recordSum", retailRecordList2.size());
+            modelMap.put("success", true);
+        } catch (SaleException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 4.9营业员 零售退货 查看详情
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/retailreturn/retaildetails")
+    @ResponseBody
+    @RequiresPermissions("/retailreturn/retaildetails")
+    public Map<String,Object> retailReturnRetailDetails(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        String retailId = HttpServletRequestUtil.getString(request, "deliveryId");
+        if (retailId == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败-01");
+            return modelMap;
+        }
+        try {
+            RetailRecord retailRecord = retailRecordService.queryByRetailId(retailId);
+            if (retailRecord.getRetailRefundStatus().equals(RetailRefundStatusStateEnum.NO_REFUND)) {
+                List<Retail> retailList = retailService.queryByRetailId(retailId);
+                List<RetailGoods> retailGoodsList = new ArrayList<>(retailList.size());
+                for (Retail retail : retailList) {
+                    RetailGoods retailGoods = new RetailGoods();
+                    Stock stock = stockService.queryById(retail.getRetailStockGoodsId());
+                    Goods goods = goodsService.queryById(stock.getGoodsStockId());
+                    GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+                    Unit unit = unitService.queryById(stock.getStockUnitId());
+                    BeanUtils.copyProperties(retail, retailGoods);
+                    BeanUtils.copyProperties(stock, retailGoods);
+                    BeanUtils.copyProperties(goods, retailGoods);
+                    BeanUtils.copyProperties(goodsCategory, retailGoods);
+                    BeanUtils.copyProperties(unit, retailGoods);
+                    retailGoodsList.add(retailGoods);
+                }
+                modelMap.put("retailGoodsList", retailGoodsList);
+                modelMap.put("success",true);
+                return modelMap;
+            }
+            List<Retail> retailList = retailService.queryByRetailId(retailId);
+            List<RetailGoodsReturn> retailGoodsReturnList = new ArrayList<>(retailList.size());
+            RefundCustomerRecord refundCustomerRecord = refundCustomerRecordService.queryByOrderId(retailRecord.getRetailId());
+            for (Retail retail : retailList) {
+                RetailGoodsReturn retailGoodsReturn = new RetailGoodsReturn();
+                Stock stock = stockService.queryById(retail.getRetailStockGoodsId());
                 Goods goods = goodsService.queryById(stock.getGoodsStockId());
                 GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
                 Unit unit = unitService.queryById(stock.getStockUnitId());
-                //TODO Refund
-                BeanUtils.copyProperties(stock, deliveryGoods);
-                BeanUtils.copyProperties(delivery, deliveryGoods);
-                BeanUtils.copyProperties(goods, deliveryGoods);
-                BeanUtils.copyProperties(goodsCategory, deliveryGoods);
-                BeanUtils.copyProperties(unit, deliveryGoods);
-                deliveryGoodsReturnList.add(deliveryGoods);
+                RefundCustomer refundCustomer = refundCustomerService
+                        .queryByDoubleId(refundCustomerRecord.getRefundCustomerId(), stock.getStockGoodsId());
+                BeanUtils.copyProperties(retail, retailGoodsReturn);
+                BeanUtils.copyProperties(stock, retailGoodsReturn);
+                BeanUtils.copyProperties(goods, retailGoodsReturn);
+                BeanUtils.copyProperties(unit, retailGoodsReturn);
+                BeanUtils.copyProperties(refundCustomer, retailGoodsReturn);
+                BeanUtils.copyProperties(goodsCategory, retailGoodsReturn);
+                retailGoodsReturnList.add(retailGoodsReturn);
             }
-            modelMap.put("deliveryGoodsReturnList", deliveryGoodsReturnList);
+            modelMap.put("retailGoodsReturnList", retailGoodsReturnList);
             modelMap.put("success",true);
         } catch (SaleException e) {
-            List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
-            List<DeliveryGoods> deliveryGoodsList = new ArrayList<>(deliveryList.size());
-            for (Delivery delivery : deliveryList) {
-                DeliveryGoods deliveryGoods = new DeliveryGoods();
-                Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
-                Goods goods = goodsService.queryById(stock.getGoodsStockId());
-                GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
-                Unit unit = unitService.queryById(stock.getStockUnitId());
-                BeanUtils.copyProperties(stock, deliveryGoods);
-                BeanUtils.copyProperties(delivery, deliveryGoods);
-                BeanUtils.copyProperties(goods, deliveryGoods);
-                BeanUtils.copyProperties(goodsCategory, deliveryGoods);
-                BeanUtils.copyProperties(unit, deliveryGoods);
-                deliveryGoodsList.add(deliveryGoods);
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查看失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 4.10营业员 零售退货 提交
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/retailreturn/commit")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/retailreturn/commit")
+    public Map<String,Object> retailReturnCommit(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        String refundCustomerRecordStr = HttpServletRequestUtil.getString(request, "refundCustomerRecordStr");
+        String refundCustomerListStr = HttpServletRequestUtil.getString(request, "refundCustomerList");
+        ObjectMapper mapper = new ObjectMapper();
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, RefundCustomer.class);
+        RefundCustomerRecord refundCustomerRecord = null;
+        List<RefundCustomer> refundCustomerList = null;
+        if (staffId < 0 || refundCustomerRecordStr == null || refundCustomerListStr == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "退货失败-01");
+            return modelMap;
+        }
+        try {
+            refundCustomerList = mapper.readValue(refundCustomerListStr, javaType);
+            refundCustomerRecord = mapper.readValue(refundCustomerRecordStr, RefundCustomerRecord.class);
+            if (refundCustomerList == null || refundCustomerRecord == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "退货失败-01");
+                return modelMap;
             }
-            modelMap.put("deliveryGoodsList", deliveryGoodsList);
-            modelMap.put("success",true);
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "退货失败-01");
+            return modelMap;
+        }
+        try { 
+            RetailRecord retailRecord = retailRecordService.queryByRetailId(refundCustomerRecord.getRefundCustomerOrderId());
+            retailRecord.setRetailRefundStatus(RetailRefundStatusStateEnum.REFUNDED.getState());
+            int res = retailRecordService.update(retailRecord);
+            if (res == 0) {
+                throw new SaleException("退货失败");
+            }
+            String refundCustomerId = RefundCustomerIdCreator.get(staffId);
+            refundCustomerRecord.setRefundCustomerId(refundCustomerId);
+            refundCustomerRecord.setRefundCustomerTime(new Date());
+            refundCustomerRecord.setRefundCustomerStatus(RefundCustomerStatusStateEnum.SALE_CLERK.getState());
+            res = refundCustomerRecordService.insert(refundCustomerRecord);
+            if (res == 0) {
+                throw new SaleException("退货失败");
+            }
+            for (RefundCustomer refundCustomer : refundCustomerList) {
+                refundCustomer.setRefundCustomerId(refundCustomerId);
+                res = refundCustomerService.insert(refundCustomer);
+                if (res == 0) {
+                    throw new SaleException("退货失败");
+                }
+                Stock stock = stockService.queryById(refundCustomer.getRefundCustomerStockGoodsId());
+                stock.setStockInventory(stock.getStockInventory() + refundCustomer.getRefundCustomerNum());
+                res = stockService.update(stock);
+                if (res == 0) {
+                    throw new SaleException("退货失败");
+                }
+            }
+            modelMap.put("success", true);
+        } catch (SaleException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
             return modelMap;
         } catch (Exception e) {
             modelMap.put("success",false);

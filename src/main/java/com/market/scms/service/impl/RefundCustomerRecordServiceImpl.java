@@ -143,4 +143,19 @@ public class RefundCustomerRecordServiceImpl implements RefundCustomerRecordServ
             throw new SaleException("查询失败");
         }
     }
+
+    @Override
+    public RefundCustomerRecord queryByOrderId(String refundCustomerOrderId) throws SaleException {
+        if (refundCustomerOrderId != null) {
+            try {
+                RefundCustomerRecord refundCustomerRecord = refundCustomerRecordMapper
+                        .queryByOrderId(refundCustomerOrderId);
+                return refundCustomerRecord;
+            } catch (SaleException e) {
+                throw new SaleException("查询失败");
+            }
+        } else {
+            throw new SaleException("查询失败");
+        }
+    }
 }

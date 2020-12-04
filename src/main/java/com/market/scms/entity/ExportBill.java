@@ -126,4 +126,23 @@ public class ExportBill {
     public void setExportSubmitStaffId(Integer exportSubmitStaffId) {
         this.exportSubmitStaffId = exportSubmitStaffId;
     }
+
+    @Override
+    public String toString() {
+        return "ExportBill{" +
+                "exportBillId='" + exportBillId + '\'' +
+                ", exportBillCouponId=" + exportBillCouponId +
+                ", exportBillSupplierId=" + exportBillSupplierId +
+                ", exportBillGoodsBatchNumber='" + exportBillGoodsBatchNumber + '\'' +
+                ", exportBillProductionDate=" + exportBillProductionDate +
+                ", exportBillShelfLife=" + exportBillShelfLife +
+                ", exportBillPrice=" + exportBillPrice +
+                ", exportBillStatus=" + exportBillStatus +
+                ", exportBillPaid=" + exportBillPaid +
+                ", exportBillTime=" + exportBillTime +
+                ", exportConfirmStaffId=" + exportConfirmStaffId +
+                ", exportSubmitStaffId=" + exportSubmitStaffId +
+                ", exportBillMark='" + exportBillMark + '\'' +
+                '}';
+    }
 }

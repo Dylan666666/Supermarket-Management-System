@@ -58,7 +58,7 @@ public class ExportBillServiceImpl implements ExportBillService {
 
     @Override
     public int update(ExportBill exportBill) throws WareHouseManagerException {
-        if (exportBill != null && exportBill.getExportBillId() != null && exportBill.getExportBillStatus() != null) {
+        if (exportBill != null && exportBill.getExportBillCouponId() != null && exportBill.getExportBillStatus() != null) {
             try {
                 if (exportBill.getExportBillStatus().equals(ExportBillStatusStateEnum.TO_STOCK.getState())) {
                     exportBill.setExportBillTime(new Date());

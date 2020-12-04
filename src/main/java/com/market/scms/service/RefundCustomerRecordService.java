@@ -56,4 +56,12 @@ public interface RefundCustomerRecordService {
     List<RefundCustomerRecord> queryByCondition(RefundCustomerRecord refundCustomerRecordCondition, 
                                                 int pageIndex, 
                                                 int pageSize);
+
+    /**
+     * 通过ID查询退货记录表
+     *
+     * @param refundCustomerOrderId
+     * @return
+     */
+    RefundCustomerRecord queryByOrderId(String refundCustomerOrderId);
 }

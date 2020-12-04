@@ -5,6 +5,7 @@ import com.market.scms.bean.StaffA;
 import com.market.scms.bean.StockingGoods;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.*;
+import com.market.scms.enums.ExportBillStatusStateEnum;
 import com.market.scms.enums.StocktakingAllStatusStateEnum;
 import com.market.scms.enums.StocktakingProfitLossStatusEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
@@ -218,8 +219,10 @@ public class StaffController {
         }
         try {
             List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
-            List<ExportBill> exportBillList = exportBillService.queryAll(pageIndex, pageSize);
-            List<ExportBill> exportBillListMax = exportBillService.queryAll(0, 10000);
+            ExportBill exportBill = new ExportBill();
+            exportBill.setExportBillStatus(ExportBillStatusStateEnum.WAREHOUSE_FIRST.getState());
+            List<ExportBill> exportBillList = exportBillService.queryByCondition(exportBill, pageIndex, pageSize);
+            List<ExportBill> exportBillListMax = exportBillService.queryByCondition(exportBill, 0, 10000);
             modelMap.put("exportBillList", exportBillList);
             modelMap.put("exportBillListCount", exportBillList.size());
             modelMap.put("functionList", functionList);

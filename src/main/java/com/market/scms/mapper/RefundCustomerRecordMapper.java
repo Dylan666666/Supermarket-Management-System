@@ -35,6 +35,14 @@ public interface RefundCustomerRecordMapper {
     RefundCustomerRecord queryByRefundCustomerId(String refundCustomerId);
 
     /**
+     * 通过ID查询退货记录表
+     *
+     * @param refundCustomerOrderId
+     * @return
+     */
+    RefundCustomerRecord queryByOrderId(String refundCustomerOrderId);
+
+    /**
      * 一键查询退货记录表
      *
      * @param rowIndex
