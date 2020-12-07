@@ -80,11 +80,15 @@
         <where>
             <if test="exportBillCondition.exportBillId != null">
                 AND
-                c.export_bill_id = #{exportBillCondition.exportBillId}
+                c.export_bill_id
+                LIKE
+                '%${exportBillCondition.exportBillId}%'
             </if>
             <if test="exportBillCondition.exportBillCouponId != null">
                 AND
-                c.export_bill_coupon_id = #{exportBillCondition.exportBillCouponId}
+                c.export_bill_coupon_id
+                LIKE
+                '%${exportBillCondition.exportBillCouponId}%'
             </if>
             <if test="exportBillCondition.exportBillSupplierId != null">
                 AND

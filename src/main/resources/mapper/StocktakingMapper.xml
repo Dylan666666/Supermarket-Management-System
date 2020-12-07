@@ -64,7 +64,9 @@
             </if>
             <if test="stocktakingCondition.stocktakingStockGoodsId != null">
                 AND
-                s.stocktaking_stock_goods_id = #{stocktakingCondition.stocktakingStockGoodsId}
+                s.stocktaking_stock_goods_id
+                LIKE
+                '%${stocktakingCondition.stocktakingStockGoodsId}%'
             </if>
             <if test="stocktakingCondition.stocktakingStatus != null">
                 AND

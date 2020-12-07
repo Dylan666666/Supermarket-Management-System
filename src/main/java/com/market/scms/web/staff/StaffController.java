@@ -287,6 +287,66 @@ public class StaffController {
     }
 
     /**
+     * 3.24职工 入库检查 模糊查询
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/exportinspectByConditions")
+    @ResponseBody
+    @RequiresPermissions("/exportinspectByConditions")
+    public Map<String,Object> exportInspectByConditions(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        String exportBillStr = HttpServletRequestUtil.getString(request, "exportBill");
+        ExportBill exportBill = null;
+        ObjectMapper mapper = new ObjectMapper();
+        if (secondaryMenuId < 0 || exportBillStr == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            exportBill = mapper.readValue(exportBillStr, ExportBill.class);
+            if (exportBill == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+                return modelMap;
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+            return modelMap;
+        }
+        try {
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<ExportBill> exportBillList = exportBillService.queryByCondition(exportBill, pageIndex, pageSize);
+            List<ExportBill> exportBillListMax = exportBillService.queryByCondition(exportBill, pageIndex, pageSize);
+            modelMap.put("exportBillList", exportBillList);
+            modelMap.put("exportBillListCount", exportBillList.size());
+            modelMap.put("functionList", functionList);
+            modelMap.put("recordSum", exportBillListMax.size());
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+    /**
      * 3.24职工 入库检查 提交
      *
      * @param request
@@ -374,7 +434,7 @@ public class StaffController {
             for (GoodsCategory category : categoryList) {
                 categoryMap.put(category.getCategoryId(), 1);
             }
-            List<Stocktaking> stocktakingList = stocktakingService.queryAll(pageIndex, pageSize);
+            List<Stocktaking> stocktakingList = stocktakingService.queryAll(0, 10000);
             List<StockingGoods> stockingGoodsList = new ArrayList<>(stocktakingList.size());
             for (Stocktaking stocktaking : stocktakingList) {
                 StockingGoods stockingGoods = new StockingGoods();
@@ -407,6 +467,131 @@ public class StaffController {
         } catch (Exception e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.10职工 货品盘点 模糊查询
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/viewStocktakingGoodsListByConditions")
+    @ResponseBody
+    @RequiresPermissions("/stocktaking/viewStocktakingGoodsListByConditions")
+    public Map<String,Object> viewStocktakingGoodsListByConditions(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        int userId = HttpServletRequestUtil.getInt(request, "userId");
+        String stockingGoodsStr = HttpServletRequestUtil.getString(request, "stockingGoods");
+        StockingGoods stockingGoods = null;
+        ObjectMapper mapper = new ObjectMapper();
+        if (secondaryMenuId < 0 || stockingGoodsStr == null || userId < 0) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            stockingGoods = mapper.readValue(stockingGoodsStr, StockingGoods.class);
+            if (stockingGoods == null) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+                return modelMap;
+            }
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+            return modelMap;
+        }
+        try {
+            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            int count = stocktakingRecordService.queryStocktakingCount(StocktakingAllStatusStateEnum.START.getState());
+            if (count == 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "无待盘点单");
+                return modelMap;
+            }
+
+            //商品类别
+            Map<Integer, Integer> categoryMap = new HashMap<>();
+            List<GoodsCategory> categoryList = null;
+            if (stockingGoods.getGoodsCategoryId() != null) {
+                categoryMap.put(stockingGoods.getGoodsCategoryId(), 1);
+            } else {
+                categoryList = goodsCategoryService.queryByStaffId(userId);
+                for (GoodsCategory category : categoryList) {
+                    categoryMap.put(category.getCategoryId(), 1);
+                }
+            }
+
+            //商品名字
+            Map<Long, Integer> goodsMap = new HashMap<>();
+            List<Goods> goodsList = null;
+            if (stockingGoods.getGoodsName() != null) {
+                Goods goods = new Goods();
+                goods.setGoodsName(stockingGoods.getGoodsName());
+                goodsList = goodsService.queryByCondition(goods, 0, 10000);
+                for (Goods goods1 : goodsList) {
+                    goodsMap.put(goods1.getGoodsId(), 1);
+                }
+            }
+            
+            //商品编号和盘点状态
+            Stocktaking stocktakingCondition = new Stocktaking();
+            if (stockingGoods.getStocktakingStatus() != null) {
+                stocktakingCondition.setStocktakingStatus(stockingGoods.getStocktakingStatus());   
+            }
+            if (stockingGoods.getStockGoodsId() != null) {
+                stocktakingCondition.setStocktakingStockGoodsId(stockingGoods.getStockGoodsId());
+            }
+            List<Stocktaking> stocktakingList = stocktakingService
+                    .queryByCondition(stocktakingCondition, 0, 10000);
+            List<StockingGoods> stockingGoodsList = new ArrayList<>(stocktakingList.size());
+            for (Stocktaking stocktaking : stocktakingList) {
+                StockingGoods stockingGoodsCur = new StockingGoods();
+                Stock stock = stockService.queryById(stocktaking.getStocktakingStockGoodsId());
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
+                if (categoryMap.getOrDefault(goods.getGoodsCategoryId(), -1) == -1) {
+                    continue;
+                }
+                if (goodsMap.getOrDefault(goods.getGoodsId(), -1) == -1) {
+                    continue;
+                }
+                BeanUtils.copyProperties(stocktaking, stockingGoodsCur);
+                BeanUtils.copyProperties(goods, stockingGoodsCur);
+                BeanUtils.copyProperties(stock, stockingGoodsCur);
+                stockingGoodsList.add(stockingGoodsCur);
+            }
+            int recordSum = stockingGoodsList.size();
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            int rightIndex = rowIndex + pageSize;
+            if (recordSum < rightIndex) {
+                rightIndex = recordSum;
+            }
+            List<StockingGoods> res = stockingGoodsList.subList(rowIndex, rightIndex);
+
+            modelMap.put("stockingGoodsList", res);
+            modelMap.put("recordSum", recordSum);
+            modelMap.put("categoryList", categoryList);
+            modelMap.put("functionList", functionList);
+            modelMap.put("success", true);
+        } catch (SupermarketStaffException e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "查询失败");
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "查询失败");
             return modelMap;
         }
         return modelMap;
