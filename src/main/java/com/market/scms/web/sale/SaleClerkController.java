@@ -370,7 +370,7 @@ public class SaleClerkController {
         }
         try {
             DeliveryRecord deliveryRecord = deliveryRecordService.queryByDeliveryId(deliveryId);
-            if (deliveryRecord.getDeliveryRefundStatus().equals(DeliveryRefundStatusStateEnum.NO_REFUND)) {
+            if (deliveryRecord.getDeliveryRefundStatus().equals(DeliveryRefundStatusStateEnum.NO_REFUND.getState())) {
                 List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
                 List<DeliveryGoods> deliveryGoodsList = new ArrayList<>(deliveryList.size());
                 for (Delivery delivery : deliveryList) {
