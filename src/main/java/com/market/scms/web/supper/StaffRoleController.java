@@ -3,10 +3,7 @@ package com.market.scms.web.supper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.bean.StaffA;
 import com.market.scms.entity.SupermarketStaff;
-import com.market.scms.entity.staff.Function;
-import com.market.scms.entity.staff.SecondaryMenu;
-import com.market.scms.entity.staff.StaffPosition;
-import com.market.scms.entity.staff.StaffPositionRelation;
+import com.market.scms.entity.staff.*;
 import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.*;
@@ -52,6 +49,9 @@ public class StaffRoleController {
 
     @Resource
     private StaffPositionService staffPositionService;
+    
+    @Resource
+    private StaffJurisdictionService staffJurisdictionService;
 
     /**
      * 7.2超级管理员 用户列表
@@ -66,6 +66,7 @@ public class StaffRoleController {
         Map<String,Object> modelMap = new HashMap<>(16);
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         if (pageIndex < 0) {
             pageIndex = 0;
         }
@@ -93,7 +94,14 @@ public class StaffRoleController {
             modelMap.put("recordSum", recordSum);
             if (pageIndex == 0) {
                 SecondaryMenu secondaryMenu = secondaryMenuService.queryByUrl("/stafflist");
-                List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenu.getSecondaryMenuId());
+                List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
+                List<Function> functionList = new ArrayList<>();
+                for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                    Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                    if (function.getSecondaryMenuId().equals(secondaryMenu.getSecondaryMenuId())) {
+                        functionList.add(function);
+                    }
+                }
                 modelMap.put("functionList", functionList);
             }
             modelMap.put("success", true);

@@ -72,6 +72,7 @@ public class JurisdictionController {
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         if (secondaryMenuId < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "不具备访问权限,访问失败");
@@ -104,7 +105,14 @@ public class JurisdictionController {
             modelMap.put("recordSum", recordSum);
             if (pageIndex == 0) {
                 SecondaryMenu secondaryMenu = secondaryMenuService.queryByUrl("/stafflist");
-                List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenu.getSecondaryMenuId());
+                List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
+                List<Function> functionList = new ArrayList<>();
+                for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                    Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                    if (function.getSecondaryMenuId().equals(secondaryMenuId)) {
+                        functionList.add(function);
+                    }
+                }
                 modelMap.put("functionList", functionList);
             }
             modelMap.put("success", true);

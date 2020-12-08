@@ -63,6 +63,9 @@ public class StaffController {
     
     @Resource
     private StockService stockService;
+    
+    @Resource
+    private StaffJurisdictionService staffJurisdictionService;
 
     /**
      * 1.3职工信息更新
@@ -206,6 +209,7 @@ public class StaffController {
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         if (secondaryMenuId < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "不具备访问条件，访问失败");
@@ -218,7 +222,14 @@ public class StaffController {
             pageSize = 10000;
         }
         try {
-            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
+            List<Function> functionList = new ArrayList<>();
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                if (function.getSecondaryMenuId().equals(secondaryMenuId)) {
+                    functionList.add(function);
+                }
+            }
             ExportBill exportBill = new ExportBill();
             exportBill.setExportBillStatus(ExportBillStatusStateEnum.WAREHOUSE_FIRST.getState());
             List<ExportBill> exportBillList = exportBillService.queryByCondition(exportBill, pageIndex, pageSize);
@@ -409,7 +420,7 @@ public class StaffController {
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
-        int staffId = HttpServletRequestUtil.getInt(request, "userId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         if (secondaryMenuId < 0 || staffId < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "不具备访问条件，访问失败");
@@ -422,7 +433,14 @@ public class StaffController {
             pageSize = 10000;
         }
         try {
-            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
+            List<Function> functionList = new ArrayList<>();
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                if (function.getSecondaryMenuId().equals(secondaryMenuId)) {
+                    functionList.add(function);
+                }
+            }
             int count = stocktakingRecordService.queryStocktakingCount(StocktakingAllStatusStateEnum.START.getState());
             if (count == 0) {
                 modelMap.put("success",false);

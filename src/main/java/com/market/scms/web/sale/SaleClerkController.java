@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.bean.*;
 import com.market.scms.entity.*;
 import com.market.scms.entity.staff.Function;
+import com.market.scms.entity.staff.StaffJurisdiction;
 import com.market.scms.enums.*;
 import com.market.scms.exceptions.SaleException;
 import com.market.scms.service.*;
@@ -66,6 +67,9 @@ public class SaleClerkController {
     @Resource
     private RefundCustomerRecordService refundCustomerRecordService;
     
+    @Resource
+    private StaffJurisdictionService staffJurisdictionService;
+    
     /**
      * 4.1营业员 批发收银
      *
@@ -80,6 +84,7 @@ public class SaleClerkController {
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         if (secondaryMenuId < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "不具备访问条件，访问失败");
@@ -92,7 +97,14 @@ public class SaleClerkController {
             pageSize = 10000;
         }
         try {
-            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
+            List<Function> functionList = new ArrayList<>();
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                if (function.getSecondaryMenuId().equals(secondaryMenuId)) {
+                    functionList.add(function);
+                }
+            }
             List<Stock> stockList = stockService.queryAll(pageIndex, pageSize);
             List<Stock> stockList2 = stockService.queryAll(0, 10000);
             List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
@@ -200,6 +212,7 @@ public class SaleClerkController {
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         if (secondaryMenuId < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "不具备访问条件，查询失败");
@@ -212,7 +225,14 @@ public class SaleClerkController {
             pageSize = 10000;
         }
         try {
-            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
+            List<Function> functionList = new ArrayList<>();
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                if (function.getSecondaryMenuId().equals(secondaryMenuId)) {
+                    functionList.add(function);
+                }
+            }
             List<Stock> stockList = stockService.queryAll(pageIndex, pageSize);
             List<Stock> stockList2 = stockService.queryAll(0, 10000);
             List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
@@ -316,6 +336,7 @@ public class SaleClerkController {
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         if (secondaryMenuId < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "不具备访问条件，访问失败");
@@ -328,7 +349,14 @@ public class SaleClerkController {
             pageSize = 10000;
         }
         try {
-            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
+            List<Function> functionList = new ArrayList<>();
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                if (function.getSecondaryMenuId().equals(secondaryMenuId)) {
+                    functionList.add(function);
+                }
+            }
             DeliveryRecord deliveryRecord = new DeliveryRecord();
             deliveryRecord.setDeliveryRefundStatus(DeliveryRefundStatusStateEnum.NO_REFUND.getState());
             List<DeliveryRecord> deliveryRecordList = deliveryRecordService
@@ -516,6 +544,7 @@ public class SaleClerkController {
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         if (secondaryMenuId < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "传入信息有误，访问失败");
@@ -529,7 +558,14 @@ public class SaleClerkController {
         }
         try {
             List<RetailRecord> retailRecordList = retailRecordService.queryAll(pageIndex, pageSize);
-            List<Function> functionList = functionService.querySecondaryMenuId(secondaryMenuId);
+            List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
+            List<Function> functionList = new ArrayList<>();
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
+                Function function = functionService.queryById(staffJurisdiction.getFunctionId());
+                if (function.getSecondaryMenuId().equals(secondaryMenuId)) {
+                    functionList.add(function);
+                }
+            }
             List<RetailRecord> retailRecordList2 = retailRecordService.queryAll(0, 10000);
             modelMap.put("retailRecordList", retailRecordList);
             modelMap.put("functionList", functionList);
