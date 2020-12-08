@@ -8,8 +8,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
@@ -46,7 +49,25 @@ public class LogAspectConfig {
         log.info("IP : " + request.getRemoteAddr());
         log.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName()
                 + "." + joinPoint.getSignature().getName());
-        log.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
+        Object[] args = joinPoint.getArgs();
+        Object[] arguments  = new Object[args.length];
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] instanceof ServletRequest || args[i] instanceof ServletResponse || args[i] instanceof MultipartFile) {
+                /* ServletRequest不能序列化，从入参里排除，否则报异常：java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
+                ServletResponse不能序列化 从入参里排除，否则报异常：java.lang.IllegalStateException: getOutputStream() has already been called for this response */
+                continue;
+            }
+            arguments[i] = args[i];
+        }
+        String params = "";
+        if (arguments != null) {
+            try {
+                params = JSON.toJSONString(arguments);
+            } catch (Exception e) {
+                params = "无参数";
+            }
+        }
+        log.info("ARGS : " + params);
         log.info("被切的方法声明:" + joinPoint.getSignature().toString());
         String[] arr1 = joinPoint.getSignature().toString().replace(".","/").split("/");
         log.info(arr1[arr1.length - 1]);

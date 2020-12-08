@@ -121,8 +121,13 @@ public class LoginController {
                     modelMap.put("errMsg", "登录失败");
                     return modelMap;
                 }
+                List<StaffPositionRelation> relation = staffPositionRelationService.queryById(staff.getStaffId());
                 log.info("============手机号为" + staff.getStaffPhone() + "的用户登陆==========");
-                log.info("============该用户职位ID为：" + staff.getStaffPosition() + "==========");
+                log.info("============该用户名称为：" + staff.getStaffName() + "==========");
+                if (relation != null || relation.size() != 0) {
+                    StaffPosition staffPosition = staffPositionService.queryById(relation.get(0).getStaffPositionId());
+                    log.info("============该用户职位为：" + staffPosition.getStaffPositionName() + "==========");
+                }
                 List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staff.getStaffId());
                 Set<Integer> secondaryIdSet = new HashSet<>();
                 Set<Integer> primaryIdSet = new HashSet<>();
