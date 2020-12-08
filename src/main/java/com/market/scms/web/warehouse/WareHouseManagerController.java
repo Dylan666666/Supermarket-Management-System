@@ -1583,7 +1583,8 @@ public class WareHouseManagerController {
     public Map<String,Object> viewStocktakingRules(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         try {
-            List<SupermarketStaff> staffList = staffService.queryStaffByCondition(new SupermarketStaff(), 0, 10000);
+            List<SupermarketStaff> staffList = staffService
+                    .queryStaffByCondition(new SupermarketStaff(), 0, 10000);
             List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
             modelMap.put("staffList", staffList);
             modelMap.put("categoryList", categoryList);
@@ -1768,6 +1769,84 @@ public class WareHouseManagerController {
             modelMap.put("success",false);
             modelMap.put("errMsg", "发起失败");
             return modelMap;    
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.10库房管理员 盘点管理 立即盘点
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/stocktakingImmediate")
+    @ResponseBody
+    @Transactional
+    @RequiresPermissions("/stocktaking/stocktakingImmediate")
+    public Map<String,Object> immediate(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (staffId <= 0) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "发起失败-01");
+            return modelMap;
+        }
+        try {
+            //判断是否存在正在盘点的单
+            int count = stocktakingRecordService.queryStocktakingCount(StocktakingAllStatusStateEnum.START.getState());
+            if (count > 0) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "发起盘点失败-有其他盘点操作正在进行中，请稍后。。。");
+                return modelMap;
+            }
+            
+            //查询所有的库存生成GoodsStockA集合
+            List<Stock> stockList = stockService.queryAll(0, 10000);
+            List<GoodsStockA> goodsStockAList = new ArrayList<>(stockList.size());
+            for (Stock stock : stockList) {
+                GoodsStockA goodsStockA = new GoodsStockA();
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
+                BeanUtils.copyProperties(stock, goodsStockA);
+                BeanUtils.copyProperties(goods, goodsStockA);
+                goodsStockAList.add(goodsStockA);
+            }
+            
+            //生成盘点记录单
+            Long stocktakingId = StocktakingIdCreator
+                    .get(stocktakingService.getCount(StocktakingIdCreator.getDateString()));
+            StocktakingRecord stocktakingRecord = new StocktakingRecord();
+            stocktakingRecord.setStocktakingId(stocktakingId);
+            stocktakingRecord.setStocktakingLaunchedStaffId(Long.valueOf(staffId));
+            stocktakingRecord.setStocktakingAllStatus(StocktakingAllStatusStateEnum.START.getState());
+            stocktakingRecord.setStocktakingLaunchedDate(new Date());
+            int res = stocktakingRecordService.insert(stocktakingRecord);
+            if (res == 0) {
+                throw new WareHouseManagerException("发起失败");
+            }
+            
+            //生成相应盘点单
+            for (GoodsStockA goodsStockA : goodsStockAList) {
+                Stocktaking stocktaking = new Stocktaking();
+                stocktaking.setStocktakingId(stocktakingId);
+                stocktaking.setStocktakingStockGoodsId(goodsStockA.getStockGoodsId());
+                stocktaking.setStockNum(goodsStockA.getStockGoodsBatchNumber());
+                stocktaking.setStocktakingStaffId(staffId);
+                stocktaking.setStocktakingStatus(StocktakingStatusEnum.START.getState());
+                stocktaking.setStocktakingPrice(goodsStockA.getStockGoodsPrice());
+                res = stocktakingService.insert(stocktaking);
+                if (res == 0) {
+                    throw new WareHouseManagerException("发起失败");
+                }
+            }
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "发起失败");
+            return modelMap;
         }
         return modelMap;
     }
