@@ -1,12 +1,14 @@
 package com.market.scms.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @Author: Mr_OO
  * @Date: 2020/11/25 20:46
  */
-public class SecondaryMenuTree {
+public class SecondaryMenuTree implements Serializable {
+    private static final long serialVersionUID = -7922296698698588448L;
     private Integer secondaryMenuId;
     private Integer secondaryMenuWeight;
     private Integer primaryMenuId;

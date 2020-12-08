@@ -1,5 +1,6 @@
 package com.market.scms.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Date;
  * @Author: Mr_OO
  * @Date: 2020/11/22 10:01
  */
-public class RetailRecord {
+public class RetailRecord implements Serializable {
+    private static final long serialVersionUID = -6956324011649114076L;
     private String retailId;
     private Date retailTime;
     private Integer retailCollectionStaffId;

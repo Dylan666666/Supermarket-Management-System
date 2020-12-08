@@ -1,12 +1,15 @@
 package com.market.scms.entity.staff;
 
+import java.io.Serializable;
+
 /**
  * 二级菜单表
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/9 21:13
  */
-public class SecondaryMenu {
+public class SecondaryMenu implements Serializable {
+    private static final long serialVersionUID = -2519156972746780773L;
     private Integer secondaryMenuId;
     private Integer secondaryMenuWeight;
     private Integer primaryMenuId;

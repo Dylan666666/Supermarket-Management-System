@@ -1,12 +1,15 @@
 package com.market.scms.entity;
 
+import java.io.Serializable;
+
 /**
  * 退货单详情表
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/22 10:19
  */
-public class RefundRetail {
+public class RefundRetail implements Serializable {
+    private static final long serialVersionUID = 9023468500200852712L;
     private String refundRetailId;
     private Long retailStockGoodsId;
     private String refundCustomerId;

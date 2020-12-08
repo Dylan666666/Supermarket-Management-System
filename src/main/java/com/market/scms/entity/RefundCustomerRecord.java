@@ -1,5 +1,6 @@
 package com.market.scms.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Date;
  * @Author: Mr_OO
  * @Date: 2020/11/22 9:56
  */
-public class RefundCustomerRecord {
+public class RefundCustomerRecord implements Serializable {
+    private static final long serialVersionUID = -7696059766099970096L;
     private String refundCustomerId;
     private String refundCustomerOrderId;
     private Date refundCustomerTime;

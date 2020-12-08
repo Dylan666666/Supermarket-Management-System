@@ -1,12 +1,15 @@
 package com.market.scms.bean;
 
+import java.io.Serializable;
+
 /**
  * staff中转对象 Staff+staff_position_relation+staff_position
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/24 9:33
  */
-public class StaffA {
+public class StaffA implements Serializable {
+    private static final long serialVersionUID = 6382612292486543090L;
     private Integer staffId;
     private String staffName;
     private String staffPassword;

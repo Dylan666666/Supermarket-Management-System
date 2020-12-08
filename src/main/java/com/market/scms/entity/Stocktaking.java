@@ -1,5 +1,6 @@
 package com.market.scms.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Date;
  * @Author: Mr_OO
  * @Date: 2020/11/22 10:08
  */
-public class Stocktaking {
+public class Stocktaking implements Serializable {
+    private static final long serialVersionUID = -6450830220467034868L;
     private Long stocktakingId;
     private Long stocktakingStockGoodsId;
     private Integer stockNum;

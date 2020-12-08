@@ -1,5 +1,6 @@
 package com.market.scms.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Date;
  * @Author: Mr_OO
  * @Date: 2020/11/18 10:14
  */
-public class ExportBill {
+public class ExportBill implements Serializable {
+    private static final long serialVersionUID = 6408294412260535161L;
     private String exportBillId;
     private Long exportBillCouponId;
     private Long exportBillSupplierId;

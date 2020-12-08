@@ -1,12 +1,15 @@
 package com.market.scms.entity.staff;
 
+import java.io.Serializable;
+
 /**
  * 职工职位表
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/9 21:16
  */
-public class StaffPositionRelation {
+public class StaffPositionRelation implements Serializable {
+    private static final long serialVersionUID = 2152292079056954771L;
     private Integer staffId;
     private Integer staffPositionId;
     private Integer staffPositionStatus;

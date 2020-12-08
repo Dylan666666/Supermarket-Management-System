@@ -1,12 +1,15 @@
 package com.market.scms.entity;
 
+import java.io.Serializable;
+
 /**
  * 订单
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/22 10:04
  */
-public class Retail {
+public class Retail implements Serializable {
+    private static final long serialVersionUID = -3419756381406921762L;
     private String retailId;
     private Long retailStockGoodsId;
     private Integer retailNum;

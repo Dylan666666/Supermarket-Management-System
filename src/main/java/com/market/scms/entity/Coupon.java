@@ -1,5 +1,6 @@
 package com.market.scms.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Date;
  * @Author: Mr_OO
  * @Date: 2020/11/18 10:13
  */
-public class Coupon {
+public class Coupon implements Serializable {
+    private static final long serialVersionUID = 6721372162208813658L;
     private Long couponId;
     private Long couponGoodsId;
     private Integer couponUnitId;

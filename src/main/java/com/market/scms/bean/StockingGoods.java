@@ -1,12 +1,15 @@
 package com.market.scms.bean;
 
+import java.io.Serializable;
+
 /**
  * Goods+stock+stocktaking
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/26 22:09
  */
-public class StockingGoods {
+public class StockingGoods implements Serializable {
+    private static final long serialVersionUID = 58652194825643575L;
     private String goodsName;
     private Integer goodsCategoryId;
     private String categoryName;

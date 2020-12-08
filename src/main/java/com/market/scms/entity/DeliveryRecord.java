@@ -1,5 +1,6 @@
 package com.market.scms.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Date;
  * @Author: Mr_OO
  * @Date: 2020/11/22 9:46
  */
-public class DeliveryRecord {
+public class DeliveryRecord implements Serializable {
+    private static final long serialVersionUID = -3839068751246988872L;
     private String deliveryId;
     private Double deliveryPaid;
     private Integer deliveryStatus;

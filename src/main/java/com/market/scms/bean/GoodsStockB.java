@@ -1,12 +1,15 @@
 package com.market.scms.bean;
 
+import java.io.Serializable;
+
 /**
  * Goods和 Stock和 Category和 Unit连接表B
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/22 14:37
  */
-public class GoodsStockB {
+public class GoodsStockB implements Serializable {
+    private static final long serialVersionUID = -6270586456574353704L;
     private Long goodsId;
     private String goodsName;
     private String goodsBrand;

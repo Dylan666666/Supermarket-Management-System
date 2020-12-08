@@ -1,12 +1,15 @@
 package com.market.scms.entity.staff;
 
+import java.io.Serializable;
+
 /**
  * 三级菜单表
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/9 21:13
  */
-public class Function {
+public class Function implements Serializable {
+    private static final long serialVersionUID = -4584978680006323773L;
     private Integer functionId;
     private Integer functionWeight;
     private Integer secondaryMenuId;

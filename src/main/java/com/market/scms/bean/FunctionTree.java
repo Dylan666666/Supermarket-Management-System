@@ -1,10 +1,13 @@
 package com.market.scms.bean;
 
+import java.io.Serializable;
+
 /**
  * @Author: Mr_OO
  * @Date: 2020/11/25 20:46
  */
-public class FunctionTree {
+public class FunctionTree implements Serializable {
+    private static final long serialVersionUID = -3324833033381665447L;
     private Integer functionId;
     private String functionUrl;
     private Integer functionWeight;

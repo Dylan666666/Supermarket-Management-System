@@ -1,11 +1,14 @@
 package com.market.scms.bean;
 
+import java.io.Serializable;
+
 /**
  * 零售出库单商品列表(delivery+stock+goods+goods_category+unit+连接)
  * @Author: Mr_OO
  * @Date: 2020/12/4 10:07
  */
-public class RetailGoods {
+public class RetailGoods implements Serializable {
+    private static final long serialVersionUID = -3288601382361404027L;
     private Long retailStockGoodsId;
     private Integer retailNum;
     private Double retailPrice;

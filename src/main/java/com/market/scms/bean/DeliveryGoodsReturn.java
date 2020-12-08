@@ -1,13 +1,16 @@
 package com.market.scms.bean;
 
+import java.io.Serializable;
+
 /**
  * delivery + stock + goods + goods_category + unit + refund_customer 连接
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/27 20:38
  */
-public class DeliveryGoodsReturn {
+public class DeliveryGoodsReturn implements Serializable {
 
+    private static final long serialVersionUID = 3996099126278877141L;
     private String goodsPicture;
     private Long deliveryStockGoodsId;
     private String goodsName;

@@ -1,12 +1,15 @@
 package com.market.scms.entity;
 
+import java.io.Serializable;
+
 /**
  * 产品类
  * 
  * @Author: Mr_OO
  * @Date: 2020/11/18 10:14
  */
-public class Goods {
+public class Goods implements Serializable {
+    private static final long serialVersionUID = 3790355939476183965L;
     private Long goodsId;
     private String goodsName;
     private Integer goodsCategoryId;
