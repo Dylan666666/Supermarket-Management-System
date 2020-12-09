@@ -50,4 +50,12 @@ public interface GoodsCategoryService {
      * @return
      */
     int update(GoodsCategory goodsCategory);
+
+    /**
+     * 删除员工时调用，置空staffId
+     *
+     * @param stocktakingStaffId
+     * @return
+     */
+    int updateByStaffId(int stocktakingStaffId);
 }

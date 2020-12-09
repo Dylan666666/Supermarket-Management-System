@@ -47,4 +47,12 @@ public interface GoodsCategoryMapper {
      * @return
      */
     List<GoodsCategory> queryByStaffId(int staffId);
+
+    /**
+     * 删除员工时调用，置空staffId
+     *
+     * @param stocktakingStaffId
+     * @return
+     */
+    int updateByStaffId(int stocktakingStaffId);
 }

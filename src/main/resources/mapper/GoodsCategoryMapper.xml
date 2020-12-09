@@ -47,4 +47,13 @@
         category_id = #{categoryId}
     </update>
 
+    <update id="updateByStaffId" parameterType="int">
+        UPDATE
+        tb_goods_category
+        SET 
+        stocktaking_staff_id = NULL
+        WHERE
+        stocktaking_staff_id = #{stocktakingStaffId}
+    </update>
+
 </mapper>

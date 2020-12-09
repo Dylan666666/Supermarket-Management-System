@@ -120,4 +120,21 @@ public class GoodsCategoryServiceImpl implements GoodsCategoryService {
             throw new WareHouseManagerException("更新产品类别失败");
         }
     }
+
+    @Override
+    public int updateByStaffId(int stocktakingStaffId) throws WareHouseManagerException {
+        if (stocktakingStaffId > 0) {
+            try {
+                int res = goodsCategoryMapper.updateByStaffId(stocktakingStaffId);
+                if (res == 0) {
+                    throw new WareHouseManagerException("");
+                }
+                return res;
+            } catch (WareHouseManagerException e) {
+                throw new WareHouseManagerException("删除员工失败");
+            }
+        } else {
+            throw new WareHouseManagerException("删除员工失败");
+        }
+    }
 }

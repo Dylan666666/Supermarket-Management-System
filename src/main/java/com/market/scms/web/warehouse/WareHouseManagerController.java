@@ -197,7 +197,7 @@ public class WareHouseManagerController {
         Map<String,Object> modelMap = new HashMap<>(16);
         String stockStr = HttpServletRequestUtil.getString(request, "stock");
         Double stockGoodsPrice = HttpServletRequestUtil.getDouble(request, "stockGoodsPrice");
-        if (stockStr == null || stockGoodsPrice == -1000d) {
+        if (stockStr == null || stockGoodsPrice < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "传入信息有误");
             return modelMap;
@@ -207,7 +207,9 @@ public class WareHouseManagerController {
         try {
             stock = mapper.readValue(stockStr, Stock.class);
         } catch (Exception e) {
-            
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "修改失败-01");
+            return modelMap;
         }
         try {
             stock.setStockGoodsPrice(DoubleUtil.get(stockGoodsPrice));
@@ -219,6 +221,10 @@ public class WareHouseManagerController {
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "修改失败");
             return modelMap;
         }
         return modelMap;

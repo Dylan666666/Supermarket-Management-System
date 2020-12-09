@@ -53,6 +53,9 @@ public class StaffRoleController {
     @Resource
     private StaffJurisdictionService staffJurisdictionService;
 
+    @Resource
+    private GoodsCategoryService goodsCategoryService;
+    
     /**
      * 7.2超级管理员 用户列表
      *
@@ -276,6 +279,10 @@ public class StaffRoleController {
         int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         try {
             int res = staffService.deleteStaff(staffId);
+            if (res == 0) {
+                throw new SupermarketStaffException("删除失败");
+            }
+            res = goodsCategoryService.updateByStaffId(staffId);
             if (res == 0) {
                 throw new SupermarketStaffException("删除失败");
             }

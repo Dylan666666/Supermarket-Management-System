@@ -33,4 +33,9 @@ public class GoodsCategoryMapperTest {
         System.out.println(goodsCategoryMapper.queryAll().get(0).getCategoryName());
     }
     
+    @Test
+    public void update() {
+        System.out.println(goodsCategoryMapper.updateByStaffId(1));
+    }
+    
 }
