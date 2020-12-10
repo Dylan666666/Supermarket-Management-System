@@ -2,12 +2,14 @@ package com.market.scms.web.supper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.bean.StaffA;
+import com.market.scms.bean.StockingGoods;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.entity.staff.*;
 import com.market.scms.enums.StaffStatusStateEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.service.*;
 import com.market.scms.util.HttpServletRequestUtil;
+import com.market.scms.util.PageCalculator;
 import com.market.scms.util.PasswordHelper;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.util.ByteSource;
@@ -134,11 +136,6 @@ public class StaffRoleController {
         int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
         int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
         String staffName = HttpServletRequestUtil.getString(request, "staffName");
-        if (staffName == null) {
-            modelMap.put("success",false);
-            modelMap.put("errMsg", "查询失败-01");
-            return modelMap;
-        }
         if (pageIndex < 0) {
             pageIndex = 0;
         }
@@ -148,7 +145,7 @@ public class StaffRoleController {
         try {
             SupermarketStaff curStaff = new SupermarketStaff();
             curStaff.setStaffName(staffName);
-            List<SupermarketStaff> list = staffService.queryStaffByCondition(curStaff, pageIndex, pageSize);
+            List<SupermarketStaff> list = staffService.queryStaffByCondition(curStaff, 0, 10000);
             List<StaffA> staffAList = new ArrayList<>(list.size());
             for (SupermarketStaff staff : list) {
                 StaffA staffA = new StaffA();
@@ -162,8 +159,14 @@ public class StaffRoleController {
                 BeanUtils.copyProperties(staff, staffA);
                 staffAList.add(staffA);
             }
-            int recordSum = staffService.countStaffAll();
-            modelMap.put("staffAList", staffAList);
+            int recordSum = staffAList.size();
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            int rightIndex = rowIndex + pageSize;
+            if (recordSum < rightIndex) {
+                rightIndex = recordSum;
+            }
+            List<StaffA> res = staffAList.subList(rowIndex, rightIndex);
+            modelMap.put("staffAList", res);
             modelMap.put("recordSum", recordSum);
             if (pageIndex == 0) {
                 SecondaryMenu secondaryMenu = secondaryMenuService.queryByUrl("/stafflist");
