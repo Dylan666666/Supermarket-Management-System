@@ -160,7 +160,7 @@ public class StocktakingServiceImpl implements StocktakingService {
     @Override
     public int getCount(String dateFormat) throws WareHouseManagerException {
         try {
-            return getCount(dateFormat);
+            return stocktakingMapper.getCount(dateFormat);
         } catch (WareHouseManagerException e) {
             throw new WareHouseManagerException("不具备获取Id条件，注册失败");
         }

@@ -16,6 +16,7 @@ import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
 import com.market.scms.util.DoubleUtil;
 import com.market.scms.util.HttpServletRequestUtil;
+import com.market.scms.util.PageCalculator;
 import com.market.scms.util.StocktakingIdCreator;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
@@ -1741,18 +1742,27 @@ public class WareHouseManagerController {
         }
         try {
             List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
-            List<Stock> stockList = stockService.queryAll(pageIndex, pageSize);
-            List<Stock> stockList2 = stockService.queryAll(0, 10000);
+            List<Stock> stockList = stockService.queryAll(0, 10000);
             List<GoodsStockA> goodsStockAList = new ArrayList<>(stockList.size());
             for (Stock stock : stockList) {
+                if (stock.getStockGoodsBatchNumber() <= 0) {
+                    continue;
+                }
                 GoodsStockA goodsStockA = new GoodsStockA();
                 Goods goods = goodsService.queryById(stock.getGoodsStockId());
                 BeanUtils.copyProperties(stock, goodsStockA);
                 BeanUtils.copyProperties(goods, goodsStockA);
                 goodsStockAList.add(goodsStockA);
             }
-            modelMap.put("goodsStockAList", goodsStockAList);
-            modelMap.put("recordSum", stockList2.size());
+            int recordSum = goodsStockAList.size();
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            int rightIndex = rowIndex + pageSize;
+            if (recordSum < rightIndex) {
+                rightIndex = recordSum;
+            }
+            List<GoodsStockA> res = goodsStockAList.subList(rowIndex, rightIndex);
+            modelMap.put("goodsStockAList", res);
+            modelMap.put("recordSum", goodsStockAList.size());
             modelMap.put("categoryList", categoryList);
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
@@ -1874,6 +1884,9 @@ public class WareHouseManagerController {
             List<Stock> stockList = stockService.queryAll(0, 10000);
             List<GoodsStockA> goodsStockAList = new ArrayList<>(stockList.size());
             for (Stock stock : stockList) {
+                if (stock.getStockGoodsBatchNumber() <= 0) {
+                    continue;
+                }
                 GoodsStockA goodsStockA = new GoodsStockA();
                 Goods goods = goodsService.queryById(stock.getGoodsStockId());
                 BeanUtils.copyProperties(stock, goodsStockA);
