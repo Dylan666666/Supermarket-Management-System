@@ -65,6 +65,7 @@ public class CouponServiceImpl implements CouponService {
                 cacheService.removeFromCache(COUPON_LIST_KEY);
                 Coupon couponNow = couponMapper.queryByTime(time);
                 ExportBill exportBill = new ExportBill();
+                exportBill.setExportConfirmStaffId(coupon.getCouponStaffId());
                 exportBill.setExportBillCouponId(couponNow.getCouponId());
                 res = exportBillService.insert(exportBill, coupon.getCouponGoodsId());
                 if (res == 0) {

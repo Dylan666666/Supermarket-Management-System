@@ -264,6 +264,7 @@ public class WareHouseManagerController {
      */
     @PostMapping("/showinventory/newgoodscommit")
     @ResponseBody
+    @Transactional
     @RequiresPermissions("/showinventory/newgoodscommit")
     public Map<String,Object> newGoodsCommit(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
@@ -314,6 +315,10 @@ public class WareHouseManagerController {
             } catch (WareHouseManagerException e) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", e.getMessage());
+                return modelMap;
+            } catch (Exception e) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "提交失败");
                 return modelMap;
             }
         } else {
@@ -466,10 +471,6 @@ public class WareHouseManagerController {
         }
         try {
             couponService.insert(coupon);
-            ExportBill exportBill = new ExportBill();
-            exportBill.setExportBillCouponId(coupon.getCouponId());
-            exportBill.setExportConfirmStaffId(staffId);
-            exportBillService.insert(exportBill, coupon.getCouponGoodsId());
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);

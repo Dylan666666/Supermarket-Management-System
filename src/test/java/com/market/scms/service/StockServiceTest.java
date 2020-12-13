@@ -18,6 +18,8 @@ public class StockServiceTest {
     
     @Resource
     private StockService stockService;
+    @Resource
+    private CacheService cacheService;
     
     @Test
     public void update() {
@@ -25,6 +27,11 @@ public class StockServiceTest {
         stock.setStockGoodsId(1L);
         stock.setStockGoodsPrice(1.41);
         System.out.println(stockService.update(stock));
+    }
+    
+    @Test
+    public void clear() {
+        cacheService.removeFromCache(StocktakingService.STOCKTAKING_LIST_KEY);
     }
     
 }
