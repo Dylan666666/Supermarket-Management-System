@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<configuration>
+<configuration scan="true">
     <!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,%i索引【从数字0开始递增】,,, -->
     <!-- appender是configuration的子节点，是负责写日志的组件。 -->
     <!-- ConsoleAppender：把日志输出到控制台 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d %p (%file:%line\)- %m%n</pattern>
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
             <!-- 控制台也要使用UTF-8，不要使用GBK，否则会中文乱码 -->
             <charset>UTF-8</charset>
         </encoder>
@@ -33,7 +33,7 @@
         <encoder>
             <!-- pattern节点，用来设置日志的输入格式 -->
             <pattern>
-                %d %p (%file:%line\)- %m%n
+                %d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
             </pattern>
             <!-- 记录日志的编码 -->
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
@@ -60,7 +60,7 @@
         <encoder>
             <!-- pattern节点，用来设置日志的输入格式 -->
             <pattern>
-                %d %p (%file:%line\)- %m%n
+                %d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
             </pattern>
             <!-- 记录日志的编码 -->
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
@@ -87,16 +87,29 @@
         <encoder>
             <!-- pattern节点，用来设置日志的输入格式 -->
             <pattern>
-                %d %p (%file:%line\)- %m%n
+                %d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
             </pattern>
             <!-- 记录日志的编码 -->
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
     </appender>
+
+    <!-- 写入到数据库 -->
+    <appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+        <connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">
+            <dataSource class="com.mchange.v2.c3p0.ComboPooledDataSource">
+                <driverClass>com.mysql.cj.jdbc.Driver</driverClass>
+                <jdbcUrl>jdbc:mysql://localhost:3306/scms?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=Asia/Shanghai</jdbcUrl>
+                <user>root</user> <!-- 数据库用户名 -->
+                <password>666666</password> <!-- 密码 -->
+            </dataSource>
+        </connectionSource>
+    </appender>
     
     <!-- 输出级别和输出配置选择 -->
     <root level="INFO">
-        <appender-ref ref="syslog" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="DB" />
     </root>
     <!-- 指定项目中某个包，当有日志操作行为时的日志记录级别 -->
     <!-- com.market.scms为根包，也就是只要是发生在这个根包下面的所有日志操作行为的权限都是DEBUG -->
