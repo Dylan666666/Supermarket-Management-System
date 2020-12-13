@@ -293,9 +293,6 @@ public class WareHouseManagerController {
                 if (multipartResolver.isMultipart(request)) {
                     thumbnail = handleImage(request, thumbnail);
                 }
-                if (thumbnail != null) {
-                    addThumbnail(goods, thumbnail);
-                }
             } catch (Exception e) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", "添加图片失败");
