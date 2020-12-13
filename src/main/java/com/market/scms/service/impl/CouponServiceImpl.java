@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.cache.JedisUtil;
 import com.market.scms.entity.Coupon;
 import com.market.scms.entity.ExportBill;
+import com.market.scms.entity.Goods;
 import com.market.scms.entity.Stock;
 import com.market.scms.enums.CouponStatusStateEnum;
 import com.market.scms.exceptions.WareHouseManagerException;
@@ -43,18 +44,17 @@ public class CouponServiceImpl implements CouponService {
     private CacheService cacheService;
     
     @Resource
-    private StockService stockService;
+    private GoodsServiceImpl goodsService;
     
     @Override
     public int insert(Coupon coupon) throws WareHouseManagerException {
         if (coupon != null && coupon.getCouponGoodsId() != null && coupon.getCouponNum() != null &&
         coupon.getCouponStaffId() != null) {
             try {
-                List<Stock> stockList = stockService.queryByGoodsId(coupon.getCouponGoodsId());
-                if (stockList.size() == 0) {
+                Goods goods = goodsService.queryById(coupon.getCouponGoodsId());
+                if (goods == null) {
                     throw new WareHouseManagerException("超市不存在该商品存档，请先添加商品信息");
                 }
-                coupon.setCouponUnitId(stockList.get(0).getStockUnitId());
                 Date time = new Date();
                 coupon.setCouponTime(time);
                 coupon.setCouponStatus(CouponStatusStateEnum.ORDERING.getState());

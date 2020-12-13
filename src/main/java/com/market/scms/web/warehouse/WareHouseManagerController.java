@@ -14,10 +14,7 @@ import com.market.scms.enums.StocktakingStatusEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
-import com.market.scms.util.DoubleUtil;
-import com.market.scms.util.HttpServletRequestUtil;
-import com.market.scms.util.PageCalculator;
-import com.market.scms.util.StocktakingIdCreator;
+import com.market.scms.util.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -291,14 +288,17 @@ public class WareHouseManagerController {
             ImageHolder thumbnail = null;
             CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(
                     request.getSession().getServletContext());
-            //若请求种有文件流，则取出相关的文件(包括缩略图和详情图）
+            //若请求种有文件流，则取出相关的文件(缩略图）
             try {
                 if (multipartResolver.isMultipart(request)) {
                     thumbnail = handleImage(request, thumbnail);
                 }
+                if (thumbnail != null) {
+                    addThumbnail(goods, thumbnail);
+                }
             } catch (Exception e) {
                 modelMap.put("success",false);
-                modelMap.put("errMsg",e.getMessage());
+                modelMap.put("errMsg", "添加图片失败");
                 return modelMap;
             }
             try {
@@ -327,6 +327,17 @@ public class WareHouseManagerController {
             return modelMap;
         }
         return modelMap;
+    }
+
+    /**
+     * 添加缩略图
+     * @param goods
+     * @param thumbnail
+     */
+    private void addThumbnail(Goods goods, ImageHolder thumbnail) {
+        String dest = PathUtil.getGoodsImagePath(goods.getGoodsCategoryId());
+        String thumbnailAddr = ImageUtil.generateThumbnail(thumbnail, dest);
+        goods.setGoodsPicture(thumbnailAddr);
     }
 
     private ImageHolder handleImage(HttpServletRequest request,ImageHolder thumbnail) throws IOException {
