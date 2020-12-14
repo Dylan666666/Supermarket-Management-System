@@ -34,4 +34,12 @@ public interface UnitService {
      * @return
      */
     Unit queryById(int unitId);
+
+    /**
+     * 更新销售单位
+     *
+     * @param unit
+     * @return
+     */
+    int update(Unit unit);
 }

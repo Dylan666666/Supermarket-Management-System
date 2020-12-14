@@ -28,4 +28,13 @@
         unit_id = #{unitId}
     </select>
 
+    <update id="update" parameterType="com.market.scms.entity.Unit">
+        UPDATE
+        tb_unit
+        SET 
+        unit_name = #{unitName}
+        WHERE
+        unit_id = #{unitId}
+    </update>
+
 </mapper>

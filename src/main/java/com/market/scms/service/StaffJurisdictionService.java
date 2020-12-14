@@ -40,4 +40,11 @@ public interface StaffJurisdictionService {
      * @return
      */
     int delete(int staffId);
+
+    /**
+     * 一键查询
+     *
+     * @return
+     */
+    List<StaffJurisdiction> queryAll();
 }

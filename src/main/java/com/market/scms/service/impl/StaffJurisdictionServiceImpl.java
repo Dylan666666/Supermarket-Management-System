@@ -70,6 +70,16 @@ public class StaffJurisdictionServiceImpl implements StaffJurisdictionService {
         }
     }
 
+    @Override
+    public List<StaffJurisdiction> queryAll() throws SupermarketStaffException {
+        try {
+            List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionMapper.queryAll();
+            return staffJurisdictionList;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("删除职工功能信息失败");
+        }
+    }
+
 
     private void isNull(StaffJurisdiction staffJurisdiction) {
         if (staffJurisdiction == null) {

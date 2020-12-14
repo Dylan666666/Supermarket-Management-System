@@ -70,7 +70,7 @@ public class DeliveryGoods implements Serializable {
     public Double getDeliveryPrice() {
         return deliveryPrice;
     }
-
+ 
     public void setDeliveryPrice(Double deliveryPrice) {
         this.deliveryPrice = deliveryPrice;
     }

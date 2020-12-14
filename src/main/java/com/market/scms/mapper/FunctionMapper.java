@@ -57,4 +57,12 @@ public interface FunctionMapper {
      * @return
      */
     List<Function> queryAll();
+
+    /**
+     * 通过功能Url查询功能表
+     *
+     * @param functionUrl
+     * @return
+     */
+    Function queryByUrl(String functionUrl);
 }

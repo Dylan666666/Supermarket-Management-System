@@ -12,6 +12,15 @@
         function_id = #{functionId}
     </select>
 
+    <select id="queryByUrl" resultType="com.market.scms.entity.staff.Function">
+        SELECT 
+        *
+        FROM 
+        tb_function
+        WHERE 
+        function_url = #{functionUrl}
+    </select>
+    
     <insert id="insert" parameterType="com.market.scms.entity.staff.Function"
     useGeneratedKeys="true" keyProperty="functionId" keyColumn="function_id">
         INSERT INTO

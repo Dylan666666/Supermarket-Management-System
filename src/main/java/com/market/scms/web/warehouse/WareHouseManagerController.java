@@ -343,7 +343,7 @@ public class WareHouseManagerController {
         CommonsMultipartFile thumbnailFile = (CommonsMultipartFile) multipartHttpServletRequest
                 .getFile("goodsPicture");
         if (thumbnailFile != null) {
-            thumbnail = new ImageHolder(thumbnailFile.getOriginalFilename(),thumbnailFile.getInputStream());
+            thumbnail = new ImageHolder(thumbnailFile.getOriginalFilename(), thumbnailFile.getInputStream());
         }
         return thumbnail;
     }
@@ -1654,9 +1654,27 @@ public class WareHouseManagerController {
         int secondaryMenuId = HttpServletRequestUtil.getInt(request, "secondaryMenuId");
         int staffId = HttpServletRequestUtil.getInt(request, "staffId");
         try {
-            List<SupermarketStaff> staffList = staffService
+            
+            List<StaffJurisdiction> staffJurisdictionListPre = staffJurisdictionService.queryAll();
+            Function functionPre = functionService.queryByUrl("/stocktaking/submitStocktakingGood");
+            Set<Integer> staffIdSet = new HashSet<>();
+            for (StaffJurisdiction staffJurisdiction : staffJurisdictionListPre) {
+                if (staffJurisdiction.getFunctionId().equals(functionPre.getFunctionId())) {
+                    staffIdSet.add(staffJurisdiction.getStaffId());
+                }
+            }
+            List<SupermarketStaff> staffListAll = staffService
                     .queryStaffByCondition(new SupermarketStaff(), 0, 10000);
+            List<SupermarketStaff> staffList = new ArrayList<>(staffIdSet.size());
+            for (SupermarketStaff staff : staffListAll) {
+                if (staffIdSet.contains(staff.getStaffId())) {
+                    staffList.add(staff);
+                }
+            }
+            
             List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
+            
+            
             List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
             List<Function> functionList = new ArrayList<>();
             for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {

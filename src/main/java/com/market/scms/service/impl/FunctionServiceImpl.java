@@ -57,6 +57,16 @@ public class FunctionServiceImpl implements FunctionService {
     }
 
     @Override
+    public Function queryByUrl(String functionUrl) throws SupermarketStaffException {
+        try {
+            Function function = functionMapper.queryByUrl(functionUrl);
+            return function;
+        } catch (SupermarketStaffException e) {
+            throw new SupermarketStaffException("查询失败");
+        }
+    }
+
+    @Override
     public int update(Function function) throws SupermarketStaffException {
         isNull(function);
         try {

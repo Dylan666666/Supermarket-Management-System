@@ -12,6 +12,13 @@
         staff_id = #{staffId}
     </select>
 
+    <select id="queryAll" resultType="com.market.scms.entity.staff.StaffJurisdiction">
+        SELECT 
+        *
+        FROM 
+        tb_staff_jurisdiction
+    </select>
+
     <insert id="insert" parameterType="com.market.scms.entity.staff.StaffJurisdiction">
         INSERT INTO
         tb_staff_jurisdiction(staff_id,function_id,jurisdiction_status)

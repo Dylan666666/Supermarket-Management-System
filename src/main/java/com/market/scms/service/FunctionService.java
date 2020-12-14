@@ -34,6 +34,14 @@ public interface FunctionService {
     Function queryById(int functionId);
 
     /**
+     * 通过功能Url查询功能表
+     *
+     * @param functionUrl
+     * @return
+     */
+    Function queryByUrl(String functionUrl);
+
+    /**
      * 更改三级菜单信息
      *
      * @param function

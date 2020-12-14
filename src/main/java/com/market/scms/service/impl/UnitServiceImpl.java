@@ -77,10 +77,28 @@ public class UnitServiceImpl implements UnitService {
     @Override
     public Unit queryById(int unitId) throws WareHouseManagerException {
         if (unitId > 0) {
-            Unit unit = unitMapper.queryById(unitId);
-            return unit;
+            try {
+                Unit unit = unitMapper.queryById(unitId);
+                return unit;
+            } catch (WareHouseManagerException e) {
+                throw new WareHouseManagerException("查询单位失败");
+            }
         } else {
             throw new WareHouseManagerException("查询单位失败");
+        }
+    }
+
+    @Override
+    public int update(Unit unit) throws WareHouseManagerException {
+        try {
+            int res = unitMapper.update(unit);
+            if (res == 0) {
+                throw new WareHouseManagerException("销售单位更新失败");
+            }
+            cacheService.removeFromCache(UNIT_LIST_KEY);
+            return res;
+        } catch (WareHouseManagerException e) {
+            throw new WareHouseManagerException("销售单位更新失败");
         }
     }
 }
