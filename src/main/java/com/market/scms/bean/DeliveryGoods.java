@@ -11,7 +11,7 @@ public class DeliveryGoods implements Serializable {
     private String goodsPicture;
     private Long deliveryStockGoodsId;
     private String goodsName;
-    private String goodsCategoryName;
+    private String categoryName;
     private String goodsBrand;
     private Integer deliveryNum;
     private Double deliveryPrice;
@@ -41,13 +41,15 @@ public class DeliveryGoods implements Serializable {
         this.goodsName = goodsName;
     }
 
-    public String getGoodsCategoryName() {
-        return goodsCategoryName;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setGoodsCategoryName(String goodsCategoryName) {
-        this.goodsCategoryName = goodsCategoryName;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
+    
+    
 
     public String getGoodsBrand() {
         return goodsBrand;

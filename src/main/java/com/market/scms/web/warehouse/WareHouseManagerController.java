@@ -837,8 +837,8 @@ public class WareHouseManagerController {
             pageSize = 10000;
         }
         try {
-           List<DeliveryRecord> deliveryRecordList = deliveryRecordService.queryAll(pageIndex, pageSize);
-           List<DeliveryRecord> deliveryRecordList2 = deliveryRecordService.queryAll(0, 10000);
+            List<DeliveryRecord> deliveryRecordList = deliveryRecordService.queryAll(pageIndex, pageSize);
+            List<DeliveryRecord> deliveryRecordList2 = deliveryRecordService.queryAll(0, 10000);
             List<StaffJurisdiction> staffJurisdictionList = staffJurisdictionService.queryById(staffId);
             List<Function> functionList = new ArrayList<>();
             for (StaffJurisdiction staffJurisdiction : staffJurisdictionList) {
@@ -848,7 +848,7 @@ public class WareHouseManagerController {
                 }
             }
            List<SupermarketStaff> supermarketStaffList = staffService
-                   .queryStaffByCondition(new SupermarketStaff(), 0, 100);
+                   .queryStaffByCondition(new SupermarketStaff(), 0, 10000);
            Map<Integer, String> staffMap = new HashMap<>(supermarketStaffList.size());
             for (SupermarketStaff staff : supermarketStaffList) {
                 staffMap.put(staff.getStaffId(), staff.getStaffName());

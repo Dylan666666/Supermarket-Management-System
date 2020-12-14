@@ -35,7 +35,10 @@ public class GoodsCategoryMapperTest {
     
     @Test
     public void update() {
-        System.out.println(goodsCategoryMapper.updateByStaffId(1));
+        GoodsCategory goodsCategory = new GoodsCategory();
+        goodsCategory = goodsCategoryMapper.queryAll().get(0);
+        goodsCategory.setStocktakingStaffId(2);
+        System.out.println(goodsCategoryMapper.update(goodsCategory));
     }
     
 }

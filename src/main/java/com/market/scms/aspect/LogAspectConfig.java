@@ -1,6 +1,7 @@
 package com.market.scms.aspect;
 
 import com.alibaba.fastjson.JSON;
+import com.market.scms.util.HttpServletRequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -44,11 +45,6 @@ public class LogAspectConfig {
         HttpServletRequest request = attributes.getRequest();
         // 记录下请求内容  
         log.info("\n\n==================== 新的操作接入 ======================\n\n");
-        log.info("URL : " + request.getRequestURL().toString());
-        log.info("HTTP_METHOD : " + request.getMethod());
-        log.info("IP : " + request.getRemoteAddr());
-        log.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName()
-                + "." + joinPoint.getSignature().getName());
         Object[] args = joinPoint.getArgs();
         Object[] arguments  = new Object[args.length];
         for (int i = 0; i < args.length; i++) {
@@ -67,10 +63,15 @@ public class LogAspectConfig {
                 params = "无参数";
             }
         }
-        log.info("ARGS : " + params);
-        log.info("被切的方法声明:" + joinPoint.getSignature().toString());
+        Integer staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (staffId < 0) {
+            staffId = HttpServletRequestUtil.getInt(request, "userId");
+        }
         String[] arr1 = joinPoint.getSignature().toString().replace(".","/").split("/");
-        log.info(arr1[arr1.length - 1]);
+        log.info("操作员工ID：" + staffId + "  || URL : " + request.getRequestURL().toString() + ",HTTP_METHOD : " + request.getMethod() +
+                ",IP : " + request.getRemoteAddr() + ",CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName()
+                + "." + joinPoint.getSignature().getName() + ",ARGS : " + params 
+                + ",被切的方法声明:" + joinPoint.getSignature().toString() + arr1[arr1.length - 1]);
     }
 
     @AfterReturning(returning = "ret", pointcut = "webLog()")
