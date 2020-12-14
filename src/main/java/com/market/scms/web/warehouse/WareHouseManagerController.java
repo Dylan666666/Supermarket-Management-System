@@ -143,6 +143,10 @@ public class WareHouseManagerController {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
             return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
         }
         return modelMap;
     }
@@ -390,6 +394,10 @@ public class WareHouseManagerController {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
             return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
         }
         return modelMap;
     }
@@ -439,6 +447,10 @@ public class WareHouseManagerController {
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "初始化失败");
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
             return modelMap;
         }
         return modelMap;
@@ -490,7 +502,7 @@ public class WareHouseManagerController {
             return modelMap;
         }
         return modelMap;
-    }
+    } 
 
     /**
      * 3.8 订单信息
@@ -538,6 +550,10 @@ public class WareHouseManagerController {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
             return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
         }
         return modelMap;
     }
@@ -579,6 +595,10 @@ public class WareHouseManagerController {
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
             return modelMap;
         }
         return modelMap;
@@ -629,6 +649,10 @@ public class WareHouseManagerController {
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
             return modelMap;
         }
         return modelMap;
@@ -681,6 +705,10 @@ public class WareHouseManagerController {
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
             return modelMap;
         }
         return modelMap;
@@ -738,6 +766,7 @@ public class WareHouseManagerController {
      */
     @PostMapping("/purchaselist/confirm")
     @ResponseBody
+    @Transactional
     @RequiresPermissions("/purchaselist/confirm")
     public Map<String,Object> confirm(HttpServletRequest request) {
         Map<String,Object> modelMap = new HashMap<>(16);
@@ -761,10 +790,28 @@ public class WareHouseManagerController {
             if (res == 0) {
                 throw new WareHouseManagerException("提交失败");
             }
+            Coupon coupon = couponService.queryByCouponId(exportBill.getExportBillCouponId());
+            Stock stock = new Stock();
+            stock.setGoodsStockId(coupon.getCouponGoodsId());
+            stock.setStockUnitId(coupon.getCouponUnitId());
+            stock.setStockGoodsBatchNumber(1);
+            stock.setStockGoodsProductionDate(exportBill.getExportBillProductionDate());
+            stock.setStockGoodsShelfLife(exportBill.getExportBillShelfLife());
+            stock.setStockGoodsPrice(exportBill.getExportBillPrice());
+            stock.setStockInventory(coupon.getCouponNum());
+            stock.setStockExportBillId(exportBill.getExportBillId());
+            res = stockService.insert(stock);
+            if (res == 0) {
+                throw new WareHouseManagerException("提交失败");
+            }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
             return modelMap;
         }
         return modelMap;
@@ -805,6 +852,10 @@ public class WareHouseManagerController {
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
             return modelMap;
         }
         return modelMap;
@@ -862,6 +913,10 @@ public class WareHouseManagerController {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
             return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
         }
         return modelMap;
     }
@@ -901,6 +956,10 @@ public class WareHouseManagerController {
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
             return modelMap;
         }
         return modelMap;

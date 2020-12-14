@@ -186,6 +186,10 @@ public class StaffController {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", "密码更改失败");
                 return modelMap;
+            } catch (Exception e) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "提交失败");
+                return modelMap;
             }
         } else {
             modelMap.put("success",false);

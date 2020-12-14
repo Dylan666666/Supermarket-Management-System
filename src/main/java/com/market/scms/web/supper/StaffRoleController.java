@@ -301,6 +301,10 @@ public class StaffRoleController {
             modelMap.put("success",false);
             modelMap.put("errMsg", "删除失败");
             return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
+            return modelMap;
         }
         return modelMap;
     }
@@ -336,6 +340,10 @@ public class StaffRoleController {
         } catch (SupermarketStaffException e) {
             modelMap.put("success",false);
             modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "提交失败");
             return modelMap;
         }
         return modelMap;

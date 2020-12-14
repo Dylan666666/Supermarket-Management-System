@@ -1,7 +1,6 @@
 package com.market.scms.web.maintain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.market.scms.bean.GoodsStockA;
 import com.market.scms.dto.ImageHolder;
 import com.market.scms.entity.Goods;
 import com.market.scms.entity.GoodsCategory;
