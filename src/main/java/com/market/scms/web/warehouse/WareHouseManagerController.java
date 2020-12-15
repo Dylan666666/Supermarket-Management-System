@@ -199,7 +199,7 @@ public class WareHouseManagerController {
             for (Goods goods1 : goodsList) {
                 GoodsStockNum goodsStockNum = new GoodsStockNum();
                 List<Stock> stockList = stockService.queryByGoodsId(goods.getGoodsId());
-                BeanUtils.copyProperties(goods, goodsStockNum);
+                BeanUtils.copyProperties(goods1, goodsStockNum);
                 if (stockList.size() != 0) {
                     BeanUtils.copyProperties(stockList.get(0), goodsStockNum);
                 }
@@ -1456,6 +1456,15 @@ public class WareHouseManagerController {
             int res = deliveryRecordService.update(deliveryRecord);
             if (res == 0) {
                 throw new WareHouseManagerException("提交失败");
+            }
+            List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryRecord.getDeliveryId());
+            for (Delivery delivery : deliveryList) {
+                Stock stock = stockService.queryById(delivery.getDeliveryStockGoodsId());
+                stock.setStockInventory(stock.getStockInventory() - delivery.getDeliveryNum());
+                res = stockService.update(stock);
+                if (res == 0) {
+                    throw new WareHouseManagerException("提交失败");
+                }
             }
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {

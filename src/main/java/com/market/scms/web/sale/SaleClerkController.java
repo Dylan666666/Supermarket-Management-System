@@ -609,6 +609,12 @@ public class SaleClerkController {
                 if (res == 0) {
                     throw new SaleException("提交失败");
                 }
+                Stock stock = stockService.queryById(retail.getRetailStockGoodsId());
+                stock.setStockInventory(stock.getStockInventory() - retail.getRetailNum());
+                res = stockService.update(stock);
+                if (res == 0) {
+                    throw new SaleException("提交失败");
+                }
             }
             modelMap.put("success", true);
         } catch (SaleException e) {

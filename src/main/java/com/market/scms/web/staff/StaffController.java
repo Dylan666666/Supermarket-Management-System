@@ -442,6 +442,7 @@ public class StaffController {
                     functionList.add(function);
                 }
             }
+            
             int count = stocktakingRecordService.queryStocktakingCount(StocktakingAllStatusStateEnum.START.getState());
             if (count == 0) {
                 modelMap.put("success",false);
