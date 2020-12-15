@@ -63,7 +63,9 @@
             </if>
             <if test="goodsCondition.goodsId != null">
                 AND
-                s.goods_id = #{goodsCondition.goodsId}
+                s.goods_id
+                LIKE
+                '%${goodsCondition.goodsId}%'
             </if>
             <if test="goodsCondition.goodsCategoryId != null">
                 AND

@@ -48,7 +48,9 @@
         <where>
             <if test="retailRecordCondition.retailId != null">
                 AND
-                retail_id = #{retailRecordCondition.retailId}
+                retail_id
+                LIKE
+                '%${retailRecordCondition.retailId}%'
             </if>
             <if test="retailRecordCondition.retailCollectionStaffId != null">
                 AND

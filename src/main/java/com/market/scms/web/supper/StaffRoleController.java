@@ -2,7 +2,6 @@ package com.market.scms.web.supper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.market.scms.bean.StaffA;
-import com.market.scms.bean.StockingGoods;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.entity.staff.*;
 import com.market.scms.enums.StaffStatusStateEnum;

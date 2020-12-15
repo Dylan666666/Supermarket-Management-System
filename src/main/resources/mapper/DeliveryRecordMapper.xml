@@ -53,8 +53,10 @@
         tb_delivery_record
         <where>
             <if test="deliveryRecordCondition.deliveryId != null">
-                AND 
-                delivery_id = #{deliveryRecordCondition.deliveryId}
+                AND
+                delivery_id
+                LIKE
+                '%${deliveryRecordCondition.deliveryId}%'
             </if>
             <if test="deliveryRecordCondition.deliveryStatus != null">
                 AND
@@ -67,6 +69,10 @@
             <if test="deliveryRecordCondition.deliveryHandleStaffId != null">
                 AND
                 delivery_handle_staff_id = #{deliveryRecordCondition.deliveryHandleStaffId}
+            </if>
+            <if test="deliveryRecordCondition.deliveryCheckOutStatus != null">
+                AND
+                delivery_check_out_status = #{deliveryRecordCondition.deliveryCheckOutStatus}
             </if>
             <if test="deliveryRecordCondition.deliveryRefundStatus != null">
                 AND

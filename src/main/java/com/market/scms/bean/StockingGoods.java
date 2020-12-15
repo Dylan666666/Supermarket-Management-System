@@ -1,15 +1,14 @@
 package com.market.scms.bean;
 
-import java.io.Serializable;
+import java.util.Date;
 
 /**
- * Goods+stock+stocktaking
+ * Goods+stock+stocking
  * 
  * @Author: Mr_OO
- * @Date: 2020/11/26 22:09
+ * @Date: 2020/12/15 12:26
  */
-public class StockingGoods implements Serializable {
-    private static final long serialVersionUID = 58652194825643575L;
+public class StockingGoods {
     private String goodsName;
     private Integer goodsCategoryId;
     private String categoryName;
@@ -17,8 +16,8 @@ public class StockingGoods implements Serializable {
     private String goodsSpecifications;
     private String goodsPicture;
     private Long stockGoodsId;
-    private Integer stockGoodsBatchNumber;
-    private Integer stockInventory;
+    private Long stockGoodsBatchNumber;
+    private Integer stockNum;
     private Long stocktakingId;
     private Integer stocktakingNum;
     private Integer stocktakingStatus;
@@ -37,6 +36,14 @@ public class StockingGoods implements Serializable {
 
     public void setGoodsCategoryId(Integer goodsCategoryId) {
         this.goodsCategoryId = goodsCategoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public String getGoodsBrand() {
@@ -71,20 +78,20 @@ public class StockingGoods implements Serializable {
         this.stockGoodsId = stockGoodsId;
     }
 
-    public Integer getStockGoodsBatchNumber() {
+    public Long getStockGoodsBatchNumber() {
         return stockGoodsBatchNumber;
     }
 
-    public void setStockGoodsBatchNumber(Integer stockGoodsBatchNumber) {
+    public void setStockGoodsBatchNumber(Long stockGoodsBatchNumber) {
         this.stockGoodsBatchNumber = stockGoodsBatchNumber;
     }
 
-    public Integer getStockInventory() {
-        return stockInventory;
+    public Integer getStockNum() {
+        return stockNum;
     }
 
-    public void setStockInventory(Integer stockInventory) {
-        this.stockInventory = stockInventory;
+    public void setStockNum(Integer stockNum) {
+        this.stockNum = stockNum;
     }
 
     public Long getStocktakingId() {
@@ -109,13 +116,5 @@ public class StockingGoods implements Serializable {
 
     public void setStocktakingStatus(Integer stocktakingStatus) {
         this.stocktakingStatus = stocktakingStatus;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
     }
 }

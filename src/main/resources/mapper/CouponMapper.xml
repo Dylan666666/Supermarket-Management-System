@@ -67,11 +67,15 @@
         <where>
             <if test="couponCondition.couponId != null">
                 AND
-                c.coupon_id = #{couponCondition.couponId}
+                c.coupon_id
+                LIKE
+                '%${couponCondition.couponId}%'
             </if>
             <if test="couponCondition.couponGoodsId != null">
                 AND
-                c.coupon_goods_id = #{couponCondition.couponGoodsId}
+                c.coupon_goods_id
+                LIKE
+                '%${couponCondition.couponGoodsId}%'
             </if>
             <if test="couponCondition.couponStatus != null">
                 AND
