@@ -772,7 +772,7 @@ public class SaleClerkController {
     public Map<String,Object> deliveryReturnCommit(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         int staffId = HttpServletRequestUtil.getInt(request, "staffId");
-        String refundCustomerRecordStr = HttpServletRequestUtil.getString(request, "refundCustomerRecordStr");
+        String refundCustomerRecordStr = HttpServletRequestUtil.getString(request, "refundCustomerRecord");
         String refundCustomerListStr = HttpServletRequestUtil.getString(request, "refundCustomerList");
         ObjectMapper mapper = new ObjectMapper();
         JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, RefundCustomer.class);

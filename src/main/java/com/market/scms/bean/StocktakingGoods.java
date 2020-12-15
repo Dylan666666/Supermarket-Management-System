@@ -19,7 +19,7 @@ public class StocktakingGoods implements Serializable {
     private String goodsSpecifications;
     private String goodsPicture;
     private Long stocktakingId;
-    private Integer stocktakingStockGoodsId;
+    private Long stocktakingStockGoodsId;
     private Integer stockNum;
     private Integer stocktakingNum;
     private String staffName;
@@ -77,11 +77,11 @@ public class StocktakingGoods implements Serializable {
         this.stocktakingId = stocktakingId;
     }
 
-    public Integer getStocktakingStockGoodsId() {
+    public Long getStocktakingStockGoodsId() {
         return stocktakingStockGoodsId;
     }
 
-    public void setStocktakingStockGoodsId(Integer stocktakingStockGoodsId) {
+    public void setStocktakingStockGoodsId(Long stocktakingStockGoodsId) {
         this.stocktakingStockGoodsId = stocktakingStockGoodsId;
     }
 

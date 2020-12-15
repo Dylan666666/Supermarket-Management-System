@@ -1289,6 +1289,17 @@ public class WareHouseManagerController {
                 modelMap.put("errMsg", "该入库单不存在");
                 return modelMap;
             }
+            if (exportBill.getExportBillStatus().equals(ExportBillStatusStateEnum.WAREHOUSE_FAILURE.getState())
+            || exportBill.getExportBillStatus().equals(ExportBillStatusStateEnum.WORKERS_FAILURE.getState())) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "改单审核不通过，无法入库");
+                return modelMap;
+            }
+            if (exportBill.getExportBillStatus().equals(ExportBillStatusStateEnum.TO_STOCK.getState())) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "已入库，无法再次入库");
+                return modelMap;
+            }
             exportBill.setExportBillStatus(ExportBillStatusStateEnum.TO_STOCK.getState());
             exportBill.setExportConfirmStaffId(staffId);
             int res = exportBillService.update(exportBill);
@@ -2346,7 +2357,7 @@ public class WareHouseManagerController {
             List<Stock> stockList = stockService.queryAll(0, 10000);
             List<GoodsStockA> goodsStockAList = new ArrayList<>(stockList.size());
             for (Stock stock : stockList) {
-                if (stock.getStockGoodsBatchNumber() <= 0) {
+                if (stock.getStockInventory() <= 0) {
                     continue;
                 }
                 GoodsStockA goodsStockA = new GoodsStockA();
