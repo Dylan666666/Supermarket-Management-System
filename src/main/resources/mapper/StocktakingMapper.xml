@@ -60,7 +60,9 @@
         <where>
             <if test="stocktakingCondition.stocktakingId != null">
                 AND
-                s.stocktaking_id = #{stocktakingCondition.stocktakingId}
+                s.stocktaking_id
+                LIKE
+                '%${stocktakingCondition.stocktakingId}%'
             </if>
             <if test="stocktakingCondition.stocktakingStockGoodsId != null">
                 AND

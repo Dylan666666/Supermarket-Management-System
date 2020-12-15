@@ -574,6 +574,7 @@ public class StaffController {
             if (stockingGoods.getStockGoodsId() != null) {
                 stocktakingCondition.setStocktakingStockGoodsId(stockingGoods.getStockGoodsId());
             }
+            
             List<Stocktaking> stocktakingList = stocktakingService
                     .queryByCondition(stocktakingCondition, 0, 10000);
             List<StockingGoods> stockingGoodsList = new ArrayList<>(stocktakingList.size());
@@ -581,10 +582,12 @@ public class StaffController {
                 StockingGoods stockingGoodsCur = new StockingGoods();
                 Stock stock = stockService.queryById(stocktaking.getStocktakingStockGoodsId());
                 Goods goods = goodsService.queryById(stock.getGoodsStockId());
-                if (categoryMap.getOrDefault(goods.getGoodsCategoryId(), -1) == -1) {
+                if (stockingGoods.getGoodsCategoryId() != null && 
+                        categoryMap.getOrDefault(goods.getGoodsCategoryId(), -1) == -1) {
                     continue;
                 }
-                if (goodsMap.getOrDefault(goods.getGoodsId(), -1) == -1) {
+                if (stockingGoods.getGoodsName() != null && 
+                        goodsMap.getOrDefault(goods.getGoodsId(), -1) == -1) {
                     continue;
                 }
                 BeanUtils.copyProperties(stocktaking, stockingGoodsCur);

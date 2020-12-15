@@ -1299,7 +1299,7 @@ public class WareHouseManagerController {
             Stock stock = new Stock();
             stock.setGoodsStockId(coupon.getCouponGoodsId());
             stock.setStockUnitId(coupon.getCouponUnitId());
-            stock.setStockGoodsBatchNumber(1);
+            stock.setStockGoodsBatchNumber(Integer.valueOf(exportBill.getExportBillGoodsBatchNumber()));
             stock.setStockGoodsProductionDate(exportBill.getExportBillProductionDate());
             stock.setStockGoodsShelfLife(exportBill.getExportBillShelfLife());
             stock.setStockGoodsPrice(exportBill.getExportBillPrice());

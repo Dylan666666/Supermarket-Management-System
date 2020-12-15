@@ -725,6 +725,7 @@ public class SaleClerkController {
                 modelMap.put("success",true);
                 return modelMap;
             }
+            
             List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
             List<DeliveryGoodsReturn> deliveryGoodsReturnList = new ArrayList<>(deliveryList.size());
             RefundCustomerRecord refundCustomerRecord = refundCustomerRecordService.queryByOrderId(deliveryId);
@@ -901,7 +902,7 @@ public class SaleClerkController {
     @RequiresPermissions("/retailreturn/retaildetails")
     public Map<String,Object> retailReturnRetailDetails(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
-        String retailId = HttpServletRequestUtil.getString(request, "deliveryId");
+        String retailId = HttpServletRequestUtil.getString(request, "retailId");
         if (retailId == null) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "查看失败-01");
@@ -909,7 +910,7 @@ public class SaleClerkController {
         }
         try {
             RetailRecord retailRecord = retailRecordService.queryByRetailId(retailId);
-            if (retailRecord.getRetailRefundStatus().equals(RetailRefundStatusStateEnum.NO_REFUND)) {
+            if (retailRecord.getRetailRefundStatus().equals(RetailRefundStatusStateEnum.NO_REFUND.getState())) {
                 List<Retail> retailList = retailService.queryByRetailId(retailId);
                 List<RetailGoods> retailGoodsList = new ArrayList<>(retailList.size());
                 for (Retail retail : retailList) {
