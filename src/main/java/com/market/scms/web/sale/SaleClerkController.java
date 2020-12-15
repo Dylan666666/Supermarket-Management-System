@@ -799,6 +799,11 @@ public class SaleClerkController {
         try {
             DeliveryRecord deliveryRecord = deliveryRecordService
                     .queryByDeliveryId(refundCustomerRecord.getRefundCustomerOrderId());
+            if (deliveryRecord.getDeliveryRefundStatus().equals(DeliveryRefundStatusStateEnum.REFUND.getState())) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该订单已经退货，无法再次退货");
+                return modelMap;
+            }
             deliveryRecord.setDeliveryRefundStatus(DeliveryRefundStatusStateEnum.REFUND.getState());
             int res = deliveryRecordService.update(deliveryRecord);
             if (res == 0) {
@@ -976,7 +981,7 @@ public class SaleClerkController {
     public Map<String,Object> retailReturnCommit(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         int staffId = HttpServletRequestUtil.getInt(request, "staffId");
-        String refundCustomerRecordStr = HttpServletRequestUtil.getString(request, "refundCustomerRecordStr");
+        String refundCustomerRecordStr = HttpServletRequestUtil.getString(request, "refundCustomerRecord");
         String refundCustomerListStr = HttpServletRequestUtil.getString(request, "refundCustomerList");
         ObjectMapper mapper = new ObjectMapper();
         JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, RefundCustomer.class);
@@ -1002,6 +1007,11 @@ public class SaleClerkController {
         }
         try { 
             RetailRecord retailRecord = retailRecordService.queryByRetailId(refundCustomerRecord.getRefundCustomerOrderId());
+            if (retailRecord.getRetailRefundStatus().equals(RetailRefundStatusStateEnum.REFUNDED.getState())) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "改订单已被退货，无法再次退货");
+                return modelMap;
+            }
             retailRecord.setRetailRefundStatus(RetailRefundStatusStateEnum.REFUNDED.getState());
             int res = retailRecordService.update(retailRecord);
             if (res == 0) {
