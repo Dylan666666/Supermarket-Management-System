@@ -421,8 +421,8 @@ public class SaleClerkController {
             }
             List<RetailRecord> res = retailRecordList.subList(rowIndex, rightIndex);
 
-            modelMap.put("deliveryRecordList", res);
-            modelMap.put("recordSum", retailRecordList.size());
+            modelMap.put("retailRecordList", res);
+            modelMap.put("recordSum", recordSum);
             modelMap.put("success", true);
         } catch (SaleException e) {
             modelMap.put("success",false);

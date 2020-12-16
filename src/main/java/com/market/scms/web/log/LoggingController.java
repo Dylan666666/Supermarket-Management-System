@@ -1,7 +1,6 @@
 package com.market.scms.web.log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.market.scms.bean.GoodsStockA;
 import com.market.scms.bean.StaffA;
 import com.market.scms.entity.SupermarketStaff;
 import com.market.scms.entity.log.LoggingEvent;

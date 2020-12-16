@@ -199,7 +199,7 @@ public class WareHouseManagerController {
             List<GoodsStockNum> goodsStockNumList = new ArrayList<>(goodsList.size());
             for (Goods goods1 : goodsList) {
                 GoodsStockNum goodsStockNum = new GoodsStockNum();
-                List<Stock> stockList = stockService.queryByGoodsId(goods.getGoodsId());
+                List<Stock> stockList = stockService.queryByGoodsId(goods1.getGoodsId());
                 BeanUtils.copyProperties(goods1, goodsStockNum);
                 if (stockList.size() != 0) {
                     BeanUtils.copyProperties(stockList.get(0), goodsStockNum);
@@ -2650,6 +2650,12 @@ public class WareHouseManagerController {
                 modelMap.put("errMsg", "该单号不存在，盘点提交失败");
                 return modelMap;
             }
+            if (stocktakingRecord.getStocktakingAllStatus().equals(StocktakingAllStatusStateEnum.FINISH.getState())) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该单号已盘点入库，盘点提交失败");
+                return modelMap;
+            }
+            
             List<Stocktaking> stocktakingList = stocktakingService.queryByStocktakingId(stocktakingId);
             Double money = 0.0;
             for (Stocktaking stocktaking : stocktakingList) {
@@ -2664,6 +2670,7 @@ public class WareHouseManagerController {
                     throw new WareHouseManagerException("提交失败");
                 }
             }
+            
             stocktakingRecord.setStocktakingProfitLossPrice(money);
             stocktakingRecord.setStocktakingCommitDate(new Date());
             stocktakingRecord.setStocktakingAllStatus(StocktakingAllStatusStateEnum.FINISH.getState());

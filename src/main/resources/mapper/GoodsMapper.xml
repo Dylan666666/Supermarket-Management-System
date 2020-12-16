@@ -73,7 +73,9 @@
             </if>
             <if test="goodsCondition.goodsBrand != null">
                 AND
-                s.goods_brand = #{goodsCondition.goodsBrand}
+                s.goods_brand
+                LIKE
+                '%${goodsCondition.goodsBrand}%'
             </if>
         </where>
         ORDER BY s.goods_id
