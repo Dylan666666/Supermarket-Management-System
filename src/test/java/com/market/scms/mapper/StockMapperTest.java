@@ -26,7 +26,7 @@ public class StockMapperTest {
         stock.setStockId(1);
         stock.setGoodsStockId(1234567894321L);
         stock.setStockUnitId(1);
-        stock.setStockGoodsBatchNumber(1);
+        stock.setStockGoodsBatchNumber(1L);
         stock.setStockGoodsProductionDate(new Date());
         stock.setStockGoodsShelfLife(180);
         stock.setStockGoodsPrice(1.9);

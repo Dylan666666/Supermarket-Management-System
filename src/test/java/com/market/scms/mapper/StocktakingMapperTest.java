@@ -24,10 +24,13 @@ public class StocktakingMapperTest {
     @Resource
     private StocktakingMapper stocktakingMapper;
     
+    @Resource
+    private StocktakingRecordMapper stocktakingRecordMapper;
+    
     @Test
     public void insert() {
         Stocktaking stocktaking = new Stocktaking();
-        stocktaking.setStocktakingId(StocktakingIdCreator.get(stocktakingMapper.getCount(StocktakingIdCreator.getDateString())));
+        stocktaking.setStocktakingId(StocktakingIdCreator.get(stocktakingRecordMapper.getCount(StocktakingIdCreator.getDateString())));
         stocktaking.setStocktakingStockGoodsId(1234567890123L);
         stocktaking.setStocktakingTime(new Date());
         stocktaking.setStockNum(100);
@@ -40,7 +43,7 @@ public class StocktakingMapperTest {
 
     @Test
     public void query() {
-        System.out.println(stocktakingMapper.getCount(StocktakingIdCreator.getDateString()));
+        System.out.println(stocktakingRecordMapper.getCount(StocktakingIdCreator.getDateString()));
         System.out.println(stocktakingMapper
                 .queryById(202011260L, 1234567890123L).getStockNum());
         System.out.println(stocktakingMapper.queryAll(0, 100).get(0).getStockNum());

@@ -92,13 +92,4 @@
         stocktaking_id = #{stocktakingId}
     </select>
 
-    <select id="getCount" resultType="int">
-        SELECT 
-        count(*)
-        FROM 
-        tb_stocktaking
-        WHERE 
-        DATE_FORMAT(stocktaking_time,'%Y-%m-%d') = #{dateFormat}
-    </select>
-
 </mapper>

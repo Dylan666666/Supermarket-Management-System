@@ -15,7 +15,7 @@ public class Stock implements Serializable {
     private Integer stockId;
     private Long goodsStockId;
     private Integer stockUnitId;
-    private Integer stockGoodsBatchNumber;
+    private Long stockGoodsBatchNumber;
     private Date stockGoodsProductionDate;
     private Integer stockGoodsShelfLife;
     private Double stockGoodsPrice;
@@ -54,11 +54,11 @@ public class Stock implements Serializable {
         this.stockUnitId = stockUnitId;
     }
 
-    public Integer getStockGoodsBatchNumber() {
+    public Long getStockGoodsBatchNumber() {
         return stockGoodsBatchNumber;
     }
 
-    public void setStockGoodsBatchNumber(Integer stockGoodsBatchNumber) {
+    public void setStockGoodsBatchNumber(Long stockGoodsBatchNumber) {
         this.stockGoodsBatchNumber = stockGoodsBatchNumber;
     }
 

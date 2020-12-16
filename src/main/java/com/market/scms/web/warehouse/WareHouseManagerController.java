@@ -1311,7 +1311,7 @@ public class WareHouseManagerController {
             Stock stock = new Stock();
             stock.setGoodsStockId(coupon.getCouponGoodsId());
             stock.setStockUnitId(coupon.getCouponUnitId());
-            stock.setStockGoodsBatchNumber(Integer.valueOf(exportBill.getExportBillGoodsBatchNumber()));
+            stock.setStockGoodsBatchNumber(exportBill.getExportBillGoodsBatchNumber());
             stock.setStockGoodsProductionDate(exportBill.getExportBillProductionDate());
             stock.setStockGoodsShelfLife(exportBill.getExportBillShelfLife());
             stock.setStockGoodsPrice(exportBill.getExportBillPrice());
@@ -2427,7 +2427,7 @@ public class WareHouseManagerController {
                 return modelMap;
             }
             Long stocktakingId = StocktakingIdCreator
-                    .get(stocktakingService.getCount(StocktakingIdCreator.getDateString()));
+                    .get(stocktakingRecordService.getCount(StocktakingIdCreator.getDateString()));
             StocktakingRecord stocktakingRecord = new StocktakingRecord();
             stocktakingRecord.setStocktakingId(stocktakingId);
             stocktakingRecord.setStocktakingLaunchedStaffId(Long.valueOf(staffId));
@@ -2444,7 +2444,7 @@ public class WareHouseManagerController {
                 Stocktaking stocktaking = new Stocktaking();
                 stocktaking.setStocktakingId(stocktakingId);
                 stocktaking.setStocktakingStockGoodsId(stockGoodsId);
-                stocktaking.setStockNum(stock.getStockGoodsBatchNumber());
+                stocktaking.setStockNum(stock.getStockInventory());
                 stocktaking.setStocktakingStaffId(category.getStocktakingStaffId());
                 stocktaking.setStocktakingStatus(StocktakingStatusEnum.START.getState());
                 stocktaking.setStocktakingPrice(stock.getStockGoodsPrice());
@@ -2587,7 +2587,7 @@ public class WareHouseManagerController {
             
             //生成盘点记录单
             Long stocktakingId = StocktakingIdCreator
-                    .get(stocktakingService.getCount(StocktakingIdCreator.getDateString()));
+                    .get(stocktakingRecordService.getCount(StocktakingIdCreator.getDateString()));
             StocktakingRecord stocktakingRecord = new StocktakingRecord();
             stocktakingRecord.setStocktakingId(stocktakingId);
             stocktakingRecord.setStocktakingLaunchedStaffId(Long.valueOf(staffId));
@@ -2638,7 +2638,8 @@ public class WareHouseManagerController {
     public Map<String,Object> submitStocktaking(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         Long stocktakingId = HttpServletRequestUtil.getLong(request, "stocktakingId");
-        if (stocktakingId < 0) {
+        int staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (stocktakingId < 0 || staffId < 0) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "盘点提交失败-01");
             return modelMap;
@@ -2662,8 +2663,21 @@ public class WareHouseManagerController {
                 if (stocktaking.getStocktakingProfitLossStatus() == null) {
                     throw new WareHouseManagerException("盘盈亏状态未填完，盘点提交失败");
                 }
-                money += ((stocktaking.getStockNum() - stocktaking.getStocktakingNum()) * 
-                        stocktaking.getStocktakingPrice());
+                
+                //数量变更情况
+                int numCur = stocktaking.getStocktakingNum() - stocktaking.getStockNum();
+                money += (numCur * stocktaking.getStocktakingPrice());
+                
+                if (numCur != 0) {
+                    //更新最新库存
+                    Stock stock = stockService.queryById(stocktaking.getStocktakingStockGoodsId());
+                    stock.setStockInventory(stocktaking.getStocktakingNum());
+                    int res = stockService.update(stock);
+                    if (res == 0) {
+                        throw new WareHouseManagerException("提交失败");
+                    }
+                }
+                
                 stocktaking.setStocktakingStatus(StocktakingStatusEnum.FINISH.getState());
                 int res = stocktakingService.update(stocktaking);
                 if (res == 0) {
@@ -2671,6 +2685,7 @@ public class WareHouseManagerController {
                 }
             }
             
+            stocktakingRecord.setStocktakingSubmitStaffId(Long.valueOf(staffId));
             stocktakingRecord.setStocktakingProfitLossPrice(money);
             stocktakingRecord.setStocktakingCommitDate(new Date());
             stocktakingRecord.setStocktakingAllStatus(StocktakingAllStatusStateEnum.FINISH.getState());

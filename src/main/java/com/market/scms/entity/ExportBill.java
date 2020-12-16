@@ -14,7 +14,7 @@ public class ExportBill implements Serializable {
     private String exportBillId;
     private Long exportBillCouponId;
     private Long exportBillSupplierId;
-    private String exportBillGoodsBatchNumber;
+    private Long exportBillGoodsBatchNumber;
     private Date exportBillProductionDate;
     private Integer exportBillShelfLife;
     private Double exportBillPrice;
@@ -57,11 +57,11 @@ public class ExportBill implements Serializable {
         this.exportBillSupplierId = exportBillSupplierId;
     }
 
-    public String getExportBillGoodsBatchNumber() {
+    public Long getExportBillGoodsBatchNumber() {
         return exportBillGoodsBatchNumber;
     }
 
-    public void setExportBillGoodsBatchNumber(String exportBillGoodsBatchNumber) {
+    public void setExportBillGoodsBatchNumber(Long exportBillGoodsBatchNumber) {
         this.exportBillGoodsBatchNumber = exportBillGoodsBatchNumber;
     }
 

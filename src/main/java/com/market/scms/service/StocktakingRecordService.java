@@ -62,4 +62,12 @@ public interface StocktakingRecordService {
      * @return
      */
     int queryStocktakingCount(int state);
+
+    /**
+     * 获取今日盘点次数
+     *
+     * @param dateFormat
+     * @return
+     */
+    int getCount(String dateFormat);
 }

@@ -147,4 +147,13 @@ public class StocktakingRecordServiceImpl implements StocktakingRecordService {
             throw new WareHouseManagerException("查询失败");
         }
     }
+
+    @Override
+    public int getCount(String dateFormat) throws WareHouseManagerException {
+        try {
+            return stocktakingRecordMapper.getCount(dateFormat);
+        } catch (WareHouseManagerException e) {
+            throw new WareHouseManagerException("不具备获取Id条件，注册失败");
+        }
+    }
 }

@@ -7,6 +7,7 @@ import com.market.scms.entity.*;
 import com.market.scms.entity.staff.*;
 import com.market.scms.enums.ExportBillStatusStateEnum;
 import com.market.scms.enums.StocktakingAllStatusStateEnum;
+import com.market.scms.enums.StocktakingStatusEnum;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.exceptions.WareHouseManagerException;
 import com.market.scms.service.*;
@@ -702,6 +703,19 @@ public class StaffController {
             return modelMap;
         }
         try {
+            Stocktaking stocktakingCur = stocktakingService
+                    .queryById(stocktaking.getStocktakingId(), stocktaking.getStocktakingStockGoodsId());
+            if (stocktakingCur == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该盘点单不存在，无法提交");
+                return modelMap;
+            }
+            if (!stocktakingCur.getStocktakingStatus().equals(StocktakingStatusEnum.START.getState())) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该盘点单无法提交");
+                return modelMap;
+            }
+            stocktaking.setStocktakingStatus(StocktakingStatusEnum.SECOND.getState());
             int res = stocktakingService.update(stocktaking);
             if (res == 0) {
                 throw new SupermarketStaffException("提交失败");

@@ -27,7 +27,7 @@ public class ExportBillMapperTest {
         exportBill.setExportBillId("1");
         exportBill.setExportBillCouponId(1L);
         exportBill.setExportBillSupplierId(1L);
-        exportBill.setExportBillGoodsBatchNumber("a");
+        exportBill.setExportBillGoodsBatchNumber(1L);
         exportBill.setExportBillProductionDate(new Date());
         exportBill.setExportBillShelfLife(180);
         exportBill.setExportBillPrice(1.2);

@@ -83,4 +83,13 @@
         stocktaking_all_status = #{state}
     </select>
 
+    <select id="getCount" resultType="int">
+        SELECT 
+        count(*)
+        FROM 
+        tb_stocktaking_record
+        WHERE 
+        DATE_FORMAT(stocktaking_launched_date,'%Y-%m-%d') = #{dateFormat}
+    </select>
+    
 </mapper>
