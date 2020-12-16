@@ -14,6 +14,7 @@ import com.market.scms.enums.StocktakingStatusEnum;
 import com.market.scms.exceptions.SaleException;
 import com.market.scms.exceptions.SupermarketStaffException;
 import com.market.scms.exceptions.WareHouseManagerException;
+import com.market.scms.mapper.GoodsMapper;
 import com.market.scms.service.*;
 import com.market.scms.util.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -2402,7 +2403,7 @@ public class WareHouseManagerController {
     public Map<String,Object> initiateStocktaking(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         int staffId = HttpServletRequestUtil.getInt(request, "staffId");
-        String stockGoodsIdListStr = HttpServletRequestUtil.getString(request, "stockGoodsIdListStr");
+        String stockGoodsIdListStr = HttpServletRequestUtil.getString(request, "stockGoodsIdList");
         if (staffId <= 0 || stockGoodsIdListStr == null) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "发起失败-01");
@@ -2461,6 +2462,84 @@ public class WareHouseManagerController {
             modelMap.put("success",false);
             modelMap.put("errMsg", "发起失败");
             return modelMap;    
+        }
+        return modelMap;
+    }
+
+    /**
+     * 6.10库房管理员 盘点管理 选取需盘点商品列表 模糊查询
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/stocktaking/selectStocktakingGoodsfindByConditions")
+    @ResponseBody
+    @RequiresPermissions("/stocktaking/selectStocktakingGoodsfindByConditions")
+    public Map<String,Object> selectStocktakingGoodsfindByConditions(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        String goodsStr = HttpServletRequestUtil.getString(request, "goods");
+        Goods goods = null;
+        ObjectMapper mapper = new ObjectMapper();
+        if (goodsStr == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+            return modelMap;
+        }
+        try {
+            goods = mapper.readValue(goodsStr, Goods.class);
+            if (goods == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+                return modelMap;
+            }
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            List<Goods> goodsList = goodsService.queryByCondition(goods, 0, 10000);
+            List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
+            
+            List<GoodsStockA> goodsStockAList = new ArrayList<>();
+            for (Goods goods1 : goodsList) {
+                List<Stock> stockList = stockService.queryByGoodsId(goods1.getGoodsId());
+                for (Stock stock : stockList) {
+                    GoodsStockA goodsStockA = new GoodsStockA();
+                    BeanUtils.copyProperties(goods1, goodsStockA);
+                    BeanUtils.copyProperties(stock, goodsStockA);
+                    goodsStockAList.add(goodsStockA);
+                }
+            }
+
+            int recordSum = goodsStockAList.size();
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            int rightIndex = rowIndex + pageSize;
+            if (recordSum < rightIndex) {
+                rightIndex = recordSum;
+            }
+            List<GoodsStockA> res = goodsStockAList.subList(rowIndex, rightIndex);
+
+            modelMap.put("goodsStockAList", res);
+            modelMap.put("recordSum", recordSum);
+            modelMap.put("categoryList", categoryList);
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "访问失败");
+            return modelMap;
         }
         return modelMap;
     }

@@ -1,11 +1,9 @@
 package com.market.scms.web.maintain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.market.scms.bean.GoodsStockA;
 import com.market.scms.dto.ImageHolder;
-import com.market.scms.entity.Goods;
-import com.market.scms.entity.GoodsCategory;
-import com.market.scms.entity.SupermarketStaff;
-import com.market.scms.entity.Unit;
+import com.market.scms.entity.*;
 import com.market.scms.entity.staff.Function;
 import com.market.scms.entity.staff.StaffJurisdiction;
 import com.market.scms.exceptions.WareHouseManagerException;
@@ -13,6 +11,7 @@ import com.market.scms.service.*;
 import com.market.scms.util.HttpServletRequestUtil;
 import com.market.scms.util.PageCalculator;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -51,6 +50,9 @@ public class MaintainController {
     
     @Resource
     private StaffService staffService;
+    
+    @Resource
+    private StockService stockService;
 
     /**
      * 8.1商品信息维护
@@ -103,6 +105,84 @@ public class MaintainController {
         return modelMap;
     }
 
+    /**
+     * 8.2商品信息维护 模糊查询
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/goodsinformation/findByConditions")
+    @ResponseBody
+    @RequiresPermissions("/goodsinformation/findByConditions")
+    public Map<String,Object> findByConditions(HttpServletRequest request) {
+        Map<String, Object> modelMap = new HashMap<>(16);
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        String goodsStr = HttpServletRequestUtil.getString(request, "goods");
+        Goods goods = null;
+        ObjectMapper mapper = new ObjectMapper();
+        if (goodsStr == null) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+            return modelMap;
+        }
+        try {
+            goods = mapper.readValue(goodsStr, Goods.class);
+            if (goods == null) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+                return modelMap;
+            }
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "不具备访问条件，访问失败-01");
+            return modelMap;
+        }
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
+        try {
+            List<Goods> goodsList = goodsService.queryByCondition(goods, 0, 10000);
+            List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
+
+            List<GoodsStockA> goodsStockAList = new ArrayList<>();
+            for (Goods goods1 : goodsList) {
+                List<Stock> stockList = stockService.queryByGoodsId(goods1.getGoodsId());
+                for (Stock stock : stockList) {
+                    GoodsStockA goodsStockA = new GoodsStockA();
+                    BeanUtils.copyProperties(goods1, goodsStockA);
+                    BeanUtils.copyProperties(stock, goodsStockA);
+                    goodsStockAList.add(goodsStockA);
+                }
+            }
+
+            int recordSum = goodsStockAList.size();
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            int rightIndex = rowIndex + pageSize;
+            if (recordSum < rightIndex) {
+                rightIndex = recordSum;
+            }
+            List<GoodsStockA> res = goodsStockAList.subList(rowIndex, rightIndex);
+
+            modelMap.put("goodsStockAList", res);
+            modelMap.put("recordSum", recordSum);
+            modelMap.put("categoryList", categoryList);
+            modelMap.put("success", true);
+        } catch (WareHouseManagerException e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", e.getMessage());
+            return modelMap;
+        } catch (Exception e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "访问失败");
+            return modelMap;
+        }
+        return modelMap;
+    }
+    
     /**
      * 8.2商品信息维护 修改
      *

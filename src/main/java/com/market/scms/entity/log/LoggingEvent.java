@@ -12,7 +12,7 @@ public class LoggingEvent implements Serializable {
 
     private static final long serialVersionUID = -4039756950945126665L;
     
-    private Long timestamp;
+    private Long timestmp;
     private String formattedMessage;
     private String loggerName;
     private String levelString;
@@ -31,12 +31,12 @@ public class LoggingEvent implements Serializable {
         return serialVersionUID;
     }
 
-    public Long getTimestamp() {
-        return timestamp;
+    public Long getTimestmp() {
+        return timestmp;
     }
 
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
+    public void setTimestmp(Long timestmp) {
+        this.timestmp = timestmp;
     }
 
     public String getFormattedMessage() {

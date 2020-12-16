@@ -3,5 +3,50 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.market.scms.mapper.LoggingEventMapper">
+    <select id="queryAll" resultType="com.market.scms.entity.log.LoggingEvent">
+        SELECT 
+        *
+        FROM 
+        logging_event
+        ORDER BY timestmp DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
 
+    <select id="queryByCondition" resultType="com.market.scms.entity.log.LoggingEvent">
+        SELECT 
+        *
+        FROM 
+        logging_event c
+        <where>
+            <if test="loggingEventCondition.timestmp != null">
+                AND
+                c.timestmp
+                LIKE
+                '%${loggingEventCondition.timestmp}%'
+            </if>
+            <if test="loggingEventCondition.formattedMessage != null">
+                AND
+                c.formatted_message
+                LIKE
+                '%${loggingEventCondition.formattedMessage}%'
+            </if>
+            <if test="loggingEventCondition.levelString != null">
+                AND
+                c.level_string
+                LIKE
+                '%${loggingEventCondition.levelString}%'
+            </if>
+        </where>
+        ORDER BY timestmp DESC 
+        LIMIT #{rowIndex},#{pageSize}
+    </select>
+    
+    <delete id="delete" parameterType="Long">
+        DELETE FROM 
+        logging_event
+        WHERE 
+        event_id = #{eventId}
+    </delete>
+    
+    
 </mapper>
