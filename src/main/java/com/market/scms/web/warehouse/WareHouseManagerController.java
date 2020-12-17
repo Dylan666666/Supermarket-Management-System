@@ -2209,6 +2209,17 @@ public class WareHouseManagerController {
             return modelMap;
         }
         try {
+            Stocktaking stocktakingCur = stocktakingService
+                    .queryById(stocktaking.getStocktakingId(), stocktaking.getStocktakingStockGoodsId());
+            
+            if (stocktakingCur.getStocktakingStatus().equals(StocktakingStatusEnum.QUIT.getState()) || 
+            stocktakingCur.getStocktakingStatus().equals(StocktakingStatusEnum.FINISH.getState())) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该订单无法修改");
+                return modelMap;
+            }
+            
+            stocktaking.setStocktakingStatus(StocktakingStatusEnum.SECOND.getState());
             int res = stocktakingService.update(stocktaking);
             if (res == 0) {
                 throw new WareHouseManagerException("修改失败");
