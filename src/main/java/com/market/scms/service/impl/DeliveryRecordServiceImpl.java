@@ -48,6 +48,7 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
                 if (res == 0) {
                     throw new WareHouseManagerException("添加入库详情单失败");
                 }
+                cacheService.removeFromCache(DELIVERY_RECORD_LIST_KEY);
                 return res;
             } catch (WareHouseManagerException e) {
                 throw new WareHouseManagerException("添加入库详情单失败");
@@ -65,6 +66,7 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
                 if (res == 0) {
                     throw new WareHouseManagerException("更新入库详情单失败");
                 }
+                cacheService.removeFromCache(DELIVERY_RECORD_LIST_KEY);
                 return res;
             } catch (WareHouseManagerException e) {
                 throw new WareHouseManagerException("更新入库详情单失败");
