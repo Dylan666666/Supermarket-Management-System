@@ -68,7 +68,7 @@ public class ImageUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return PathUtil.getImgBasePath() + relativeAddr;
+        return relativeAddr;
     }
 
     /**

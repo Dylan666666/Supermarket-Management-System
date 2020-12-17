@@ -8,24 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
  * @Date: 2020/11/5 14:23
  */
 public class PathUtil {
-    private static String winPath;
-    private static String linuxPath;
-    private static String goodsPath;
-
-    @Value("${win.base.path}")
-    public void setWinPath(String winPath) {
-        PathUtil.winPath = winPath;
-    }
-
-    @Value("${linux.base.path}")
-    public void setLinuxPath(String linuxPath) {
-        PathUtil.linuxPath = linuxPath;
-    }
-
-    @Value("${goods.relevant.path}")
-    public void setGoodsPath(String goodsPath) {
-        PathUtil.goodsPath = goodsPath;
-    }
+    private static String winPath = "C:/scms/image";
+    private static String linuxPath = "/scms/image";
+    private static String goodsPath = "/goods/";
 
     /**
      * 获取基础路径

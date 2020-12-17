@@ -63,10 +63,9 @@ public class CouponServiceImpl implements CouponService {
                     throw new WareHouseManagerException("添加订单失败");
                 }
                 cacheService.removeFromCache(COUPON_LIST_KEY);
-                Coupon couponNow = couponMapper.queryByTime(time);
                 ExportBill exportBill = new ExportBill();
                 exportBill.setExportConfirmStaffId(coupon.getCouponStaffId());
-                exportBill.setExportBillCouponId(couponNow.getCouponId());
+                exportBill.setExportBillCouponId(coupon.getCouponId());
                 res = exportBillService.insert(exportBill, coupon.getCouponGoodsId());
                 if (res == 0) {
                     throw new WareHouseManagerException("添加订单失败");

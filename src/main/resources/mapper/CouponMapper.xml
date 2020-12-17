@@ -20,15 +20,6 @@
         WHERE 
         coupon_staff_id = #{couponStaffId}
     </select>
-
-    <select id="queryByTime" resultType="com.market.scms.entity.Coupon">
-        SELECT 
-        *
-        FROM 
-        tb_coupon
-        WHERE 
-        coupon_time = #{couponTime}
-    </select>
     
     <insert id="insert" parameterType="com.market.scms.entity.Coupon"
     useGeneratedKeys="true" keyColumn="coupon_id" keyProperty="couponId">

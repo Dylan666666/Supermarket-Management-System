@@ -89,6 +89,17 @@ public class MvcConfiguration implements WebMvcConfigurer, ApplicationContextAwa
         multipartResolver.setMaxInMemorySize(20971520);
         return multipartResolver;
     }
+
+    /**
+     * 静态资源配置
+     * @param registry
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //加载图片的默认地址前缀
+        registry.addResourceHandler("/goods/**")
+                .addResourceLocations("file:C:/scms/image/goods/");
+    }
     
     
 }

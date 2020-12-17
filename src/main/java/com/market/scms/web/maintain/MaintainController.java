@@ -646,7 +646,7 @@ public class MaintainController {
         MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
         //取出缩略图并构建ImageHolder对象
         CommonsMultipartFile thumbnailFile = (CommonsMultipartFile) multipartHttpServletRequest
-                .getFile("goodsPicture");
+                .getFile("image");
         if (thumbnailFile != null) {
             thumbnail = new ImageHolder(thumbnailFile.getOriginalFilename(),thumbnailFile.getInputStream());
         }

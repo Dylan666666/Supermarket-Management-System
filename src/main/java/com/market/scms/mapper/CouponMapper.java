@@ -53,14 +53,6 @@ public interface CouponMapper {
     List<Coupon> queryAll(@Param("rowIndex") int rowIndex, @Param("pageSize") int pageSize);
 
     /**
-     * 插入时，立刻查询生成入库单时使用
-     * 
-     * @param couponTime
-     * @return
-     */
-    Coupon queryByTime(Date couponTime);
-
-    /**
      * 订货单模糊查询
      *
      * @param couponCondition
