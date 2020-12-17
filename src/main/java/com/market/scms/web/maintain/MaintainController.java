@@ -215,8 +215,20 @@ public class MaintainController {
             modelMap.put("errMsg", "更改失败-01");
             return modelMap;
         }
+        ImageHolder thumbnail = null;
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(
+                request.getSession().getServletContext());
         try {
-            int res = goodsService.updateGoods(goods, null);
+            if (multipartResolver.isMultipart(request)) {
+                thumbnail = handleImage(request, thumbnail);
+            }
+        } catch (Exception e) {
+            modelMap.put("success",false);
+            modelMap.put("errMsg", "添加图片失败");
+            return modelMap;
+        }
+        try {
+            int res = goodsService.updateGoods(goods, thumbnail);
             if (res == 0) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg", "更改失败");
