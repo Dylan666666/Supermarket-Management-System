@@ -46,6 +46,8 @@ public class ShiroConfig {
          */
         filterChainDefinitionMap.put("/staff/login", "anon");
         filterChainDefinitionMap.put("/staff/insert", "anon");
+        //放行商品图片
+        filterChainDefinitionMap.put("/goods/**", "anon");
         // 所有url都必须认证通过才可以访问
         filterChainDefinitionMap.put("/**", "authc");
 

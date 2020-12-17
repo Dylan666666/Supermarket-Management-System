@@ -99,6 +99,7 @@ public class MvcConfiguration implements WebMvcConfigurer, ApplicationContextAwa
         //加载图片的默认地址前缀
         registry.addResourceHandler("/goods/**")
                 .addResourceLocations("file:C:/scms/image/goods/");
+        WebMvcConfigurer.super.addResourceHandlers(registry);
     }
     
     
