@@ -184,43 +184,13 @@ public class StaffServiceImpl implements StaffService {
         if (staffCondition == null) {
             throw new WareHouseManagerException("传入信息为空，查询失败");
         }
-        String key = STAFF_LIST_KEY + pageIndex + pageSize;
-        pageIndex = pageIndex >= 0 ? pageIndex : 0;
-        pageSize = pageSize > 0 ? pageSize : 10000;
         int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
-        List<SupermarketStaff> res = null;
-        ObjectMapper mapper = new ObjectMapper();
-        if (pageIndex == 0) {
-            if (!jedisKeys.exists(key)) {
-                res = staffMapper.queryStaffByCondition(staffCondition, rowIndex, pageSize);
-                String jsonString = null;
-                try {
-                    jsonString = mapper.writeValueAsString(res);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                    throw new WareHouseManagerException("查询失败");
-                }
-                jedisStrings.set(key, jsonString);
-            } else {
-                String jsonString = jedisStrings.get(key);
-                JavaType javaType = mapper.getTypeFactory()
-                        .constructParametricType(ArrayList.class, SupermarketStaff.class);
-                try {
-                    res = mapper.readValue(jsonString, javaType);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                    throw new WareHouseManagerException("查询失败");
-                }
-            }
-        } else {
-            try {
-                res = staffMapper.queryStaffByCondition(staffCondition, rowIndex, pageSize);
-                return res;
-            } catch (WareHouseManagerException e) {
-                throw new WareHouseManagerException("查询失败");
-            }
+        try {
+            List<SupermarketStaff> res = staffMapper.queryStaffByCondition(staffCondition, rowIndex, pageSize);
+            return res;
+        } catch (WareHouseManagerException e) {
+            throw new WareHouseManagerException("查询失败");
         }
-        return res;
     }
 
     @Override

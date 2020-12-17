@@ -1,6 +1,7 @@
 package com.market.scms.mapper;
 
 import com.market.scms.entity.StocktakingRecord;
+import com.market.scms.util.StocktakingIdCreator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,6 +45,12 @@ public class StocktakingRecordMapperTest {
         stocktakingRecord.setStocktakingSubmitStaffId(2L);
         stocktakingRecord.setStocktakingCommitDate(new Date());
         System.out.println(stocktakingRecordMapper.update(stocktakingRecord));
+    }
+    
+    @Test
+    public void create() {
+        System.out.println(StocktakingIdCreator
+                .get(stocktakingRecordMapper.getCount(StocktakingIdCreator.getDateString())));
     }
     
 }

@@ -2054,7 +2054,7 @@ public class WareHouseManagerController {
                 }
             }
             List<SupermarketStaff> staffList = staffService
-                    .queryStaffByCondition(new SupermarketStaff(), pageIndex, pageSize);
+                    .queryStaffByCondition(new SupermarketStaff(), 0, 10000);
             List<StocktakingRecord> stocktakingRecordList2 = stocktakingRecordService.queryAll(0, 10000);
             List<StocktakingRecord> stocktakingRecordList = stocktakingRecordService.queryAll(pageIndex, pageSize);
             modelMap.put("recordSum", stocktakingRecordList2.size());

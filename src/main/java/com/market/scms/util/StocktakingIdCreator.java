@@ -20,7 +20,7 @@ public class StocktakingIdCreator {
     }
 
     public static String getDateString() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String str = sdf.format(new Date());
         return str;
     }

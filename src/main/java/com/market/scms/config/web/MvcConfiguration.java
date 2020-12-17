@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -73,6 +74,20 @@ public class MvcConfiguration implements WebMvcConfigurer, ApplicationContextAwa
             @Override
             public void destroy() {}
         });
+    }
+
+    /**
+     * 文件上传解析器
+     * @return
+     */
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver createMultipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setDefaultEncoding("utf-8");
+        // 1024 * 1024 * 20 = 20M
+        multipartResolver.setMaxUploadSize(20971520);
+        multipartResolver.setMaxInMemorySize(20971520);
+        return multipartResolver;
     }
     
     

@@ -457,7 +457,11 @@ public class StaffController {
             }
             List<Stocktaking> stocktakingList = stocktakingService.queryAll(0, 10000);
             List<StockingGoods> stockingGoodsList = new ArrayList<>(stocktakingList.size());
+            
             for (Stocktaking stocktaking : stocktakingList) {
+                if (!stocktaking.getStocktakingStatus().equals(StocktakingStatusEnum.START.getState())) {
+                    continue;
+                }
                 StockingGoods stockingGoods = new StockingGoods();
                 Stock stock = stockService.queryById(stocktaking.getStocktakingStockGoodsId());
                 Goods goods = goodsService.queryById(stock.getGoodsStockId());
@@ -469,6 +473,7 @@ public class StaffController {
                 BeanUtils.copyProperties(stock, stockingGoods);
                 stockingGoodsList.add(stockingGoods);
             }
+            
             int recordSum = stockingGoodsList.size();
             int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
             int rightIndex = rowIndex + pageSize;
