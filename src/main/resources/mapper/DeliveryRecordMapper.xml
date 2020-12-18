@@ -7,10 +7,10 @@
     <insert id="insert" parameterType="com.market.scms.entity.DeliveryRecord">
         INSERT INTO
         tb_delivery_record(delivery_id,delivery_paid,delivery_status,delivery_launched_staff_id,
-        delivery_check_out_status,delivery_refund_status,delivery_create_date)
+        delivery_check_out_status,delivery_refund_status,delivery_create_date,delivery_total_price)
         VALUES 
         (#{deliveryId},#{deliveryPaid},#{deliveryStatus},#{deliveryLaunchedStaffId},
-        #{deliveryCheckOutStatus},#{deliveryRefundStatus},#{deliveryCreateDate})
+        #{deliveryCheckOutStatus},#{deliveryRefundStatus},#{deliveryCreateDate},#{deliveryTotalPrice})
     </insert>
 
     <update id="update" parameterType="com.market.scms.entity.DeliveryRecord">
