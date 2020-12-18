@@ -147,7 +147,7 @@ public class StaffController {
      * @param request
      * @return
      */
-    @PostMapping("/changePassword")
+    @PostMapping("/staff/changePassword")
     @ResponseBody
     @Transactional
     @RequiresPermissions("/staff/changePassword")
