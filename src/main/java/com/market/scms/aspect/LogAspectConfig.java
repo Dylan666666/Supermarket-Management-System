@@ -39,6 +39,13 @@ public class LogAspectConfig {
 
     @Before("webLog()")
     public void deBefore(JoinPoint joinPoint) {
+        Integer staffId = HttpServletRequestUtil.getInt(request, "staffId");
+        if (staffId < 0) {
+            staffId = HttpServletRequestUtil.getInt(request, "userId");
+        }
+        if (staffId < 0) {
+            return;
+        }
         // 接收到请求，记录请求内容  
         startTimeMillis = System.currentTimeMillis();
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -62,10 +69,6 @@ public class LogAspectConfig {
             } catch (Exception e) {
                 params = "无参数";
             }
-        }
-        Integer staffId = HttpServletRequestUtil.getInt(request, "staffId");
-        if (staffId < 0) {
-            staffId = HttpServletRequestUtil.getInt(request, "userId");
         }
         String[] arr1 = joinPoint.getSignature().toString().replace(".","/").split("/");
         log.info("操作员工ID：" + staffId + "  || URL : " + request.getRequestURL().toString() + ",HTTP_METHOD : " + request.getMethod() +
