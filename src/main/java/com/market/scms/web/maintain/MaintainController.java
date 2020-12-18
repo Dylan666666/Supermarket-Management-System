@@ -361,9 +361,8 @@ public class MaintainController {
                 }
             }
             List<GoodsCategory> categoryList = goodsCategoryService.queryAll();
+            
             int recordSum = categoryList.size();
-            
-            
             int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
             int rightIndex = rowIndex + pageSize;
             if (recordSum < rightIndex) {

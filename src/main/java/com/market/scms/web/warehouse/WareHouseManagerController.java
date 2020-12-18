@@ -1463,7 +1463,17 @@ public class WareHouseManagerController {
                 modelMap.put("errMsg", "传入信息有误，提交失败");
                 return modelMap;
             }
-            deliveryRecord.setDeliveryLaunchedStaffId(staffId);
+            if (deliveryRecord.getDeliveryStatus().equals(DeliveryStatusStateEnum.FAILURE.getState())) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该订单已被驳回，提交失败");
+                return modelMap;
+            }
+            if (deliveryRecord.getDeliveryStatus().equals(DeliveryStatusStateEnum.SUCCESS.getState())) {
+                modelMap.put("success",false);
+                modelMap.put("errMsg", "该订单已入库，提交失败");
+                return modelMap;
+            }
+            deliveryRecord.setDeliveryHandleStaffId(staffId);
             deliveryRecord.setDeliveryStatus(DeliveryStatusStateEnum.SUCCESS.getState());
             int res = deliveryRecordService.update(deliveryRecord);
             if (res == 0) {
@@ -1503,12 +1513,21 @@ public class WareHouseManagerController {
     public Map<String,Object> warehousingDetails(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         String deliveryId = HttpServletRequestUtil.getString(request, "deliveryId");
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
         if (deliveryId == null) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "传入信息有误，查看失败");
             return modelMap;
         }
         try {
+            
             List<Delivery> deliveryList = deliveryService.queryByDeliveryId(deliveryId);
             if (deliveryList == null) {
                 modelMap.put("success",false);
@@ -1539,7 +1558,19 @@ public class WareHouseManagerController {
                 BeanUtils.copyProperties(unit, deliveryGoods);
                 deliveryGoodsList.add(deliveryGoods);
             }
-            modelMap.put("deliveryGoodsList", deliveryGoodsList);
+
+            int recordSum = deliveryGoodsList.size();
+
+
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            int rightIndex = rowIndex + pageSize;
+            if (recordSum < rightIndex) {
+                rightIndex = recordSum;
+            }
+            List<DeliveryGoods> res = deliveryGoodsList.subList(rowIndex, rightIndex);
+            
+            modelMap.put("deliveryGoodsList", res);
+            modelMap.put("recordSum", recordSum);
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);
@@ -1672,6 +1703,14 @@ public class WareHouseManagerController {
     public Map<String,Object> retaildetails(HttpServletRequest request) {
         Map<String, Object> modelMap = new HashMap<>(16);
         String retailId = HttpServletRequestUtil.getString(request, "retailId");
+        int pageIndex = HttpServletRequestUtil.getInt(request, "pageIndex");
+        int pageSize = HttpServletRequestUtil.getInt(request, "pageSize");
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+        if (pageSize <= 0) {
+            pageSize = 10000;
+        }
         if (request == null) {
             modelMap.put("success",false);
             modelMap.put("errMsg", "不具备访问条件，访问失败");
@@ -1679,7 +1718,32 @@ public class WareHouseManagerController {
         }
         try {
             List<Retail> retailList = retailService.queryByRetailId(retailId);
-            modelMap.put("retailList", retailList);
+            List<RetailGoods> retailGoodsList = new ArrayList<>(retailList.size());
+
+            for (Retail retail : retailList) {
+                RetailGoods retailGoods = new RetailGoods();
+                Stock stock = stockService.queryById(retail.getRetailStockGoodsId());
+                Goods goods = goodsService.queryById(stock.getGoodsStockId());
+                GoodsCategory goodsCategory = goodsCategoryService.queryById(goods.getGoodsCategoryId());
+                Unit unit = unitService.queryById(stock.getStockUnitId());
+                BeanUtils.copyProperties(retail, retailGoods);
+                BeanUtils.copyProperties(stock, retailGoods);
+                BeanUtils.copyProperties(goods, retailGoods);
+                BeanUtils.copyProperties(goodsCategory, retailGoods);
+                BeanUtils.copyProperties(unit, retailGoods);
+                retailGoodsList.add(retailGoods);
+            }
+
+            int recordSum = retailGoodsList.size();
+            int rowIndex = PageCalculator.calculatorRowIndex(pageIndex, pageSize);
+            int rightIndex = rowIndex + pageSize;
+            if (recordSum < rightIndex) {
+                rightIndex = recordSum;
+            }
+            List<RetailGoods> res = retailGoodsList.subList(rowIndex, rightIndex);
+            
+            modelMap.put("recordSum", recordSum);
+            modelMap.put("retailGoodsList", res);
             modelMap.put("success", true);
         } catch (WareHouseManagerException e) {
             modelMap.put("success",false);

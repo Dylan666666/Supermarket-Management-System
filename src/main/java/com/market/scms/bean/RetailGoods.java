@@ -3,7 +3,7 @@ package com.market.scms.bean;
 import java.io.Serializable;
 
 /**
- * 零售出库单商品列表(delivery+stock+goods+goods_category+unit+连接)
+ * 零售出库单商品列表(retail+stock+goods+goods_category+unit连接)
  * @Author: Mr_OO
  * @Date: 2020/12/4 10:07
  */

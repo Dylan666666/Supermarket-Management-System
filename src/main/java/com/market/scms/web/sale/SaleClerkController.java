@@ -482,6 +482,7 @@ public class SaleClerkController {
             deliveryRecord.setDeliveryId(deliveryId);
             deliveryRecord.setDeliveryStatus(DeliveryStatusStateEnum.START.getState());
             deliveryRecord.setDeliveryTotalPrice(money);
+            deliveryRecord.setDeliveryLaunchedStaffId(staffId);
             int res = deliveryRecordService.insert(deliveryRecord);
             if (res == 0) {
                 throw new SaleException("提交失败");
