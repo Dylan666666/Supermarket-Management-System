@@ -96,11 +96,27 @@ public class MvcConfiguration implements WebMvcConfigurer, ApplicationContextAwa
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String os = System.getProperty("os.name");
+        String basePath = "";
+        String windows = "windows";
         //加载图片的默认地址前缀
-        registry.addResourceHandler("/goods/**")
-                .addResourceLocations("file:C:/scms/image/goods/");
+        
+        if(os.toLowerCase().startsWith(windows)) {
+            registry.addResourceHandler("/goods/**")
+                    .addResourceLocations("file:C:/scms/image/goods/");
+        } else {
+            registry.addResourceHandler("/goods/**")
+                    .addResourceLocations("file:/scms/image/goods/");
+        }
+
+        if(!registry.hasMappingForPattern("/watermark.png")){
+            registry.addResourceHandler("/watermark.png").addResourceLocations("classpath:/");
+        }
+        
         WebMvcConfigurer.super.addResourceHandlers(registry);
     }
+
+    
     
     
 }

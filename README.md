@@ -13,3 +13,7 @@
 ----
 ### 前端采用 Vue + Element UI + axios
 * 前端代码链接：https://github.com/mengnayang/20201102_vue.git
+-----
+* 已提供日志数据库创建SQL ： log.sql
+* 已提供超市商品数据库创建SQL ： market.sql
+* 已提供超市职工及权限数据库创建SQL ： staffjurisdiction.sql
