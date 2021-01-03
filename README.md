@@ -17,3 +17,9 @@
 * 已提供日志数据库创建SQL ： log.sql
 * 已提供超市商品数据库创建SQL ： market.sql
 * 已提供超市职工及权限数据库创建SQL ： staffjurisdiction.sql
+-----
+上图：
+![Index](https://github.com/Dylan666666/Supermarket-Management-System/blob/master/images/Index.png) 
+![goodsMa](https://github.com/Dylan666666/Supermarket-Management-System/blob/master/images/goodsManage.png) 
+![RBAC](https://github.com/Dylan666666/Supermarket-Management-System/blob/master/images/RBAC.png) 
+![Log](https://github.com/Dylan666666/Supermarket-Management-System/blob/master/images/logManage.png) 
